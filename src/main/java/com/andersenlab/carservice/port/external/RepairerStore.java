@@ -10,7 +10,7 @@ public interface RepairerStore {
     Collection<RepairerEntity> findAllSorted(Sort sort);
 
     enum Sort {
-        NAME
+        ID, NAME
     }
 
     record RepairerEntity(UUID id, String name) {}

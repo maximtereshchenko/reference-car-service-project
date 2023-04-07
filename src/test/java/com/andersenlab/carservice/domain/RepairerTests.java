@@ -33,4 +33,16 @@ class RepairerTests {
                         new ListRepairersUserCase.RepairerView(firstRepairerId, "John")
                 );
     }
+
+    @Test
+    void givenSomeRepairers_whenListById_thenTheyShouldBeSortedById() {
+        module.addRepairerUseCase().add(secondRepairerId, "Andrei");
+        module.addRepairerUseCase().add(firstRepairerId, "John");
+
+        assertThat(module.listRepairersUserCase().list(ListRepairersUserCase.Sort.ID))
+                .containsExactly(
+                        new ListRepairersUserCase.RepairerView(firstRepairerId, "John"),
+                        new ListRepairersUserCase.RepairerView(secondRepairerId, "Andrei")
+                );
+    }
 }

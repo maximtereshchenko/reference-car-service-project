@@ -8,7 +8,7 @@ public interface ListRepairersUserCase {
     List<RepairerView> list(Sort sort);
 
     enum Sort{
-        NAME
+        ID, NAME
     }
 
     record RepairerView(UUID id, String name) {}
