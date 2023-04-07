@@ -4,6 +4,7 @@ import com.andersenlab.carservice.port.usecase.ListRepairersUserCase;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Locale;
 
 public final class ListRepairersCommand extends NamedCommandWithDescription {
 
@@ -16,17 +17,21 @@ public final class ListRepairersCommand extends NamedCommandWithDescription {
 
     @Override
     List<String> expectedArguments() {
-        return List.of();
+        return List.of("sort");
     }
 
     @Override
     String desription() {
-        return "list all known repairers";
+        return "list all known repairers sorted";
     }
 
     @Override
     void executeIfMatched(PrintStream output, List<String> arguments) {
-        var repairers = userCase.list();
+        var repairers = userCase.list(
+                ListRepairersUserCase.Sort.valueOf(
+                        arguments.get(0).toUpperCase(Locale.ROOT)
+                )
+        );
         for (int i = 0; i < repairers.size(); i++) {
             var repairer = repairers.get(i);
             output.printf("%d) %s, %s%n", i + 1, repairer.id(), repairer.name());

@@ -21,8 +21,8 @@ final class RepairerService implements AddRepairerUseCase, ListRepairersUserCase
     }
 
     @Override
-    public List<RepairerView> list() {
-        return repairerStore.findAll()
+    public List<RepairerView> list(Sort sort) {
+        return repairerStore.findAllSorted(RepairerStore.Sort.valueOf(sort.toString()))
                 .stream()
                 .map(repairerEntity -> new RepairerView(repairerEntity.id(), repairerEntity.name()))
                 .toList();

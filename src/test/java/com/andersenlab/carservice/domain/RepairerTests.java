@@ -11,13 +11,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RepairerTests {
 
     private final CarServiceModule module = new CarServiceModule(new InMemoryRepairerStore());
-    private final UUID repairerId = UUID.fromString("00000000-0000-0000-0000-000000000001");
+    private final UUID firstRepairerId = UUID.fromString("00000000-0000-0000-0000-000000000001");
+    private final UUID secondRepairerId = UUID.fromString("00000000-0000-0000-0000-000000000002");
 
     @Test
     void givenNoRepairers_whenAddRepairer_thenItShouldBeListed() {
-        module.addRepairerUseCase().add(repairerId, "John");
+        module.addRepairerUseCase().add(firstRepairerId, "John");
 
-        assertThat(module.listRepairersUserCase().list())
-                .containsExactly(new ListRepairersUserCase.RepairerView(repairerId, "John"));
+        assertThat(module.listRepairersUserCase().list(ListRepairersUserCase.Sort.NAME))
+                .containsExactly(new ListRepairersUserCase.RepairerView(firstRepairerId, "John"));
+    }
+
+    @Test
+    void givenSomeRepairers_whenListByName_thenTheyShouldBeSortedByName() {
+        module.addRepairerUseCase().add(firstRepairerId, "John");
+        module.addRepairerUseCase().add(secondRepairerId, "Andrei");
+
+        assertThat(module.listRepairersUserCase().list(ListRepairersUserCase.Sort.NAME))
+                .containsExactly(
+                        new ListRepairersUserCase.RepairerView(secondRepairerId, "Andrei"),
+                        new ListRepairersUserCase.RepairerView(firstRepairerId, "John")
+                );
     }
 }

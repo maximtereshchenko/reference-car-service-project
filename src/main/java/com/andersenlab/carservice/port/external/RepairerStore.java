@@ -7,7 +7,11 @@ public interface RepairerStore {
 
     void save(RepairerEntity repairerEntity);
 
-    Collection<RepairerEntity> findAll();
+    Collection<RepairerEntity> findAllSorted(Sort sort);
+
+    enum Sort {
+        NAME
+    }
 
     record RepairerEntity(UUID id, String name) {}
 }

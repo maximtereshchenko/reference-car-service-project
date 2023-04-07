@@ -36,7 +36,7 @@ final class EndToEndTests {
         assertThat(output.toString())
                 .isEqualTo("""
                         repairers add (name) - add a repairer with given name
-                        repairers list - list all known repairers
+                        repairers list (sort) - list all known repairers sorted
                         help - print all available commands
                         """);
     }
@@ -57,7 +57,7 @@ final class EndToEndTests {
     void listRepairers() {
         input("""
                 repairers add John
-                repairers list
+                repairers list name
                 exit
                 """);
 

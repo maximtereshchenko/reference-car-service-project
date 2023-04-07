@@ -2,14 +2,14 @@ package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.external.RepairerStore;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class InMemoryRepairerStore implements RepairerStore {
 
     private final Map<UUID, RepairerEntity> map = new HashMap<>();
+    private final Map<Sort, Comparator<RepairerEntity>> comparators = Map.of(
+            Sort.NAME, Comparator.comparing(RepairerEntity::name)
+    );
 
     @Override
     public void save(RepairerEntity repairerEntity) {
@@ -17,7 +17,9 @@ public final class InMemoryRepairerStore implements RepairerStore {
     }
 
     @Override
-    public Collection<RepairerEntity> findAll() {
-        return map.values();
+    public Collection<RepairerEntity> findAllSorted(Sort sort) {
+        return map.values().stream()
+                .sorted(comparators.get(sort))
+                .toList();
     }
 }

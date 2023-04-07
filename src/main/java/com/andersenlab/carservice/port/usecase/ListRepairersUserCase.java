@@ -5,7 +5,11 @@ import java.util.UUID;
 
 public interface ListRepairersUserCase {
 
-    List<RepairerView> list();
+    List<RepairerView> list(Sort sort);
+
+    enum Sort{
+        NAME
+    }
 
     record RepairerView(UUID id, String name) {}
 }
