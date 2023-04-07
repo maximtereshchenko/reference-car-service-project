@@ -4,6 +4,7 @@ import com.andersenlab.carservice.port.external.RepairerStore;
 import com.andersenlab.carservice.port.usecase.AddRepairerUseCase;
 import com.andersenlab.carservice.port.usecase.ListRepairersUserCase;
 
+import java.util.List;
 import java.util.UUID;
 
 final class RepairerService implements AddRepairerUseCase, ListRepairersUserCase {
@@ -20,7 +21,7 @@ final class RepairerService implements AddRepairerUseCase, ListRepairersUserCase
     }
 
     @Override
-    public Iterable<RepairerView> list() {
+    public List<RepairerView> list() {
         return repairerStore.findAll()
                 .stream()
                 .map(repairerEntity -> new RepairerView(repairerEntity.id(), repairerEntity.name()))

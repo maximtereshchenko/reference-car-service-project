@@ -1,10 +1,11 @@
 package com.andersenlab.carservice.port.usecase;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ListRepairersUserCase {
 
-    Iterable<RepairerView> list();
+    List<RepairerView> list();
 
     record RepairerView(UUID id, String name) {}
 }
