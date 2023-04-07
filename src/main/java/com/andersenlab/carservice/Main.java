@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-enum Main {
-    ;
+class Main {
 
     public static void main(String[] args) {
         var module = new CarServiceModule(new InMemoryRepairerStore());
@@ -18,7 +17,8 @@ enum Main {
                 new CompositeCommand(
                         "repairers",
                         new AddRepairer(module.addRepairerUseCase()),
-                        new ListRepairersCommand(module.listRepairersUserCase())
+                        new ListRepairersCommand(module.listRepairersUserCase()),
+                        new DeleteRepairer(module.deleteRepairerUseCase())
                 )
         );
         new TextInterface(

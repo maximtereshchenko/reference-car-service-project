@@ -39,6 +39,7 @@ final class EndToEndTests {
                 .hasToString("""
                         repairers add (id?, name) - add a repairer with given name and, optionally, ID
                         repairers list (sort) - list all known repairers sorted
+                        repairers delete (id) - delete a repairer with given ID
                         help - print all available commands
                         """);
     }
@@ -80,6 +81,21 @@ final class EndToEndTests {
         Main.main(ARGS);
 
         assertThat(output.toString()).contains("Repairer added", "1) ", ", John");
+    }
+
+    @Test
+    void deleteRepairerById() {
+        input("""
+                repairers add %s John
+                repairers delete %s
+                exit
+                """
+                .formatted(repairerId, repairerId)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Repairer deleted");
     }
 
     private void input(String commands) {
