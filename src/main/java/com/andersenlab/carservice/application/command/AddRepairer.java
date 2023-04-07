@@ -17,18 +17,32 @@ public final class AddRepairer extends NamedCommandWithDescription {
 
     @Override
     List<String> expectedArguments() {
-        return List.of("name");
+        return List.of("id?", "name");
     }
 
     @Override
     String desription() {
-        return "add a repairer with given name";
+        return "add a repairer with given name and, optionally, ID";
     }
 
     @Override
     void executeIfMatched(PrintStream output, List<String> arguments) {
-        var id = UUID.randomUUID();
-        useCase.add(id, arguments.get(0));
+        var id = id(arguments);
+        useCase.add(id, name(arguments));
         output.println("Repairer added " + id);
+    }
+
+    private String name(List<String> arguments) {
+        if (arguments.size() == 1) {
+            return arguments.get(0);
+        }
+        return arguments.get(1);
+    }
+
+    private UUID id(List<String> arguments) {
+        if (arguments.size() == 1) {
+            return UUID.randomUUID();
+        }
+        return UUID.fromString(arguments.get(0));
     }
 }

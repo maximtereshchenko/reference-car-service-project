@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,6 +19,7 @@ final class EndToEndTests {
     private static final String[] ARGS = {};
 
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
+    private final UUID repairerId = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
     @BeforeEach
     void setUp() {
@@ -33,16 +35,16 @@ final class EndToEndTests {
 
         Main.main(ARGS);
 
-        assertThat(output.toString())
-                .isEqualTo("""
-                        repairers add (name) - add a repairer with given name
+        assertThat(output)
+                .hasToString("""
+                        repairers add (id?, name) - add a repairer with given name and, optionally, ID
                         repairers list (sort) - list all known repairers sorted
                         help - print all available commands
                         """);
     }
 
     @Test
-    void addRepairer() {
+    void addRepairerWithoutId() {
         input("""
                 repairers add John
                 exit
@@ -51,6 +53,20 @@ final class EndToEndTests {
         Main.main(ARGS);
 
         assertThat(output.toString()).contains("Repairer added");
+    }
+
+    @Test
+    void addRepairerWithId() {
+        input("""
+                repairers add %s John
+                exit
+                """
+                .formatted(repairerId)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Repairer added " + repairerId);
     }
 
     @Test
