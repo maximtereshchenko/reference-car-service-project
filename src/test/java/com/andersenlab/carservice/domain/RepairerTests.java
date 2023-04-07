@@ -45,4 +45,13 @@ class RepairerTests {
                         new ListRepairersUserCase.RepairerView(secondRepairerId, "Andrei")
                 );
     }
+
+    @Test
+    void givenOneRepairer_whenDeleteHim_thenNoRepairersShouldBeSeen() {
+        module.addRepairerUseCase().add(firstRepairerId, "John");
+
+        module.deleteRepairerUseCase().delete(firstRepairerId);
+
+        assertThat(module.listRepairersUserCase().list(ListRepairersUserCase.Sort.ID)).isEmpty();
+    }
 }

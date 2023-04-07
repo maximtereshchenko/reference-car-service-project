@@ -23,4 +23,9 @@ public final class InMemoryRepairerStore implements RepairerStore {
                 .sorted(comparators.get(sort))
                 .toList();
     }
+
+    @Override
+    public void delete(UUID id) {
+        map.remove(id);
+    }
 }

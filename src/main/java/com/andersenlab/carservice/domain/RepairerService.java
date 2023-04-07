@@ -2,12 +2,13 @@ package com.andersenlab.carservice.domain;
 
 import com.andersenlab.carservice.port.external.RepairerStore;
 import com.andersenlab.carservice.port.usecase.AddRepairerUseCase;
+import com.andersenlab.carservice.port.usecase.DeleteRepairerUseCase;
 import com.andersenlab.carservice.port.usecase.ListRepairersUserCase;
 
 import java.util.List;
 import java.util.UUID;
 
-final class RepairerService implements AddRepairerUseCase, ListRepairersUserCase {
+final class RepairerService implements AddRepairerUseCase, ListRepairersUserCase, DeleteRepairerUseCase {
 
     private final RepairerStore repairerStore;
 
@@ -26,5 +27,10 @@ final class RepairerService implements AddRepairerUseCase, ListRepairersUserCase
                 .stream()
                 .map(repairerEntity -> new RepairerView(repairerEntity.id(), repairerEntity.name()))
                 .toList();
+    }
+
+    @Override
+    public void delete(UUID id) {
+        repairerStore.delete(id);
     }
 }

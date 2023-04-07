@@ -9,6 +9,8 @@ public interface RepairerStore {
 
     Collection<RepairerEntity> findAllSorted(Sort sort);
 
+    void delete(UUID id);
+
     enum Sort {
         ID, NAME
     }
