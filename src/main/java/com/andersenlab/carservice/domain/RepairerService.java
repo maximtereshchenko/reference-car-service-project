@@ -1,8 +1,8 @@
-package com.andersenlab.carservce.domain;
+package com.andersenlab.carservice.domain;
 
-import com.andersenlab.carservce.port.external.RepairerStore;
-import com.andersenlab.carservce.port.usecase.AddRepairerUseCase;
-import com.andersenlab.carservce.port.usecase.ListRepairersUserCase;
+import com.andersenlab.carservice.port.external.RepairerStore;
+import com.andersenlab.carservice.port.usecase.AddRepairerUseCase;
+import com.andersenlab.carservice.port.usecase.ListRepairersUserCase;
 
 import java.util.UUID;
 

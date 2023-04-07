@@ -1,4 +1,4 @@
-package com.andersenlab.carservce.port.external;
+package com.andersenlab.carservice.port.external;
 
 import java.util.Collection;
 import java.util.UUID;

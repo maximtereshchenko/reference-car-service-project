@@ -1,4 +1,4 @@
-package com.andersenlab.carservce.port.usecase;
+package com.andersenlab.carservice.port.usecase;
 
 import java.util.UUID;
 

@@ -1,8 +1,7 @@
 package com.andersenlab.carservice.domain;
 
-import com.andersenlab.carservce.application.InMemoryRepairerStore;
-import com.andersenlab.carservce.domain.CarServiceModule;
-import com.andersenlab.carservce.port.usecase.ListRepairersUserCase;
+import com.andersenlab.carservice.application.InMemoryRepairerStore;
+import com.andersenlab.carservice.port.usecase.ListRepairersUserCase;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
