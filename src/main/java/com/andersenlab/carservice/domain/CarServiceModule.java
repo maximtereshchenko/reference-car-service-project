@@ -1,17 +1,27 @@
 package com.andersenlab.carservice.domain;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
+import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.external.RepairerStore;
 import com.andersenlab.carservice.port.usecase.*;
+
+import java.time.Clock;
 
 public final class CarServiceModule {
 
     private final RepairerService repairerService;
     private final GarageSlotService garageSlotService;
+    private final OrderService orderService;
 
-    public CarServiceModule(RepairerStore repairerStore, GarageSlotStore garageSlotStore) {
+    public CarServiceModule(
+            RepairerStore repairerStore,
+            GarageSlotStore garageSlotStore,
+            OrderStore orderStore,
+            Clock clock
+    ) {
         repairerService = new RepairerService(repairerStore);
         garageSlotService = new GarageSlotService(garageSlotStore);
+        orderService = new OrderService(orderStore, clock);
     }
 
     public AddRepairerUseCase addRepairerUseCase() {
@@ -36,5 +46,13 @@ public final class CarServiceModule {
 
     public DeleteGarageSlotUseCase deleteGarageSlotUseCase() {
         return garageSlotService;
+    }
+
+    public CreateOrderUseCase createOrderUseCase() {
+        return orderService;
+    }
+
+    public ListOrdersUseCase listOrdersUseCase() {
+        return orderService;
     }
 }

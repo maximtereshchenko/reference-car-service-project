@@ -11,5 +11,5 @@
 * Assign one or more repairers to the order
 * Complete an order
 * Cancel an order
-* List orders sorted by creation date, completion date, price, status, repairer
+* List orders sorted by creation date, completion date, price, status
 * Get full information about an order: repairers, garage slot, creation date, completion date
