@@ -36,7 +36,8 @@ final class Main {
                 ),
                 new CompositeCommand(
                         "orders",
-                        new CreateOrder(module.createOrderUseCase())
+                        new CreateOrder(module.createOrderUseCase()),
+                        new ListOrders(module.listOrdersUseCase())
                 )
         );
         new TextInterface(

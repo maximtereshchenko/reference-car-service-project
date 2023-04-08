@@ -25,7 +25,7 @@ final class EndToEndTests {
 
     @BeforeEach
     void setUp() {
-        System.setOut(new PrintStream(output));
+        System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));
     }
 
     @Test
@@ -46,6 +46,7 @@ final class EndToEndTests {
                         garage-slots list (sort) - list all known garage slots sorted
                         garage-slots delete (id) - delete a garage slot with given ID
                         orders create (id?, price) - create an order with given price and, optionally, ID
+                        orders list (sort) - list all known orders sorted
                         help - print all available commands
                         """);
     }
@@ -186,6 +187,25 @@ final class EndToEndTests {
         Main.main(ARGS);
 
         assertThat(output.toString()).contains("Order created " + orderId1);
+    }
+
+    @Test
+    void listOrders(UUID orderId1) {
+        input("""
+                orders create %s 100
+                orders list id
+                exit
+                """
+                .formatted(orderId1)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains(
+                "Order created " + orderId1,
+                "1) " + orderId1 + ", 100, IN_PROCESS, ",
+                ", NONE"
+        );
     }
 
     private void input(String commands) {
