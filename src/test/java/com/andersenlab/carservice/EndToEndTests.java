@@ -1,7 +1,9 @@
 package com.andersenlab.carservice;
 
+import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
@@ -14,12 +16,12 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Execution(ExecutionMode.SAME_THREAD)
+@ExtendWith(PredictableUUIDExtension.class)
 final class EndToEndTests {
 
     private static final String[] ARGS = {};
 
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
-    private final UUID repairerId = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
     @BeforeEach
     void setUp() {
@@ -57,17 +59,17 @@ final class EndToEndTests {
     }
 
     @Test
-    void addRepairerWithId() {
+    void addRepairerWithId(UUID repairerId1) {
         input("""
                 repairers add %s John
                 exit
                 """
-                .formatted(repairerId)
+                .formatted(repairerId1)
         );
 
         Main.main(ARGS);
 
-        assertThat(output.toString()).contains("Repairer added " + repairerId);
+        assertThat(output.toString()).contains("Repairer added " + repairerId1);
     }
 
     @Test
@@ -84,13 +86,13 @@ final class EndToEndTests {
     }
 
     @Test
-    void deleteRepairerById() {
+    void deleteRepairerById(UUID repairerId1) {
         input("""
                 repairers add %s John
                 repairers delete %s
                 exit
                 """
-                .formatted(repairerId, repairerId)
+                .formatted(repairerId1, repairerId1)
         );
 
         Main.main(ARGS);

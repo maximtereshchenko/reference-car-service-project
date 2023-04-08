@@ -1,4 +1,4 @@
-package com.andersenlab.carservice;
+package com.andersenlab.carservice.extension;
 
 import com.andersenlab.carservice.application.InMemoryGarageSlotStore;
 import com.andersenlab.carservice.application.InMemoryRepairerStore;
