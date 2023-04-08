@@ -7,7 +7,7 @@ public interface ListGarageSlotsUseCase {
 
     List<GarageSlotView> list(Sort sort);
 
-    enum Sort{
+    enum Sort {
         ID
     }
 

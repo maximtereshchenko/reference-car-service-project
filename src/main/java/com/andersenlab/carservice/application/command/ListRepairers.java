@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
 
-public final class ListRepairersCommand extends NamedCommandWithDescription {
+public final class ListRepairers extends NamedCommandWithDescription {
 
     private final ListRepairersUseCase userCase;
 
-    public ListRepairersCommand(ListRepairersUseCase userCase) {
+    public ListRepairers(ListRepairersUseCase userCase) {
         super("list");
         this.userCase = userCase;
     }

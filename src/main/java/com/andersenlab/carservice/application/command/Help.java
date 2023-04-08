@@ -4,11 +4,11 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.List;
 
-public final class HelpCommand extends NamedCommandWithDescription {
+public final class Help extends NamedCommandWithDescription {
 
     private final Collection<Command> commands;
 
-    public HelpCommand(Collection<? extends Command> commands) {
+    public Help(Collection<? extends Command> commands) {
         super("help");
         this.commands = List.copyOf(commands);
     }

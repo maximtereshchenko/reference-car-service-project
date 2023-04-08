@@ -10,16 +10,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-class Main {
+enum Main {
+    ;
 
     public static void main(String[] args) {
-        var module = new CarServiceModule(new InMemoryRepairerStore(),new InMemoryGarageSlotStore());
+        var module = new CarServiceModule(new InMemoryRepairerStore(), new InMemoryGarageSlotStore());
         var mainCommands = List.of(
                 new CompositeCommand(
                         "repairers",
                         new AddRepairer(module.addRepairerUseCase()),
-                        new ListRepairersCommand(module.listRepairersUserCase()),
+                        new ListRepairers(module.listRepairersUserCase()),
                         new DeleteRepairer(module.deleteRepairerUseCase())
+                ),
+                new CompositeCommand(
+                        "garage-slots",
+                        new AddGarageSlot(module.addGarageSlotUseCase())
                 )
         );
         new TextInterface(
@@ -32,7 +37,7 @@ class Main {
 
     private static Collection<Command> allCommands(List<CompositeCommand> mainCommands) {
         var all = new ArrayList<Command>(mainCommands);
-        all.add(new HelpCommand(mainCommands));
+        all.add(new Help(mainCommands));
         return all;
     }
 }

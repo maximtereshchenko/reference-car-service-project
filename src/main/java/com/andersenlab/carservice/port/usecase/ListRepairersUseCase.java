@@ -7,7 +7,7 @@ public interface ListRepairersUseCase {
 
     List<RepairerView> list(Sort sort);
 
-    enum Sort{
+    enum Sort {
         ID, NAME
     }
 
