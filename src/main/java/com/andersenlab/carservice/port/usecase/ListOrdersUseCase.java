@@ -13,9 +13,5 @@ public interface ListOrdersUseCase {
         ID, PRICE, STATUS, CREATION_TIMESTAMP, CLOSING_TIMESTAMP
     }
 
-    enum OrderStatus {
-        IN_PROCESS, COMPLETED, CANCELED
-    }
-
     record OrderView(UUID id, long price, OrderStatus status, Instant creation, Optional<Instant> closing) {}
 }

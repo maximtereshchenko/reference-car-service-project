@@ -4,6 +4,8 @@ import com.andersenlab.carservice.extension.CarServiceExtension;
 import com.andersenlab.carservice.extension.ManualClock;
 import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListOrdersUseCase;
+import com.andersenlab.carservice.port.usecase.OrderStatus;
+import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -82,11 +84,36 @@ class OrderTests {
                 );
     }
 
+    @Test
+    void givenGarageSlotExists_whenAssignGarageSlot_thenOrderHasThatGarageSlotAssigned(
+            CarServiceModule module,
+            UUID garageSlot1,
+            UUID orderId1,
+            ManualClock clock
+    ) {
+        module.addGarageSlotUseCase().add(garageSlot1);
+        module.createOrderUseCase().create(orderId1, 100);
+
+        module.assignGarageSlotToOrderUseCase().assign(orderId1, garageSlot1);
+
+        assertThat(module.viewOrderUseCase().view(orderId1))
+                .contains(
+                        new ViewOrderUseCase.OrderView(
+                                orderId1,
+                                100,
+                                OrderStatus.IN_PROCESS,
+                                Optional.of(garageSlot1),
+                                clock.instant(),
+                                Optional.empty()
+                        )
+                );
+    }
+
     private ListOrdersUseCase.OrderView orderView(UUID id, int price, Instant timestamp) {
         return new ListOrdersUseCase.OrderView(
                 id,
                 price,
-                ListOrdersUseCase.OrderStatus.IN_PROCESS,
+                OrderStatus.IN_PROCESS,
                 timestamp,
                 Optional.empty()
         );

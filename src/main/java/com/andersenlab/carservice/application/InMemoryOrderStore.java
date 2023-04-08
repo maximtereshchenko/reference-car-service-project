@@ -22,10 +22,24 @@ public final class InMemoryOrderStore implements OrderStore {
     }
 
     @Override
-    public Collection<OrderEntity> findAllSorted(Sort sort) {
+    public Optional<OrderEntity> findById(UUID id) {
+        return Optional.ofNullable(map.get(id));
+    }
+
+    @Override
+    public Collection<OrderProjection> findAllSorted(Sort sort) {
         return map.values()
                 .stream()
                 .sorted(comparators.get(sort))
+                .map(orderEntity ->
+                        new OrderProjection(
+                                orderEntity.id(),
+                                orderEntity.price(),
+                                orderEntity.status(),
+                                orderEntity.creation(),
+                                orderEntity.closing()
+                        )
+                )
                 .toList();
     }
 

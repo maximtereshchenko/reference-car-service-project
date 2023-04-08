@@ -55,4 +55,12 @@ public final class CarServiceModule {
     public ListOrdersUseCase listOrdersUseCase() {
         return orderService;
     }
+
+    public AssignGarageSlotToOrderUseCase assignGarageSlotToOrderUseCase() {
+        return orderService;
+    }
+
+    public ViewOrderUseCase viewOrderUseCase() {
+        return orderService;
+    }
 }

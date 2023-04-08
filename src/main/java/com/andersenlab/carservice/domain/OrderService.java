@@ -1,15 +1,14 @@
 package com.andersenlab.carservice.domain;
 
 import com.andersenlab.carservice.port.external.OrderStore;
-import com.andersenlab.carservice.port.usecase.CreateOrderUseCase;
-import com.andersenlab.carservice.port.usecase.ListOrdersUseCase;
+import com.andersenlab.carservice.port.usecase.*;
 
 import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-final class OrderService implements CreateOrderUseCase, ListOrdersUseCase {
+final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, AssignGarageSlotToOrderUseCase, ViewOrderUseCase {
 
     private final OrderStore orderStore;
     private final Clock clock;
@@ -21,23 +20,15 @@ final class OrderService implements CreateOrderUseCase, ListOrdersUseCase {
 
     @Override
     public void create(UUID id, long price) {
-        orderStore.save(
-                new OrderStore.OrderEntity(
-                        id,
-                        price,
-                        OrderStore.OrderStatus.IN_PROCESS,
-                        clock.instant(),
-                        Optional.empty()
-                )
-        );
+        orderStore.save(new Order(id, price, clock.instant()).entity());
     }
 
     @Override
-    public List<OrderView> list(Sort sort) {
+    public List<ListOrdersUseCase.OrderView> list(Sort sort) {
         return orderStore.findAllSorted(OrderStore.Sort.valueOf(sort.name()))
                 .stream()
                 .map(orderEntity ->
-                        new OrderView(
+                        new ListOrdersUseCase.OrderView(
                                 orderEntity.id(),
                                 orderEntity.price(),
                                 OrderStatus.valueOf(orderEntity.status().name()),
@@ -46,5 +37,21 @@ final class OrderService implements CreateOrderUseCase, ListOrdersUseCase {
                         )
                 )
                 .toList();
+    }
+
+    @Override
+    public void assign(UUID orderId, UUID garageSlotId) {
+        orderStore.findById(orderId)
+                .map(Order::new)
+                .map(order -> order.assignGarageSlot(garageSlotId))
+                .map(Order::entity)
+                .ifPresent(orderStore::save);
+    }
+
+    @Override
+    public Optional<ViewOrderUseCase.OrderView> view(UUID id) {
+        return orderStore.findById(id)
+                .map(Order::new)
+                .map(Order::view);
     }
 }

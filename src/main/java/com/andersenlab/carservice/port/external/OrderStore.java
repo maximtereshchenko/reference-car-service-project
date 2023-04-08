@@ -9,7 +9,9 @@ public interface OrderStore {
 
     void save(OrderEntity orderEntity);
 
-    Collection<OrderEntity> findAllSorted(Sort sort);
+    Optional<OrderEntity> findById(UUID id);
+
+    Collection<OrderProjection> findAllSorted(Sort sort);
 
     enum Sort {
         ID, PRICE, STATUS, CREATION_TIMESTAMP, CLOSING_TIMESTAMP
@@ -19,5 +21,14 @@ public interface OrderStore {
         IN_PROCESS, COMPLETED, CANCELED
     }
 
-    record OrderEntity(UUID id, long price, OrderStatus status, Instant creation, Optional<Instant> closing) {}
+    record OrderEntity(
+            UUID id,
+            long price,
+            OrderStatus status,
+            Optional<UUID> garageSlotId,
+            Instant creation,
+            Optional<Instant> closing
+    ) {}
+
+    record OrderProjection(UUID id, long price, OrderStatus status, Instant creation, Optional<Instant> closing) {}
 }
