@@ -20,15 +20,7 @@ class OrderTests {
         module.createOrderUseCase().create(orderId1, 100);
 
         assertThat(module.listOrdersUseCase().list(ListOrdersUseCase.Sort.ID))
-                .containsExactly(
-                        new ListOrdersUseCase.OrderView(
-                                orderId1,
-                                100,
-                                ListOrdersUseCase.OrderStatus.IN_PROCESS,
-                                timestamp,
-                                Optional.empty()
-                        )
-                );
+                .containsExactly(orderView(orderId1, 100, timestamp));
     }
 
     @Test
@@ -43,20 +35,35 @@ class OrderTests {
 
         assertThat(module.listOrdersUseCase().list(ListOrdersUseCase.Sort.ID))
                 .containsExactly(
-                        new ListOrdersUseCase.OrderView(
-                                orderId1,
-                                100,
-                                ListOrdersUseCase.OrderStatus.IN_PROCESS,
-                                timestamp,
-                                Optional.empty()
-                        ),
-                        new ListOrdersUseCase.OrderView(
-                                orderId2,
-                                100,
-                                ListOrdersUseCase.OrderStatus.IN_PROCESS,
-                                timestamp,
-                                Optional.empty()
-                        )
+                        orderView(orderId1, 100, timestamp),
+                        orderView(orderId2, 100, timestamp)
                 );
+    }
+
+    @Test
+    void givenSomeOrders_whenListByPrice_thenTheyShouldBeSortedByPrice(
+            CarServiceModule module,
+            UUID orderId1,
+            UUID orderId2,
+            Instant timestamp
+    ) {
+        module.createOrderUseCase().create(orderId1, 200);
+        module.createOrderUseCase().create(orderId2, 100);
+
+        assertThat(module.listOrdersUseCase().list(ListOrdersUseCase.Sort.PRICE))
+                .containsExactly(
+                        orderView(orderId2, 100, timestamp),
+                        orderView(orderId1, 200, timestamp)
+                );
+    }
+
+    private ListOrdersUseCase.OrderView orderView(UUID orderId2, int price, Instant timestamp) {
+        return new ListOrdersUseCase.OrderView(
+                orderId2,
+                price,
+                ListOrdersUseCase.OrderStatus.IN_PROCESS,
+                timestamp,
+                Optional.empty()
+        );
     }
 }
