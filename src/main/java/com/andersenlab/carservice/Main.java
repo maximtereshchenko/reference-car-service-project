@@ -24,7 +24,8 @@ final class Main {
                 new CompositeCommand(
                         "garage-slots",
                         new AddGarageSlot(module.addGarageSlotUseCase()),
-                        new ListGarageSlots(module.listGarageSlotsUseCase())
+                        new ListGarageSlots(module.listGarageSlotsUseCase()),
+                        new DeleteGarageSlot(module.deleteGarageSlotUseCase())
                 )
         );
         new TextInterface(

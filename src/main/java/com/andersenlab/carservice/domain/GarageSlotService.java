@@ -2,13 +2,13 @@ package com.andersenlab.carservice.domain;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.usecase.AddGarageSlotUseCase;
-import com.andersenlab.carservice.port.usecase.DeleteRepairerUseCase;
+import com.andersenlab.carservice.port.usecase.DeleteGarageSlotUseCase;
 import com.andersenlab.carservice.port.usecase.ListGarageSlotsUseCase;
 
 import java.util.List;
 import java.util.UUID;
 
-final class GarageSlotService implements AddGarageSlotUseCase, ListGarageSlotsUseCase, DeleteRepairerUseCase {
+final class GarageSlotService implements AddGarageSlotUseCase, ListGarageSlotsUseCase, DeleteGarageSlotUseCase {
 
     private final GarageSlotStore garageSlotStore;
 
