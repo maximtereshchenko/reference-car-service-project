@@ -3,7 +3,7 @@ package com.andersenlab.carservice.port.usecase;
 import java.util.List;
 import java.util.UUID;
 
-public interface ListRepairersUserCase {
+public interface ListRepairersUseCase {
 
     List<RepairerView> list(Sort sort);
 

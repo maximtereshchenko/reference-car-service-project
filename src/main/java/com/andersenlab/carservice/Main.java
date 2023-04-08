@@ -1,5 +1,6 @@
 package com.andersenlab.carservice;
 
+import com.andersenlab.carservice.application.InMemoryGarageSlotStore;
 import com.andersenlab.carservice.application.InMemoryRepairerStore;
 import com.andersenlab.carservice.application.TextInterface;
 import com.andersenlab.carservice.application.command.*;
@@ -12,7 +13,7 @@ import java.util.List;
 class Main {
 
     public static void main(String[] args) {
-        var module = new CarServiceModule(new InMemoryRepairerStore());
+        var module = new CarServiceModule(new InMemoryRepairerStore(),new InMemoryGarageSlotStore());
         var mainCommands = List.of(
                 new CompositeCommand(
                         "repairers",

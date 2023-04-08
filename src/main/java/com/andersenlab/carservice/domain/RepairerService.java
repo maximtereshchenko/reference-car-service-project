@@ -3,12 +3,12 @@ package com.andersenlab.carservice.domain;
 import com.andersenlab.carservice.port.external.RepairerStore;
 import com.andersenlab.carservice.port.usecase.AddRepairerUseCase;
 import com.andersenlab.carservice.port.usecase.DeleteRepairerUseCase;
-import com.andersenlab.carservice.port.usecase.ListRepairersUserCase;
+import com.andersenlab.carservice.port.usecase.ListRepairersUseCase;
 
 import java.util.List;
 import java.util.UUID;
 
-final class RepairerService implements AddRepairerUseCase, ListRepairersUserCase, DeleteRepairerUseCase {
+final class RepairerService implements AddRepairerUseCase, ListRepairersUseCase, DeleteRepairerUseCase {
 
     private final RepairerStore repairerStore;
 

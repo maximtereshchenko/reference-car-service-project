@@ -1,6 +1,6 @@
 package com.andersenlab.carservice.application.command;
 
-import com.andersenlab.carservice.port.usecase.ListRepairersUserCase;
+import com.andersenlab.carservice.port.usecase.ListRepairersUseCase;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -8,9 +8,9 @@ import java.util.Locale;
 
 public final class ListRepairersCommand extends NamedCommandWithDescription {
 
-    private final ListRepairersUserCase userCase;
+    private final ListRepairersUseCase userCase;
 
-    public ListRepairersCommand(ListRepairersUserCase userCase) {
+    public ListRepairersCommand(ListRepairersUseCase userCase) {
         super("list");
         this.userCase = userCase;
     }
@@ -28,7 +28,7 @@ public final class ListRepairersCommand extends NamedCommandWithDescription {
     @Override
     void executeIfMatched(PrintStream output, List<String> arguments) {
         var repairers = userCase.list(
-                ListRepairersUserCase.Sort.valueOf(
+                ListRepairersUseCase.Sort.valueOf(
                         arguments.get(0).toUpperCase(Locale.ROOT)
                 )
         );
