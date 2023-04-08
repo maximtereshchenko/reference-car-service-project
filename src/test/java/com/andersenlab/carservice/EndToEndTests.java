@@ -43,6 +43,7 @@ final class EndToEndTests {
                         repairers list (sort) - list all known repairers sorted
                         repairers delete (id) - delete a repairer with given ID
                         garage-slots add (id?) - add a garage slot with, optionally, given ID
+                        garage-slots list (sort) - list all known garage slots sorted
                         help - print all available commands
                         """);
     }
@@ -74,16 +75,18 @@ final class EndToEndTests {
     }
 
     @Test
-    void listRepairers() {
+    void listRepairers(UUID repairerId1) {
         input("""
-                repairers add John
+                repairers add %s John
                 repairers list name
                 exit
-                """);
+                """
+                .formatted(repairerId1)
+        );
 
         Main.main(ARGS);
 
-        assertThat(output.toString()).contains("Repairer added", "1) ", ", John");
+        assertThat(output.toString()).contains("Repairer added " + repairerId1, "1) " + repairerId1 + ", John");
     }
 
     @Test
@@ -125,6 +128,21 @@ final class EndToEndTests {
         Main.main(ARGS);
 
         assertThat(output.toString()).contains("Garage slot added " + garageSlotId1);
+    }
+
+    @Test
+    void listGarageSlots(UUID garageSlotId1) {
+        input("""
+                garage-slots add %s
+                garage-slots list id
+                exit
+                """
+                .formatted(garageSlotId1)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Garage slot added " + garageSlotId1, "1) " + garageSlotId1);
     }
 
     private void input(String commands) {

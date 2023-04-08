@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-enum Main {
-    ;
+final class Main {
 
     public static void main(String[] args) {
         var module = new CarServiceModule(new InMemoryRepairerStore(), new InMemoryGarageSlotStore());
@@ -24,7 +23,8 @@ enum Main {
                 ),
                 new CompositeCommand(
                         "garage-slots",
-                        new AddGarageSlot(module.addGarageSlotUseCase())
+                        new AddGarageSlot(module.addGarageSlotUseCase()),
+                        new ListGarageSlots(module.listGarageSlotsUseCase())
                 )
         );
         new TextInterface(
