@@ -8,30 +8,30 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class CarServiceExtension implements ParameterResolver {
 
-    private final Instant timestamp = Instant.parse("2000-01-01T00:00:00.00Z");
+    private final Map<String, ManualClock> clocks = new ConcurrentHashMap<>();
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
         var type = parameterContext.getParameter().getType();
-        return type == CarServiceModule.class || type == Instant.class;
+        return type == CarServiceModule.class || type == ManualClock.class;
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        if (parameterContext.getParameter().getType() == Instant.class) {
-            return timestamp;
+        var clock = clocks.computeIfAbsent(extensionContext.getUniqueId(), id -> new ManualClock());
+        if (parameterContext.getParameter().getType() == ManualClock.class) {
+            return clock;
         }
         return new CarServiceModule(
                 new InMemoryRepairerStore(),
                 new InMemoryGarageSlotStore(),
                 new InMemoryOrderStore(),
-                Clock.fixed(timestamp, ZoneOffset.UTC)
+                clock
         );
     }
 }
