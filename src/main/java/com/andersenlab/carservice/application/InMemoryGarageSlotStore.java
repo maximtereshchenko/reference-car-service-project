@@ -22,4 +22,9 @@ public final class InMemoryGarageSlotStore implements GarageSlotStore {
                 .sorted(comparators.get(sort))
                 .toList();
     }
+
+    @Override
+    public void delete(UUID id) {
+        map.remove(id);
+    }
 }

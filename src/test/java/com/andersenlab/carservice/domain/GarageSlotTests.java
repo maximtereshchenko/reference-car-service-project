@@ -20,4 +20,13 @@ class GarageSlotTests {
         assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID))
                 .containsExactly(new ListGarageSlotsUseCase.GarageSlotView(garageSlotId1));
     }
+
+    @Test
+    void givenOneGarageSlot_whenDeleteIt_thenNoGarageSlotsShouldBeSeen(CarServiceModule module, UUID garageSlotId1) {
+        module.addGarageSlotUseCase().add(garageSlotId1);
+
+        module.deleteGarageSlotUseCase().delete(garageSlotId1);
+
+        assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID)).isEmpty();
+    }
 }

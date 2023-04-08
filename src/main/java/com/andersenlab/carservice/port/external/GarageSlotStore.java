@@ -9,6 +9,8 @@ public interface GarageSlotStore {
 
     Collection<GarageSlotEntity> findAllSorted(Sort sort);
 
+    void delete(UUID id);
+
     enum Sort {
         ID
     }

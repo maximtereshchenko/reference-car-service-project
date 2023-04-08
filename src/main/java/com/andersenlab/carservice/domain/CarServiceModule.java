@@ -33,4 +33,8 @@ public final class CarServiceModule {
     public ListGarageSlotsUseCase listGarageSlotsUseCase() {
         return garageSlotService;
     }
+
+    public DeleteRepairerUseCase deleteGarageSlotUseCase() {
+        return garageSlotService;
+    }
 }
