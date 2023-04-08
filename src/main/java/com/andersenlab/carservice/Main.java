@@ -33,6 +33,10 @@ final class Main {
                         new AddGarageSlot(module.addGarageSlotUseCase()),
                         new ListGarageSlots(module.listGarageSlotsUseCase()),
                         new DeleteGarageSlot(module.deleteGarageSlotUseCase())
+                ),
+                new CompositeCommand(
+                        "orders",
+                        new CreateOrder(module.createOrderUseCase())
                 )
         );
         new TextInterface(

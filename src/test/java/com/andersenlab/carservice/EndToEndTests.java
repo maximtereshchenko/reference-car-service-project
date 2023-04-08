@@ -45,6 +45,7 @@ final class EndToEndTests {
                         garage-slots add (id?) - add a garage slot with, optionally, given ID
                         garage-slots list (sort) - list all known garage slots sorted
                         garage-slots delete (id) - delete a garage slot with given ID
+                        orders create (id?, price) - create an order with given price and, optionally, ID
                         help - print all available commands
                         """);
     }
@@ -159,6 +160,32 @@ final class EndToEndTests {
         Main.main(ARGS);
 
         assertThat(output.toString()).contains("Garage slot deleted");
+    }
+
+    @Test
+    void createOrderWithoutId() {
+        input("""
+                orders create 100
+                exit
+                """);
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Order created");
+    }
+
+    @Test
+    void createOrderWithId(UUID orderId1) {
+        input("""
+                orders create %s 100
+                exit
+                """
+                .formatted(orderId1)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Order created " + orderId1);
     }
 
     private void input(String commands) {
