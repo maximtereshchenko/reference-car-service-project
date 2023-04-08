@@ -30,4 +30,33 @@ class OrderTests {
                         )
                 );
     }
+
+    @Test
+    void givenSomeOrders_whenListById_thenTheyShouldBeSortedById(
+            CarServiceModule module,
+            UUID orderId1,
+            UUID orderId2,
+            Instant timestamp
+    ) {
+        module.createOrderUseCase().create(orderId1, 100);
+        module.createOrderUseCase().create(orderId2, 100);
+
+        assertThat(module.listOrdersUseCase().list(ListOrdersUseCase.Sort.ID))
+                .containsExactly(
+                        new ListOrdersUseCase.OrderView(
+                                orderId1,
+                                100,
+                                ListOrdersUseCase.OrderStatus.IN_PROCESS,
+                                timestamp,
+                                Optional.empty()
+                        ),
+                        new ListOrdersUseCase.OrderView(
+                                orderId2,
+                                100,
+                                ListOrdersUseCase.OrderStatus.IN_PROCESS,
+                                timestamp,
+                                Optional.empty()
+                        )
+                );
+    }
 }
