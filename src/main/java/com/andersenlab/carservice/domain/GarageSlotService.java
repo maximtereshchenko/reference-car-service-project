@@ -4,6 +4,7 @@ import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.usecase.AddGarageSlotUseCase;
 import com.andersenlab.carservice.port.usecase.DeleteGarageSlotUseCase;
 import com.andersenlab.carservice.port.usecase.ListGarageSlotsUseCase;
+import com.andersenlab.carservice.port.usecase.exception.GarageSlotIsAssigned;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +33,9 @@ final class GarageSlotService implements AddGarageSlotUseCase, ListGarageSlotsUs
 
     @Override
     public void delete(UUID id) {
+        if (garageSlotStore.hasGarageSlotWithStatusAssigned(id)) {
+            throw new GarageSlotIsAssigned();
+        }
         garageSlotStore.delete(id);
     }
 

@@ -3,12 +3,14 @@ package com.andersenlab.carservice.domain;
 import com.andersenlab.carservice.extension.CarServiceExtension;
 import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListGarageSlotsUseCase;
+import com.andersenlab.carservice.port.usecase.exception.GarageSlotIsAssigned;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith({CarServiceExtension.class, PredictableUUIDExtension.class})
 class GarageSlotTests {
@@ -58,5 +60,19 @@ class GarageSlotTests {
                                 ListGarageSlotsUseCase.GarageSlotStatus.ASSIGNED
                         )
                 );
+    }
+
+    @Test
+    void givenGarageSlotAssignedToOrder_whenDeleteIt_thenGarageSlotIsAssignedThrown(
+            CarServiceModule module,
+            UUID garageSlotId,
+            UUID orderId
+    ) {
+        module.addGarageSlotUseCase().add(garageSlotId);
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageSlotId);
+        var useCase = module.deleteGarageSlotUseCase();
+
+        assertThatThrownBy(() -> useCase.delete(garageSlotId)).isInstanceOf(GarageSlotIsAssigned.class);
     }
 }

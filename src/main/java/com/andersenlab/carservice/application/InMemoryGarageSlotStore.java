@@ -38,4 +38,12 @@ public final class InMemoryGarageSlotStore implements GarageSlotStore {
     public GarageSlotEntity getById(UUID id) {
         return map.get(id);
     }
+
+    @Override
+    public boolean hasGarageSlotWithStatusAssigned(UUID id) {
+        if (hasNot(id)) {
+            return false;
+        }
+        return map.get(id).status() == GarageSlotStatus.ASSIGNED;
+    }
 }

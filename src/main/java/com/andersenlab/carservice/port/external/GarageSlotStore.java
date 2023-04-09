@@ -15,6 +15,8 @@ public interface GarageSlotStore {
 
     GarageSlotEntity getById(UUID id);
 
+    boolean hasGarageSlotWithStatusAssigned(UUID id);
+
     enum Sort {
         ID, STATUS
     }
