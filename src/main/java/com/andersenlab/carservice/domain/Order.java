@@ -3,9 +3,10 @@ package com.andersenlab.carservice.domain;
 import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
+import com.andersenlab.carservice.port.usecase.exception.OrderHasNoGarageSlotAssigned;
 
-import java.time.Clock;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -79,7 +80,10 @@ final class Order {
         );
     }
 
-    Order complete(Clock clock) {
+    Order complete(InstantSource clock) {
+        if (entity.garageSlotId().isEmpty()) {
+            throw new OrderHasNoGarageSlotAssigned();
+        }
         return new Order(
                 new OrderStore.OrderEntity(
                         entity.id(),
