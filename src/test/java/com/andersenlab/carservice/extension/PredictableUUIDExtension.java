@@ -15,7 +15,20 @@ public final class PredictableUUIDExtension implements ParameterResolver {
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        var name = parameterContext.getParameter().getName();
-        return UUID.fromString("00000000-0000-0000-0000-00000000000%c".formatted(name.charAt(name.length() - 1)));
+        return UUID.fromString(
+                "00000000-0000-0000-0000-00000000000" +
+                        digit(lastCharacter(parameterContext.getParameter().getName()))
+        );
+    }
+
+    private char lastCharacter(CharSequence charSequence) {
+        return charSequence.charAt(charSequence.length() - 1);
+    }
+
+    private int digit(char lastCharacter) {
+        if (Character.isDigit(lastCharacter)) {
+            return Character.digit(lastCharacter, 10);
+        }
+        return 0;
     }
 }

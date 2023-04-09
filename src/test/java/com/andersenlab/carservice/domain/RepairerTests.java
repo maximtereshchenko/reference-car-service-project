@@ -14,11 +14,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RepairerTests {
 
     @Test
-    void givenNoRepairers_whenAddRepairer_thenItShouldBeListed(CarServiceModule module, UUID repairerId1) {
-        module.addRepairerUseCase().add(repairerId1, "John");
+    void givenNoRepairers_whenAddRepairer_thenItShouldBeListed(CarServiceModule module, UUID repairerId) {
+        module.addRepairerUseCase().add(repairerId, "John");
 
         assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.NAME))
-                .containsExactly(new ListRepairersUseCase.RepairerView(repairerId1, "John"));
+                .containsExactly(new ListRepairersUseCase.RepairerView(repairerId, "John"));
     }
 
     @Test
@@ -54,10 +54,10 @@ class RepairerTests {
     }
 
     @Test
-    void givenOneRepairer_whenDeleteHim_thenNoRepairersShouldBeSeen(CarServiceModule module, UUID repairerId1) {
-        module.addRepairerUseCase().add(repairerId1, "John");
+    void givenOneRepairer_whenDeleteHim_thenNoRepairersShouldBeSeen(CarServiceModule module, UUID repairerId) {
+        module.addRepairerUseCase().add(repairerId, "John");
 
-        module.deleteRepairerUseCase().delete(repairerId1);
+        module.deleteRepairerUseCase().delete(repairerId);
 
         assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.ID)).isEmpty();
     }

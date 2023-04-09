@@ -27,13 +27,13 @@ class OrderTests {
     @Test
     void givenNoOrders_whenCreateOrder_thenItShouldBeListed(
             CarServiceModule module,
-            UUID orderId1,
+            UUID orderId,
             ManualClock clock
     ) {
-        module.createOrderUseCase().create(orderId1, 100);
+        module.createOrderUseCase().create(orderId, 100);
 
         assertThat(module.listOrdersUseCase().list(ListOrdersUseCase.Sort.ID))
-                .containsExactly(orderView(orderId1, 100, clock.instant()));
+                .containsExactly(orderView(orderId, 100, clock.instant()));
     }
 
     @Test
@@ -92,22 +92,22 @@ class OrderTests {
     @Test
     void givenGarageSlotExists_whenAssignGarageSlot_thenOrderHasThatGarageSlotAssigned(
             CarServiceModule module,
-            UUID garageSlot1,
-            UUID orderId1,
+            UUID garageSlot,
+            UUID orderId,
             ManualClock clock
     ) {
-        module.addGarageSlotUseCase().add(garageSlot1);
-        module.createOrderUseCase().create(orderId1, 100);
+        module.addGarageSlotUseCase().add(garageSlot);
+        module.createOrderUseCase().create(orderId, 100);
 
-        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId1, garageSlot1);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageSlot);
 
-        assertThat(module.viewOrderUseCase().view(orderId1))
+        assertThat(module.viewOrderUseCase().view(orderId))
                 .isEqualTo(
                         new ViewOrderUseCase.OrderView(
-                                orderId1,
+                                orderId,
                                 100,
                                 OrderStatus.IN_PROCESS,
-                                Optional.of(garageSlot1),
+                                Optional.of(garageSlot),
                                 Set.of(),
                                 clock.instant(),
                                 Optional.empty()
@@ -118,57 +118,57 @@ class OrderTests {
     @Test
     void givenOrderDoNotExist_whenViewOrder_thenOrderWasNotFoundThrown(
             CarServiceModule module,
-            UUID orderId1
+            UUID orderId
     ) {
         var useCase = module.viewOrderUseCase();
 
-        assertThatThrownBy(() -> useCase.view(orderId1)).isInstanceOf(OrderWasNotFound.class);
+        assertThatThrownBy(() -> useCase.view(orderId)).isInstanceOf(OrderWasNotFound.class);
     }
 
     @Test
     void givenGarageSlotDoNotExist_whenAssignGarageSlot_thenGarageSlotWasNotFoundThrown(
             CarServiceModule module,
-            UUID garageSlot1,
-            UUID orderId1
+            UUID garageSlot,
+            UUID orderId
     ) {
-        module.createOrderUseCase().create(orderId1, 100);
+        module.createOrderUseCase().create(orderId, 100);
         var useCase = module.assignGarageSlotToOrderUseCase();
 
-        assertThatThrownBy(() -> useCase.assignGarageSlot(orderId1, garageSlot1)).isInstanceOf(GarageSlotWasNotFound.class);
+        assertThatThrownBy(() -> useCase.assignGarageSlot(orderId, garageSlot)).isInstanceOf(GarageSlotWasNotFound.class);
     }
 
     @Test
     void givenOrderDoNotExist_whenAssignGarageSlot_thenOrderWasNotFoundThrown(
             CarServiceModule module,
-            UUID garageSlot1,
-            UUID orderId1
+            UUID garageSlot,
+            UUID orderId
     ) {
-        module.addGarageSlotUseCase().add(garageSlot1);
+        module.addGarageSlotUseCase().add(garageSlot);
         var useCase = module.assignGarageSlotToOrderUseCase();
 
-        assertThatThrownBy(() -> useCase.assignGarageSlot(orderId1, garageSlot1)).isInstanceOf(OrderWasNotFound.class);
+        assertThatThrownBy(() -> useCase.assignGarageSlot(orderId, garageSlot)).isInstanceOf(OrderWasNotFound.class);
     }
 
     @Test
     void givenRepairerExists_whenAssignRepairer_thenOrderHasThatRepairerAssigned(
             CarServiceModule module,
-            UUID repairer1,
-            UUID orderId1,
+            UUID repairer,
+            UUID orderId,
             ManualClock clock
     ) {
-        module.addRepairerUseCase().add(repairer1, "John");
-        module.createOrderUseCase().create(orderId1, 100);
+        module.addRepairerUseCase().add(repairer, "John");
+        module.createOrderUseCase().create(orderId, 100);
 
-        module.assignRepairerToOrderUseCase().assignRepairer(orderId1, repairer1);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairer);
 
-        assertThat(module.viewOrderUseCase().view(orderId1))
+        assertThat(module.viewOrderUseCase().view(orderId))
                 .isEqualTo(
                         new ViewOrderUseCase.OrderView(
-                                orderId1,
+                                orderId,
                                 100,
                                 OrderStatus.IN_PROCESS,
                                 Optional.empty(),
-                                Set.of(repairer1),
+                                Set.of(repairer),
                                 clock.instant(),
                                 Optional.empty()
                         )
@@ -178,51 +178,51 @@ class OrderTests {
     @Test
     void givenRepairerDoNotExist_whenAssignRepairer_thenRepairerWasNotFoundThrown(
             CarServiceModule module,
-            UUID repairer1,
-            UUID orderId1
+            UUID repairer,
+            UUID orderId
     ) {
-        module.addRepairerUseCase().add(repairer1, "John");
+        module.addRepairerUseCase().add(repairer, "John");
         var useCase = module.assignRepairerToOrderUseCase();
 
-        assertThatThrownBy(() -> useCase.assignRepairer(orderId1, repairer1)).isInstanceOf(OrderWasNotFound.class);
+        assertThatThrownBy(() -> useCase.assignRepairer(orderId, repairer)).isInstanceOf(OrderWasNotFound.class);
     }
 
     @Test
     void givenOrderDoNotExist_whenAssignRepairer_thenOrderWasNotFoundThrown(
             CarServiceModule module,
-            UUID repairer1,
-            UUID orderId1
+            UUID repairer,
+            UUID orderId
     ) {
-        module.createOrderUseCase().create(orderId1, 100);
+        module.createOrderUseCase().create(orderId, 100);
         var useCase = module.assignRepairerToOrderUseCase();
 
-        assertThatThrownBy(() -> useCase.assignRepairer(orderId1, repairer1)).isInstanceOf(RepairerWasNotFound.class);
+        assertThatThrownBy(() -> useCase.assignRepairer(orderId, repairer)).isInstanceOf(RepairerWasNotFound.class);
     }
 
     @Test
     void givenOrderHasGarageSlotAndAtLeastOneRepairerAssigned_whenCompleteOrder_thenOrderShouldBeCompleted(
             CarServiceModule module,
-            UUID repairer1,
-            UUID garageSlot1,
-            UUID orderId1,
+            UUID repairer,
+            UUID garageSlot,
+            UUID orderId,
             ManualClock clock
     ) {
-        module.addGarageSlotUseCase().add(garageSlot1);
-        module.addRepairerUseCase().add(repairer1, "John");
-        module.createOrderUseCase().create(orderId1, 100);
-        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId1, garageSlot1);
-        module.assignRepairerToOrderUseCase().assignRepairer(orderId1, repairer1);
+        module.addGarageSlotUseCase().add(garageSlot);
+        module.addRepairerUseCase().add(repairer, "John");
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageSlot);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairer);
 
-        module.completeOrderUseCase().complete(orderId1);
+        module.completeOrderUseCase().complete(orderId);
 
-        assertThat(module.viewOrderUseCase().view(orderId1))
+        assertThat(module.viewOrderUseCase().view(orderId))
                 .isEqualTo(
                         new ViewOrderUseCase.OrderView(
-                                orderId1,
+                                orderId,
                                 100,
                                 OrderStatus.COMPLETED,
-                                Optional.of(garageSlot1),
-                                Set.of(repairer1),
+                                Optional.of(garageSlot),
+                                Set.of(repairer),
                                 clock.instant(),
                                 Optional.of(clock.instant())
                         )

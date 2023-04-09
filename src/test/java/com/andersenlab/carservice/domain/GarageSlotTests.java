@@ -14,18 +14,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GarageSlotTests {
 
     @Test
-    void givenNoGarageSlots_whenAddGarageSlot_thenItShouldBeListed(CarServiceModule module, UUID garageSlotId1) {
-        module.addGarageSlotUseCase().add(garageSlotId1);
+    void givenNoGarageSlots_whenAddGarageSlot_thenItShouldBeListed(CarServiceModule module, UUID garageSlotId) {
+        module.addGarageSlotUseCase().add(garageSlotId);
 
         assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID))
-                .containsExactly(new ListGarageSlotsUseCase.GarageSlotView(garageSlotId1));
+                .containsExactly(new ListGarageSlotsUseCase.GarageSlotView(garageSlotId));
     }
 
     @Test
-    void givenOneGarageSlot_whenDeleteIt_thenNoGarageSlotsShouldBeSeen(CarServiceModule module, UUID garageSlotId1) {
-        module.addGarageSlotUseCase().add(garageSlotId1);
+    void givenOneGarageSlot_whenDeleteIt_thenNoGarageSlotsShouldBeSeen(CarServiceModule module, UUID garageSlotId) {
+        module.addGarageSlotUseCase().add(garageSlotId);
 
-        module.deleteGarageSlotUseCase().delete(garageSlotId1);
+        module.deleteGarageSlotUseCase().delete(garageSlotId);
 
         assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID)).isEmpty();
     }
