@@ -248,6 +248,21 @@ final class EndToEndTests {
     }
 
     @Test
+    void assignNonExistentGarageSlotToOrder(UUID garageSlotId1, UUID orderId1) {
+        input("""
+                orders create %s 100
+                orders assign garage-slot %s %s
+                exit
+                """
+                .formatted(orderId1, orderId1, garageSlotId1)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Garage slot was not found");
+    }
+
+    @Test
     void viewOrder(UUID orderId1) {
         input("""
                 orders create %s 100

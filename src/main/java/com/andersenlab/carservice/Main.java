@@ -59,6 +59,7 @@ final class Main {
                         Stream.of(new Help(mainCommands))
                 )
                 .map(GenericExceptionHandlingCommand::new)
+                .map(BusinessExceptionHandlingCommand::new)
                 .toList();
     }
 }
