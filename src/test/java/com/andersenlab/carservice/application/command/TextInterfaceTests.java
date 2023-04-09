@@ -29,7 +29,7 @@ final class TextInterfaceTests {
 
         textInterface.run();
 
-        assertThat(output.toString()).isEqualToIgnoringNewLines("hello world");
+        assertThat(output.toString()).contains("hello world");
     }
 
     @Test
@@ -45,7 +45,7 @@ final class TextInterfaceTests {
 
         textInterface.run();
 
-        assertThat(output.toString()).isEqualToIgnoringNewLines("hello world");
+        assertThat(output.toString()).contains("hello world");
     }
 
     private InputStream input(String commands) {

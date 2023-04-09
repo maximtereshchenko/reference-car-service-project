@@ -7,7 +7,7 @@ repositories {
 }
 
 application {
-    mainClass.set("com.andersenlab.carservce.Main")
+    mainClass.set("com.andersenlab.carservice.Main")
 }
 
 group = "com.andersenlab.carservice"
@@ -19,10 +19,15 @@ dependencies {
     testImplementation(libs.assertj)
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
 
-tasks.compileTestJava {
-    options.compilerArgs.add("-parameters")
+tasks {
+    named<JavaExec>("run") {
+        standardInput = System.`in`
+    }
+    test {
+        useJUnitPlatform()
+    }
+    compileTestJava {
+        options.compilerArgs.add("-parameters")
+    }
 }

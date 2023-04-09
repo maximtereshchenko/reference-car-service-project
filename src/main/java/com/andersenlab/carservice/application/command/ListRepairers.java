@@ -32,9 +32,10 @@ public final class ListRepairers extends NamedCommandWithDescription {
                         arguments.get(0).toUpperCase(Locale.ROOT)
                 )
         );
+        output.println("ID, name, status");
         for (int i = 0; i < repairers.size(); i++) {
             var repairer = repairers.get(i);
-            output.printf("%d) %s, %s%n", i + 1, repairer.id(), repairer.name());
+            output.printf("%d) %s, %s, %s%n", i + 1, repairer.id(), repairer.name(), repairer.status());
         }
     }
 }

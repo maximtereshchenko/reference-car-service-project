@@ -27,12 +27,18 @@ public final class TextInterface {
 
     public void run() {
         try (var scanner = new Scanner(inputStream, StandardCharsets.UTF_8)) {
+            printStream.println("""
+                    Welcome to "Car Service Inc."!
+                    """
+            );
             while (true) {
+                printStream.print('>');
                 var input = scanner.nextLine();
                 if (input.equals("exit")) {
                     return;
                 }
                 commands.forEach(command -> command.execute(printStream, List.of(input.trim().split(" "))));
+                printStream.println();
             }
         }
     }

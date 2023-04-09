@@ -32,9 +32,10 @@ public final class ListGarageSlots extends NamedCommandWithDescription {
                         arguments.get(0).toUpperCase(Locale.ROOT)
                 )
         );
+        output.println("ID, status");
         for (int i = 0; i < garageSlots.size(); i++) {
             var garageSlot = garageSlots.get(i);
-            output.printf("%d) %s", i + 1, garageSlot.id());
+            output.printf("%d) %s, %s%n", i + 1, garageSlot.id(), garageSlot.status());
         }
     }
 }

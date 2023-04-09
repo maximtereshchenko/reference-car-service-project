@@ -33,10 +33,11 @@ public final class ListOrders extends NamedCommandWithDescription {
                         arguments.get(0).toUpperCase(Locale.ROOT)
                 )
         );
+        output.println("ID, price, status, created at, closed at");
         for (int i = 0; i < orders.size(); i++) {
             var order = orders.get(i);
             output.printf(
-                    "%d) %s, %d, %s, %s, %s",
+                    "%d) %s, %d, %s, %s, %s%n",
                     i + 1,
                     order.id(),
                     order.price(),
