@@ -28,6 +28,8 @@ public final class BusinessExceptionHandlingCommand implements Command {
             output.println("Garage slot was not found");
         } catch (GarageSlotWithSameIdExists e) {
             output.println("Garage slot with same ID exists");
+        } catch (OrderHasBeenAlreadyCanceled e) {
+            output.println("Order has been already canceled");
         } catch (OrderHasBeenAlreadyCompleted e) {
             output.println("Order has been already completed");
         } catch (OrderHasNoGarageSlotAssigned e) {
