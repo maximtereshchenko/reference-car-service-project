@@ -21,7 +21,7 @@ public final class DeleteRepairer extends NamedCommandWithDescription {
     }
 
     @Override
-    String desription() {
+    String description() {
         return "delete a repairer with given ID";
     }
 

@@ -281,11 +281,28 @@ final class EndToEndTests {
                                 Price: 100
                                 Status: IN_PROCESS
                                 Garage slot: NONE
+                                Repairers: NONE
                                 Created:\
                                 """
                                 .formatted(orderId1),
                         "Closed: NONE"
                 );
+    }
+
+    @Test
+    void assignRepairerToOrder(UUID repairerId1, UUID orderId1) {
+        input("""
+                repairers add %s John
+                orders create %s 100
+                orders assign repairer %s %s
+                exit
+                """
+                .formatted(repairerId1, orderId1, orderId1, repairerId1)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Repairer " + repairerId1 + " assigned to order " + orderId1);
     }
 
     private void input(String commands) {

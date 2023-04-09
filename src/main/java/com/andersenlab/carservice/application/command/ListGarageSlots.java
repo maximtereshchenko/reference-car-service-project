@@ -21,7 +21,7 @@ public final class ListGarageSlots extends NamedCommandWithDescription {
     }
 
     @Override
-    String desription() {
+    String description() {
         return "list all known garage slots sorted";
     }
 

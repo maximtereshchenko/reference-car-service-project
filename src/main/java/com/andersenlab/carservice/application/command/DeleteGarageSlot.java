@@ -21,7 +21,7 @@ public final class DeleteGarageSlot extends NamedCommandWithDescription {
     }
 
     @Override
-    String desription() {
+    String description() {
         return "delete a garage slot with given ID";
     }
 

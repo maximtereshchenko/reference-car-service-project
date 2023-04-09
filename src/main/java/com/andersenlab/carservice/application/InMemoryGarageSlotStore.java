@@ -29,7 +29,7 @@ public final class InMemoryGarageSlotStore implements GarageSlotStore {
     }
 
     @Override
-    public boolean notExist(UUID id) {
+    public boolean hasNot(UUID id) {
         return !map.containsKey(id);
     }
 }

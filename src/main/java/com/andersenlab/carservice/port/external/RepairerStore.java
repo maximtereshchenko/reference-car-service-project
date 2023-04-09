@@ -11,7 +11,7 @@ public interface RepairerStore {
 
     void delete(UUID id);
 
-    boolean notExist(UUID repairerId);
+    boolean hasNot(UUID repairerId);
 
     enum Sort {
         ID, NAME

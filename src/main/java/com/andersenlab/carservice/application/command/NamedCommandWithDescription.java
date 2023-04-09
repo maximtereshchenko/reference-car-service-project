@@ -14,10 +14,10 @@ abstract class NamedCommandWithDescription extends NamedCommand {
     public void printDescription(PrintStream output) {
         var joiner = new StringJoiner(", ", "(", ") ").setEmptyValue("");
         expectedArguments().forEach(joiner::add);
-        output.printf("%s %s- %s%n", name(), joiner, desription());
+        output.printf("%s %s- %s%n", name(), joiner, description());
     }
 
     abstract List<String> expectedArguments();
 
-    abstract String desription();
+    abstract String description();
 }

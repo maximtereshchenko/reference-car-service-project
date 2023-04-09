@@ -21,7 +21,7 @@ public final class AddGarageSlot extends NamedCommandWithDescription {
     }
 
     @Override
-    String desription() {
+    String description() {
         return "add a garage slot with, optionally, given ID";
     }
 

@@ -21,7 +21,7 @@ public final class AssignGarageSlotToOrder extends NamedCommandWithDescription {
     }
 
     @Override
-    String desription() {
+    String description() {
         return "assign a garage slot to the order";
     }
 

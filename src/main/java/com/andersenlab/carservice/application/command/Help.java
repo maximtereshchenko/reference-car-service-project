@@ -25,7 +25,7 @@ public final class Help extends NamedCommandWithDescription {
     }
 
     @Override
-    String desription() {
+    String description() {
         return "print all available commands";
     }
 }

@@ -21,7 +21,7 @@ public final class AddRepairer extends NamedCommandWithDescription {
     }
 
     @Override
-    String desription() {
+    String description() {
         return "add a repairer with given name and, optionally, ID";
     }
 

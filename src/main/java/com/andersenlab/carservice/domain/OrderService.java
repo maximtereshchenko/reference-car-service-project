@@ -54,7 +54,7 @@ final class OrderService
 
     @Override
     public void assignGarageSlot(UUID orderId, UUID garageSlotId) {
-        if (garageSlotStore.notExist(garageSlotId)) {
+        if (garageSlotStore.hasNot(garageSlotId)) {
             throw new GarageSlotWasNotFound();
         }
         var order = orderStore.findById(orderId)
@@ -74,7 +74,7 @@ final class OrderService
 
     @Override
     public void assignRepairer(UUID orderId, UUID repairerId) {
-        if (repairerStore.notExist(repairerId)) {
+        if (repairerStore.hasNot(repairerId)) {
             throw new RepairerWasNotFound();
         }
         var order = orderStore.findById(orderId)

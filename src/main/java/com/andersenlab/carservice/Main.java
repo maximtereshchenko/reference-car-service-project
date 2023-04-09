@@ -15,13 +15,25 @@ import java.util.stream.Stream;
 final class Main {
 
     public static void main(String[] args) {
-        var module = new CarServiceModule(
+        new TextInterface(
+                System.in,
+                System.out,
+                allCommands(mainCommands(module()))
+        )
+                .run();
+    }
+
+    private static CarServiceModule module() {
+        return new CarServiceModule(
                 new InMemoryRepairerStore(),
                 new InMemoryGarageSlotStore(),
                 new InMemoryOrderStore(),
                 Clock.systemDefaultZone()
         );
-        var mainCommands = List.of(
+    }
+
+    private static List<CompositeCommand> mainCommands(CarServiceModule module) {
+        return List.of(
                 new CompositeCommand(
                         "repairers",
                         new AddRepairer(module.addRepairerUseCase()),
@@ -40,17 +52,12 @@ final class Main {
                         new ListOrders(module.listOrdersUseCase()),
                         new CompositeCommand(
                                 "assign",
-                                new AssignGarageSlotToOrder(module.assignGarageSlotToOrderUseCase())
+                                new AssignGarageSlotToOrder(module.assignGarageSlotToOrderUseCase()),
+                                new AssignRepairerToOrder(module.assignRepairerToOrderUseCase())
                         ),
                         new ViewOrder(module.viewOrderUseCase())
                 )
         );
-        new TextInterface(
-                System.in,
-                System.out,
-                allCommands(mainCommands)
-        )
-                .run();
     }
 
     private static Collection<? extends Command> allCommands(List<? extends Command> mainCommands) {

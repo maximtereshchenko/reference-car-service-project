@@ -30,7 +30,7 @@ public final class InMemoryRepairerStore implements RepairerStore {
     }
 
     @Override
-    public boolean notExist(UUID repairerId) {
+    public boolean hasNot(UUID repairerId) {
         return !map.containsKey(repairerId);
     }
 }

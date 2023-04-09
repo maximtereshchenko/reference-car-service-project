@@ -21,7 +21,7 @@ public final class CreateOrder extends NamedCommandWithDescription {
     }
 
     @Override
-    String desription() {
+    String description() {
         return "create an order with given price and, optionally, ID";
     }
 

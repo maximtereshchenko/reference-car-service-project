@@ -3,9 +3,7 @@ package com.andersenlab.carservice.application.command;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
 
 import java.io.PrintStream;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public final class ViewOrder extends NamedCommandWithDescription {
 
@@ -24,7 +22,7 @@ public final class ViewOrder extends NamedCommandWithDescription {
     }
 
     @Override
-    String desription() {
+    String description() {
         return "View full order information";
     }
 
@@ -37,6 +35,7 @@ public final class ViewOrder extends NamedCommandWithDescription {
                         Price: %s
                         Status: %s
                         Garage slot: %s
+                        Repairers: %s
                         Created: %S
                         Closed: %s
                         """,
@@ -46,10 +45,19 @@ public final class ViewOrder extends NamedCommandWithDescription {
                 order.garageSlotId()
                         .map(Objects::toString)
                         .orElse(NONE),
+                repairers(order.repairers()),
                 order.created(),
                 order.closed()
                         .map(Objects::toString)
                         .orElse(NONE)
         );
+    }
+
+    private String repairers(Collection<UUID> repairers) {
+        var joiner = new StringJoiner(", ").setEmptyValue(NONE);
+        repairers.stream()
+                .map(Objects::toString)
+                .forEach(joiner::add);
+        return joiner.toString();
     }
 }
