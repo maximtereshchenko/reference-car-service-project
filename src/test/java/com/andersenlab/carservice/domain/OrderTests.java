@@ -387,11 +387,31 @@ class OrderTests {
         module.addGarageSlotUseCase().add(garageSlotId);
         module.createOrderUseCase().create(orderId, 100);
         module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageSlotId);
-        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairerId);
-        var useCase = module.completeOrderUseCase();
-        useCase.complete(orderId);
+        var useCase = module.assignRepairerToOrderUseCase();
+        useCase.assignRepairer(orderId, repairerId);
+        module.completeOrderUseCase().complete(orderId);
 
-        assertThatThrownBy(() -> useCase.complete(orderId)).isInstanceOf(OrderHasBeenAlreadyCompleted.class);
+        assertThatThrownBy(() -> useCase.assignRepairer(orderId, repairerId))
+                .isInstanceOf(OrderHasBeenAlreadyCompleted.class);
+    }
+
+    @Test
+    void givenOrderCompleted_whenAssignGarageSlot_thenOrderHasBeenAlreadyCompletedThrown(
+            CarServiceModule module,
+            UUID repairerId,
+            UUID garageSlotId,
+            UUID orderId
+    ) {
+        module.addRepairerUseCase().add(repairerId, "John");
+        module.addGarageSlotUseCase().add(garageSlotId);
+        module.createOrderUseCase().create(orderId, 100);
+        var useCase = module.assignGarageSlotToOrderUseCase();
+        useCase.assignGarageSlot(orderId, garageSlotId);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairerId);
+        module.completeOrderUseCase().complete(orderId);
+
+        assertThatThrownBy(() -> useCase.assignGarageSlot(orderId, garageSlotId))
+                .isInstanceOf(OrderHasBeenAlreadyCompleted.class);
     }
 
     @Test
