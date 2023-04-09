@@ -189,6 +189,21 @@ class OrderTests {
     }
 
     @Test
+    void givenCanceledOrder_whenAssignRepairer_thenOrderHasBeenAlreadyCanceledThrown(
+            CarServiceModule module,
+            UUID repairerId,
+            UUID orderId
+    ) {
+        module.addRepairerUseCase().add(repairerId, "John");
+        module.createOrderUseCase().create(orderId, 100);
+        module.cancelOrderUseCase().cancel(orderId);
+        var useCase = module.assignRepairerToOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.assignRepairer(orderId, repairerId))
+                .isInstanceOf(OrderHasBeenAlreadyCanceled.class);
+    }
+
+    @Test
     void givenOrderDoNotExist_whenViewOrder_thenOrderWasNotFoundThrown(
             CarServiceModule module,
             UUID orderId
