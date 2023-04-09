@@ -4,6 +4,7 @@ import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
 import com.andersenlab.carservice.port.usecase.exception.OrderHasNoGarageSlotAssigned;
+import com.andersenlab.carservice.port.usecase.exception.OrderHasNoRepairersAssigned;
 
 import java.time.Instant;
 import java.time.InstantSource;
@@ -83,6 +84,9 @@ final class Order {
     Order complete(InstantSource clock) {
         if (entity.garageSlotId().isEmpty()) {
             throw new OrderHasNoGarageSlotAssigned();
+        }
+        if (entity.repairers().isEmpty()) {
+            throw new OrderHasNoRepairersAssigned();
         }
         return new Order(
                 new OrderStore.OrderEntity(
