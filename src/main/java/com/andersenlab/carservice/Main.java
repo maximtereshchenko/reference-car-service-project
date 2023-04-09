@@ -37,7 +37,11 @@ final class Main {
                 new CompositeCommand(
                         "orders",
                         new CreateOrder(module.createOrderUseCase()),
-                        new ListOrders(module.listOrdersUseCase())
+                        new ListOrders(module.listOrdersUseCase()),
+                        new CompositeCommand(
+                                "assign",
+                                new AssignGarageSlotToOrder(module.assignGarageSlotToOrderUseCase())
+                        )
                 )
         );
         new TextInterface(

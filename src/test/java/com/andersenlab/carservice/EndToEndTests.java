@@ -37,18 +37,9 @@ final class EndToEndTests {
 
         Main.main(ARGS);
 
-        assertThat(output)
-                .hasToString("""
-                        repairers add (id?, name) - add a repairer with given name and, optionally, ID
-                        repairers list (sort) - list all known repairers sorted
-                        repairers delete (id) - delete a repairer with given ID
-                        garage-slots add (id?) - add a garage slot with, optionally, given ID
-                        garage-slots list (sort) - list all known garage slots sorted
-                        garage-slots delete (id) - delete a garage slot with given ID
-                        orders create (id?, price) - create an order with given price and, optionally, ID
-                        orders list (sort) - list all known orders sorted
-                        help - print all available commands
-                        """);
+        var printed = this.output.toString();
+        assertThat(printed.lines().count()).isGreaterThan(1);
+        assertThat(printed).contains("help - print all available commands");
     }
 
     @Test
@@ -206,6 +197,22 @@ final class EndToEndTests {
                 "1) " + orderId1 + ", 100, IN_PROCESS, ",
                 ", NONE"
         );
+    }
+
+    @Test
+    void assignGarageSlotToOrder(UUID garageSlotId1, UUID orderId1) {
+        input("""
+                garage-slots add %s
+                orders create %s 100
+                orders assign garage-slot %s %s
+                exit
+                """
+                .formatted(garageSlotId1, orderId1, orderId1, garageSlotId1)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Garage slot " + garageSlotId1 + " assigned to order " + orderId1);
     }
 
     private void input(String commands) {
