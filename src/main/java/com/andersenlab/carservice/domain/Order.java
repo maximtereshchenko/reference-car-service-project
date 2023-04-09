@@ -81,22 +81,30 @@ final class Order {
         );
     }
 
-    Order complete(InstantSource clock) {
+    Order complete(InstantSource instantSource) {
         if (entity.garageSlotId().isEmpty()) {
             throw new OrderHasNoGarageSlotAssigned();
         }
         if (entity.repairers().isEmpty()) {
             throw new OrderHasNoRepairersAssigned();
         }
+        return closed(OrderStore.OrderStatus.COMPLETED, instantSource.instant());
+    }
+
+    Order cancel(InstantSource instantSource) {
+        return closed(OrderStore.OrderStatus.CANCELED, instantSource.instant());
+    }
+
+    private Order closed(OrderStore.OrderStatus status, Instant closed) {
         return new Order(
                 new OrderStore.OrderEntity(
                         entity.id(),
                         entity.price(),
-                        OrderStore.OrderStatus.COMPLETED,
+                        status,
                         entity.garageSlotId(),
                         entity.repairers(),
                         entity.created(),
-                        Optional.of(clock.instant())
+                        Optional.of(closed)
                 )
         );
     }

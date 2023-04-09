@@ -262,6 +262,30 @@ class OrderTests {
         assertThatThrownBy(() -> useCase.complete(orderId)).isInstanceOf(OrderWasNotFound.class);
     }
 
+    @Test
+    void givenOrderExists_whenCancelOrder_thenOrderShouldBeCanceled(
+            CarServiceModule module,
+            UUID orderId,
+            ManualClock clock
+    ) {
+        module.createOrderUseCase().create(orderId, 100);
+
+        module.cancelOrderUseCase().cancel(orderId);
+
+        assertThat(module.viewOrderUseCase().view(orderId))
+                .isEqualTo(
+                        new ViewOrderUseCase.OrderView(
+                                orderId,
+                                100,
+                                OrderStatus.CANCELED,
+                                Optional.empty(),
+                                Set.of(),
+                                clock.instant(),
+                                Optional.of(clock.instant())
+                        )
+                );
+    }
+
     private ListOrdersUseCase.OrderView orderView(UUID id, int price, Instant timestamp) {
         return new ListOrdersUseCase.OrderView(
                 id,

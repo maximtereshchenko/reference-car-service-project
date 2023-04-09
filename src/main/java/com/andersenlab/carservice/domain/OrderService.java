@@ -17,7 +17,9 @@ final class OrderService
         ListOrdersUseCase,
         AssignGarageSlotToOrderUseCase,
         ViewOrderUseCase,
-        AssignRepairerToOrderUseCase, CompleteOrderUseCase {
+        AssignRepairerToOrderUseCase,
+        CompleteOrderUseCase,
+        CancelOrderUseCase {
 
     private final OrderStore orderStore;
     private final GarageSlotStore garageSlotStore;
@@ -80,6 +82,15 @@ final class OrderService
                         .complete(clock)
                         .entity()
         );
+    }
+
+    @Override
+    public void cancel(UUID id) {
+orderStore.save(
+        order(id)
+                .cancel(clock)
+                .entity()
+);
     }
 
     private Order order(UUID id) {

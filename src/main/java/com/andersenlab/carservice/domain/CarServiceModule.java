@@ -71,4 +71,8 @@ public final class CarServiceModule {
     public CompleteOrderUseCase completeOrderUseCase() {
         return orderService;
     }
+
+    public CancelOrderUseCase cancelOrderUseCase() {
+        return orderService;
+    }
 }
