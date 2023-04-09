@@ -14,17 +14,17 @@ final class CompletedOrder extends ObservedOrder {
 
     @Override
     public Order assignGarageSlot(UUID garageSlotId) {
-        throw new RuntimeException(); //TODO
+        throw new OrderHasBeenAlreadyCompleted();
     }
 
     @Override
     public Order assignRepairer(UUID repairerId) {
-        throw new RuntimeException(); //TODO
+        throw new OrderHasBeenAlreadyCompleted();
     }
 
     @Override
     public Order complete(InstantSource instantSource) {
-        throw new RuntimeException(); //TODO
+        throw new OrderHasBeenAlreadyCompleted();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.andersenlab.carservice.domain;
 
 import com.andersenlab.carservice.port.external.OrderStore;
-import com.andersenlab.carservice.port.usecase.exception.OrderHasBeenAlreadyCompleted;
 import com.andersenlab.carservice.port.usecase.exception.OrderHasNoGarageSlotAssigned;
 import com.andersenlab.carservice.port.usecase.exception.OrderHasNoRepairersAssigned;
 
@@ -59,7 +58,7 @@ final class ProcessingOrder extends ObservedOrder {
             throw new OrderHasNoRepairersAssigned();
         }
         Instant closed = instantSource.instant();
-        return new ProcessingOrder(
+        return new CompletedOrder(
                 new OrderStore.OrderEntity(
                         entity().id(),
                         entity().price(),
@@ -74,11 +73,8 @@ final class ProcessingOrder extends ObservedOrder {
 
     @Override
     public Order cancel(InstantSource instantSource) {
-        if (entity().status() == OrderStore.OrderStatus.COMPLETED) {
-            throw new OrderHasBeenAlreadyCompleted();
-        }
         Instant closed = instantSource.instant();
-        return new ProcessingOrder(
+        return new CanceledOrder(
                 new OrderStore.OrderEntity(
                         entity().id(),
                         entity().price(),
