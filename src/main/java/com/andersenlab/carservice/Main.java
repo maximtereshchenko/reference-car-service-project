@@ -10,6 +10,7 @@ import com.andersenlab.carservice.domain.CarServiceModule;
 import java.time.Clock;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 final class Main {
@@ -32,37 +33,47 @@ final class Main {
         );
     }
 
-    private static List<CompositeCommand> mainCommands(CarServiceModule module) {
-        return List.of(
-                new CompositeCommand(
-                        "repairers",
-                        new AddRepairer(module.addRepairerUseCase()),
-                        new ListRepairers(module.listRepairersUserCase()),
-                        new DeleteRepairer(module.deleteRepairerUseCase())
-                ),
-                new CompositeCommand(
-                        "garage-slots",
-                        new AddGarageSlot(module.addGarageSlotUseCase()),
-                        new ListGarageSlots(module.listGarageSlotsUseCase()),
-                        new DeleteGarageSlot(module.deleteGarageSlotUseCase())
-                ),
-                new CompositeCommand(
-                        "orders",
-                        new CreateOrder(module.createOrderUseCase()),
-                        new ListOrders(module.listOrdersUseCase()),
-                        new CompositeCommand(
-                                "assign",
-                                new AssignGarageSlotToOrder(module.assignGarageSlotToOrderUseCase()),
-                                new AssignRepairerToOrder(module.assignRepairerToOrderUseCase())
+    private static List<Command> mainCommands(CarServiceModule module) {
+        return Stream.of(
+                        allPrefixed(
+                                "repairers",
+                                new AddRepairer(module.addRepairerUseCase()),
+                                new ListRepairers(module.listRepairersUserCase()),
+                                new DeleteRepairer(module.deleteRepairerUseCase())
                         ),
-                        new ViewOrder(module.viewOrderUseCase()),
-                        new CompleteOrder(module.completeOrderUseCase()),
-                        new CancelOrder(module.cancelOrderUseCase())
+                        allPrefixed(
+                                "garage-slots",
+                                new AddGarageSlot(module.addGarageSlotUseCase()),
+                                new ListGarageSlots(module.listGarageSlotsUseCase()),
+                                new DeleteGarageSlot(module.deleteGarageSlotUseCase())
+                        ),
+                        allPrefixed(
+                                "orders",
+                                new CreateOrder(module.createOrderUseCase()),
+                                new ListOrders(module.listOrdersUseCase()),
+                                new PrefixedCommand(
+                                        "assign",
+                                        new AssignGarageSlotToOrder(module.assignGarageSlotToOrderUseCase())
+                                ),
+                                new PrefixedCommand(
+                                        "assign",
+                                        new AssignRepairerToOrder(module.assignRepairerToOrderUseCase())
+                                ),
+                                new ViewOrder(module.viewOrderUseCase()),
+                                new CompleteOrder(module.completeOrderUseCase()),
+                                new CancelOrder(module.cancelOrderUseCase())
+                        )
                 )
-        );
+                .flatMap(Function.identity())
+                .toList();
     }
 
-    private static Collection<? extends Command> allCommands(List<? extends Command> mainCommands) {
+    private static Stream<Command> allPrefixed(String prefix, Command... commands) {
+        return Stream.of(commands)
+                .map(command -> new PrefixedCommand(prefix, command));
+    }
+
+    private static Collection<? extends Command> allCommands(List<Command> mainCommands) {
         return Stream.concat(
                         mainCommands.stream(),
                         Stream.of(new Help(mainCommands))

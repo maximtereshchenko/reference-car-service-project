@@ -40,7 +40,7 @@ final class TextInterfaceTests {
                         exit
                         """),
                 new PrintStream(output, true, StandardCharsets.UTF_8),
-                new CompositeCommand("composite", new EchoCommand())
+                new PrefixedCommand("composite", new EchoCommand())
         );
 
         textInterface.run();
