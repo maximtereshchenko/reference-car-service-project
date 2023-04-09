@@ -108,4 +108,32 @@ class GarageSlotTests {
                 );
     }
 
+    @Test
+    void givenGarageSlotAssignedToProcessingOrder_whenCancelOrder_thenGarageSlotShouldBeAvailableAgain(
+            CarServiceModule module,
+            UUID garageId,
+            UUID orderId
+    ) {
+        module.addGarageSlotUseCase().add(garageId);
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageId);
+
+        assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID))
+                .containsExactly(
+                        new ListGarageSlotsUseCase.GarageSlotView(
+                                garageId,
+                                ListGarageSlotsUseCase.GarageSlotStatus.ASSIGNED
+                        )
+                );
+
+        module.cancelOrderUseCase().cancel(orderId);
+
+        assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID))
+                .containsExactly(
+                        new ListGarageSlotsUseCase.GarageSlotView(
+                                garageId,
+                                ListGarageSlotsUseCase.GarageSlotStatus.AVAILABLE
+                        )
+                );
+    }
 }
