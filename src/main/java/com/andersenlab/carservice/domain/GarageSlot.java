@@ -36,4 +36,13 @@ final class GarageSlot {
                 )
         );
     }
+
+    GarageSlot asAvailable() {
+        return new GarageSlot(
+                new GarageSlotStore.GarageSlotEntity(
+                        entity.id(),
+                        GarageSlotStore.GarageSlotStatus.AVAILABLE
+                )
+        );
+    }
 }

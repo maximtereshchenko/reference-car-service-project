@@ -38,4 +38,14 @@ final class Repairer {
                 )
         );
     }
+
+    Repairer asAvailable() {
+        return new Repairer(
+                new RepairerStore.RepairerEntity(
+                        entity.id(),
+                        entity.name(),
+                        RepairerStore.RepairerStatus.AVAILABLE
+                )
+        );
+    }
 }

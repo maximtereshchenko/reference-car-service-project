@@ -54,4 +54,12 @@ final class RepairerService implements AddRepairerUseCase, ListRepairersUseCase,
                         .entity()
         );
     }
+
+    void markRepairerAsAvailable(UUID id) {
+        repairerStore.save(
+                new Repairer(repairerStore.getById(id))
+                        .asAvailable()
+                        .entity()
+        );
+    }
 }

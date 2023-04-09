@@ -135,4 +135,38 @@ class RepairerTests {
 
         assertThatThrownBy(() -> useCase.delete(repairerId)).isInstanceOf(RepairerIsAssigned.class);
     }
+
+    @Test
+    void givenRepairerAssignedToProcessingOrder_whenCompleteOrder_thenRepairerShouldBeAvailableAgain(
+            CarServiceModule module,
+            UUID repairerId,
+            UUID garageId,
+            UUID orderId
+    ) {
+        module.addRepairerUseCase().add(repairerId, "John");
+        module.addGarageSlotUseCase().add(garageId);
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairerId);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageId);
+
+        assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.STATUS))
+                .containsExactly(
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId,
+                                "John",
+                                ListRepairersUseCase.RepairerStatus.ASSIGNED
+                        )
+                );
+
+        module.completeOrderUseCase().complete(orderId);
+
+        assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.STATUS))
+                .containsExactly(
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId,
+                                "John",
+                                ListRepairersUseCase.RepairerStatus.AVAILABLE
+                        )
+                );
+    }
 }

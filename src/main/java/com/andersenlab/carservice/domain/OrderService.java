@@ -77,20 +77,18 @@ final class OrderService
 
     @Override
     public void complete(UUID id) {
-        orderStore.save(
-                order(id)
-                        .complete(clock)
-                        .entity()
-        );
+        var order = order(id).complete(clock);
+        order.garageSlot().ifPresent(garageSlotService::markGarageSlotAsAvailable);
+        order.repairers().forEach(repairerService::markRepairerAsAvailable);
+        orderStore.save(order.entity());
     }
 
     @Override
     public void cancel(UUID id) {
-        orderStore.save(
-                order(id)
-                        .cancel(clock)
-                        .entity()
-        );
+        var order = order(id).cancel(clock);
+        order.garageSlot().ifPresent(garageSlotService::markGarageSlotAsAvailable);
+        order.repairers().forEach(repairerService::markRepairerAsAvailable);
+        orderStore.save(order.entity());
     }
 
     private ListOrdersUseCase.OrderView orderView(OrderStore.OrderProjection orderEntity) {

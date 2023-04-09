@@ -50,4 +50,12 @@ final class GarageSlotService implements AddGarageSlotUseCase, ListGarageSlotsUs
                         .entity()
         );
     }
+
+    void markGarageSlotAsAvailable(UUID id) {
+        garageSlotStore.save(
+                new GarageSlot(garageSlotStore.getById(id))
+                        .asAvailable()
+                        .entity()
+        );
+    }
 }

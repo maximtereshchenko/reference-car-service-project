@@ -4,7 +4,9 @@ import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 abstract class ObservedOrder implements Order {
 
@@ -30,5 +32,15 @@ abstract class ObservedOrder implements Order {
     @Override
     public OrderStore.OrderEntity entity() {
         return entity;
+    }
+
+    @Override
+    public Optional<UUID> garageSlot() {
+        return entity.garageSlotId();
+    }
+
+    @Override
+    public Iterable<UUID> repairers() {
+        return entity.repairers();
     }
 }
