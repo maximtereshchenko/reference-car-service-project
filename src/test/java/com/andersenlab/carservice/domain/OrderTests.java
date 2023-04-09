@@ -181,6 +181,18 @@ class OrderTests {
             UUID repairer1,
             UUID orderId1
     ) {
+        module.addRepairerUseCase().add(repairer1, "John");
+        var useCase = module.assignRepairerToOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.assignRepairer(orderId1, repairer1)).isInstanceOf(OrderWasNotFound.class);
+    }
+
+    @Test
+    void givenOrderDoNotExist_whenAssignRepairer_thenOrderWasNotFoundThrown(
+            CarServiceModule module,
+            UUID repairer1,
+            UUID orderId1
+    ) {
         module.createOrderUseCase().create(orderId1, 100);
         var useCase = module.assignRepairerToOrderUseCase();
 
