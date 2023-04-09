@@ -55,7 +55,8 @@ final class Main {
                                 new AssignGarageSlotToOrder(module.assignGarageSlotToOrderUseCase()),
                                 new AssignRepairerToOrder(module.assignRepairerToOrderUseCase())
                         ),
-                        new ViewOrder(module.viewOrderUseCase())
+                        new ViewOrder(module.viewOrderUseCase()),
+                        new CompleteOrder(module.completeOrderUseCase())
                 )
         );
     }

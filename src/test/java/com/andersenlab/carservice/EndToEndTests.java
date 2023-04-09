@@ -188,7 +188,7 @@ final class EndToEndTests {
     @Test
     void createOrderWithoutId() {
         input("""
-                orders create 10
+                orders create 100
                 exit
                 """
         );
@@ -201,7 +201,7 @@ final class EndToEndTests {
     @Test
     void createOrderWithId(UUID orderId) {
         input("""
-                orders create %s 10
+                orders create %s 100
                 exit
                 """
                 .formatted(orderId)
@@ -215,7 +215,7 @@ final class EndToEndTests {
     @Test
     void listOrders(UUID orderId) {
         input("""
-                orders create %s 10
+                orders create %s 100
                 orders list id
                 exit
                 """
@@ -226,7 +226,7 @@ final class EndToEndTests {
 
         assertThat(output.toString()).contains(
                 "Order created " + orderId,
-                "1) " + orderId + ", 10, IN_PROCESS, ",
+                "1) " + orderId + ", 100, IN_PROCESS, ",
                 ", NONE"
         );
     }
@@ -235,7 +235,7 @@ final class EndToEndTests {
     void assignGarageSlotToOrder(UUID garageSlotId, UUID orderId) {
         input("""
                 garage-slots add %s
-                orders create %s 10
+                orders create %s 100
                 orders assign garage-slot %s %s
                 exit
                 """
@@ -250,7 +250,7 @@ final class EndToEndTests {
     @Test
     void assignNonExistentGarageSlotToOrder(UUID garageSlotId, UUID orderId) {
         input("""
-                orders create %s 10
+                orders create %s 100
                 orders assign garage-slot %s %s
                 exit
                 """
@@ -265,7 +265,7 @@ final class EndToEndTests {
     @Test
     void viewOrder(UUID orderId) {
         input("""
-                orders create %s 10
+                orders create %s 100
                 orders view %s
                 exit
                 """
@@ -278,7 +278,7 @@ final class EndToEndTests {
                 .contains(
                         """
                                 ID: %s
-                                Price: 10
+                                Price: 100
                                 Status: IN_PROCESS
                                 Garage slot: NONE
                                 Repairers: NONE
@@ -293,7 +293,7 @@ final class EndToEndTests {
     void assignRepairerToOrder(UUID repairerId, UUID orderId) {
         input("""
                 repairers add %s John
-                orders create %s 10
+                orders create %s 100
                 orders assign repairer %s %s
                 exit
                 """
@@ -303,6 +303,32 @@ final class EndToEndTests {
         Main.main(ARGS);
 
         assertThat(output.toString()).contains("Repairer " + repairerId + " assigned to order " + orderId);
+    }
+
+    @Test
+    void completeOrder(UUID repairerId, UUID garageSlotId, UUID orderId) {
+        input("""
+                repairers add %s John
+                garage-slots add %s
+                orders create %s 100
+                orders assign repairer %s %s
+                orders assign garage-slot %s %s
+                orders complete %s
+                exit
+                """
+                .formatted(
+                        repairerId,
+                        garageSlotId,
+                        orderId,
+                        orderId, repairerId,
+                        orderId, garageSlotId,
+                        orderId
+                )
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Order completed");
     }
 
     private void input(String commands) {
