@@ -228,7 +228,7 @@ class OrderTests {
     }
 
     @Test
-    void givenOrderHasNotGarageSlotAssigned_whenCompleteOrder_thenOrderHasNoGarageSlotAssigned(
+    void givenOrderHasNotGarageSlotAssigned_whenCompleteOrder_thenOrderHasNoGarageSlotAssignedThrown(
             CarServiceModule module,
             UUID repairer,
             UUID orderId
@@ -242,7 +242,7 @@ class OrderTests {
     }
 
     @Test
-    void givenOrderHasNoRepairersAssigned_whenCompleteOrder_thenOrderHasNoRepairersAssigned(
+    void givenOrderHasNoRepairersAssigned_whenCompleteOrder_thenOrderHasNoRepairersAssignedThrown(
             CarServiceModule module,
             UUID garageSlot,
             UUID orderId
@@ -253,6 +253,13 @@ class OrderTests {
         var useCase = module.completeOrderUseCase();
 
         assertThatThrownBy(() -> useCase.complete(orderId)).isInstanceOf(OrderHasNoRepairersAssigned.class);
+    }
+
+    @Test
+    void givenOrderDoNotExist_whenCompleteOrder_thenOrderWasNotFoundThrown(CarServiceModule module, UUID orderId) {
+        var useCase = module.completeOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.complete(orderId)).isInstanceOf(OrderWasNotFound.class);
     }
 
     private ListOrdersUseCase.OrderView orderView(UUID id, int price, Instant timestamp) {
