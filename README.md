@@ -1,4 +1,8 @@
-# Car service
+# What is it?
+
+This is a reference project for Java intensive course.
+
+## Required capabilities
 
 * Add a repairer
 * Remove a repairer
@@ -13,3 +17,9 @@
 * Cancel an order
 * List orders sorted by creation date, completion date, price, status
 * Get full information about an order: repairers, garage slot, creation date, completion date
+
+## How to run?
+
+```bash
+./gradlew --console plain -q run
+```
