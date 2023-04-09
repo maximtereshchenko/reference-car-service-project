@@ -3,6 +3,7 @@ package com.andersenlab.carservice.domain;
 import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
+import com.andersenlab.carservice.port.usecase.exception.OrderHasBeenAlreadyCompleted;
 import com.andersenlab.carservice.port.usecase.exception.OrderHasNoGarageSlotAssigned;
 import com.andersenlab.carservice.port.usecase.exception.OrderHasNoRepairersAssigned;
 
@@ -92,6 +93,9 @@ final class Order {
     }
 
     Order cancel(InstantSource instantSource) {
+        if (entity.status() == OrderStore.OrderStatus.COMPLETED) {
+            throw new OrderHasBeenAlreadyCompleted();
+        }
         return closed(OrderStore.OrderStatus.CANCELED, instantSource.instant());
     }
 
