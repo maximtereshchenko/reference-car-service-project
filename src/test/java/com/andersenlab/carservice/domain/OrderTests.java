@@ -204,6 +204,18 @@ class OrderTests {
     }
 
     @Test
+    void givenCanceledOrder_whenCompleteOrder_thenOrderHasBeenAlreadyCanceledThrown(
+            CarServiceModule module,
+            UUID orderId
+    ) {
+        module.createOrderUseCase().create(orderId, 100);
+        module.cancelOrderUseCase().cancel(orderId);
+        var useCase = module.completeOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.complete(orderId)).isInstanceOf(OrderHasBeenAlreadyCanceled.class);
+    }
+
+    @Test
     void givenOrderDoNotExist_whenViewOrder_thenOrderWasNotFoundThrown(
             CarServiceModule module,
             UUID orderId
