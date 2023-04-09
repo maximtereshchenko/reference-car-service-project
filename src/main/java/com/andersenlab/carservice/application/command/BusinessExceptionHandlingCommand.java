@@ -1,8 +1,6 @@
 package com.andersenlab.carservice.application.command;
 
-import com.andersenlab.carservice.port.usecase.exception.GarageSlotWasNotFound;
-import com.andersenlab.carservice.port.usecase.exception.OrderWasNotFound;
-import com.andersenlab.carservice.port.usecase.exception.RepairerWasNotFound;
+import com.andersenlab.carservice.port.usecase.exception.*;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -30,6 +28,10 @@ public final class BusinessExceptionHandlingCommand implements Command {
             output.println("Order was not found");
         } catch (RepairerWasNotFound e) {
             output.println("Repairer was not found");
+        } catch (OrderHasNoGarageSlotAssigned e) {
+            output.println("Order has no garage slot assigned");
+        } catch (OrderHasNoRepairersAssigned e) {
+            output.println("Order has no repairers assigned");
         }
     }
 }
