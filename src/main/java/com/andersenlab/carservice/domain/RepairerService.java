@@ -23,14 +23,15 @@ final class RepairerService implements AddRepairerUseCase, ListRepairersUseCase,
         if (repairerStore.has(id)) {
             throw new RepairerWithSameIdExists();
         }
-        repairerStore.save(new RepairerStore.RepairerEntity(id, name, RepairerStore.RepairerStatus.AVAILABLE));
+        repairerStore.save(new Repairer(id, name).entity());
     }
 
     @Override
     public List<RepairerView> list(Sort sort) {
         return repairerStore.findAllSorted(RepairerStore.Sort.valueOf(sort.toString()))
                 .stream()
-                .map(this::repairerView)
+                .map(Repairer::new)
+                .map(Repairer::view)
                 .toList();
     }
 
@@ -47,21 +48,10 @@ final class RepairerService implements AddRepairerUseCase, ListRepairersUseCase,
     }
 
     void markRepairerAsAssigned(UUID id) {
-        var entity = repairerStore.getById(id);
         repairerStore.save(
-                new RepairerStore.RepairerEntity(
-                        entity.id(),
-                        entity.name(),
-                        RepairerStore.RepairerStatus.ASSIGNED
-                )
-        );
-    }
-
-    private RepairerView repairerView(RepairerStore.RepairerEntity repairerEntity) {
-        return new RepairerView(
-                repairerEntity.id(),
-                repairerEntity.name(),
-                RepairerStatus.valueOf(repairerEntity.status().name())
+                new Repairer(repairerStore.getById(id))
+                        .asAssigned()
+                        .entity()
         );
     }
 }
