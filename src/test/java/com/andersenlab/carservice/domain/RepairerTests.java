@@ -169,4 +169,35 @@ class RepairerTests {
                         )
                 );
     }
+
+    @Test
+    void givenRepairerAssignedToProcessingOrder_whenCancelOrder_thenRepairerShouldBeAvailableAgain(
+            CarServiceModule module,
+            UUID repairerId,
+            UUID orderId
+    ) {
+        module.addRepairerUseCase().add(repairerId, "John");
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairerId);
+
+        assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.STATUS))
+                .containsExactly(
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId,
+                                "John",
+                                ListRepairersUseCase.RepairerStatus.ASSIGNED
+                        )
+                );
+
+        module.cancelOrderUseCase().cancel(orderId);
+
+        assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.STATUS))
+                .containsExactly(
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId,
+                                "John",
+                                ListRepairersUseCase.RepairerStatus.AVAILABLE
+                        )
+                );
+    }
 }
