@@ -25,32 +25,32 @@ final class OrderService
     private final GarageSlotStore garageSlotStore;
     private final RepairerStore repairerStore;
     private final Clock clock;
+    private final OrderFactory orderFactory;
 
-    OrderService(OrderStore orderStore, GarageSlotStore garageSlotStore, RepairerStore repairerStore, Clock clock) {
+    OrderService(
+            OrderStore orderStore,
+            GarageSlotStore garageSlotStore,
+            RepairerStore repairerStore,
+            Clock clock,
+            OrderFactory orderFactory
+    ) {
         this.orderStore = orderStore;
         this.garageSlotStore = garageSlotStore;
         this.repairerStore = repairerStore;
         this.clock = clock;
+        this.orderFactory = orderFactory;
     }
 
     @Override
     public void create(UUID id, long price) {
-        orderStore.save(new Order(id, price, clock.instant()).entity());
+        orderStore.save(orderFactory.createNew(id, price, clock.instant()).entity());
     }
 
     @Override
     public List<ListOrdersUseCase.OrderView> list(Sort sort) {
         return orderStore.findAllSorted(OrderStore.Sort.valueOf(sort.name()))
                 .stream()
-                .map(orderEntity ->
-                        new ListOrdersUseCase.OrderView(
-                                orderEntity.id(),
-                                orderEntity.price(),
-                                OrderStatus.valueOf(orderEntity.status().name()),
-                                orderEntity.created(),
-                                orderEntity.closed()
-                        )
-                )
+                .map(this::orderView)
                 .toList();
     }
 
@@ -86,16 +86,26 @@ final class OrderService
 
     @Override
     public void cancel(UUID id) {
-orderStore.save(
-        order(id)
-                .cancel(clock)
-                .entity()
-);
+        orderStore.save(
+                order(id)
+                        .cancel(clock)
+                        .entity()
+        );
+    }
+
+    private ListOrdersUseCase.OrderView orderView(OrderStore.OrderProjection orderEntity) {
+        return new ListOrdersUseCase.OrderView(
+                orderEntity.id(),
+                orderEntity.price(),
+                OrderStatus.valueOf(orderEntity.status().name()),
+                orderEntity.created(),
+                orderEntity.closed()
+        );
     }
 
     private Order order(UUID id) {
         return orderStore.findById(id)
-                .map(Order::new)
+                .map(orderFactory::order)
                 .orElseThrow(OrderWasNotFound::new);
     }
 }
