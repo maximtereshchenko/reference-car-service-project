@@ -3,12 +3,14 @@ package com.andersenlab.carservice.domain;
 import com.andersenlab.carservice.extension.CarServiceExtension;
 import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListRepairersUseCase;
+import com.andersenlab.carservice.port.usecase.exception.RepairerWithSameIdExists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith({CarServiceExtension.class, PredictableUUIDExtension.class})
 class RepairerTests {
@@ -19,6 +21,14 @@ class RepairerTests {
 
         assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.NAME))
                 .containsExactly(new ListRepairersUseCase.RepairerView(repairerId, "John"));
+    }
+
+    @Test
+    void givenRepairerExists_whenAddRepairer_thenRepairerWithSameIdExistsThrown(CarServiceModule module, UUID repairerId) {
+        var useCase = module.addRepairerUseCase();
+        useCase.add(repairerId, "John");
+
+        assertThatThrownBy(() -> useCase.add(repairerId, "Andrei")).isInstanceOf(RepairerWithSameIdExists.class);
     }
 
     @Test

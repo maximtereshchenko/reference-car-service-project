@@ -4,6 +4,7 @@ import com.andersenlab.carservice.port.external.RepairerStore;
 import com.andersenlab.carservice.port.usecase.AddRepairerUseCase;
 import com.andersenlab.carservice.port.usecase.DeleteRepairerUseCase;
 import com.andersenlab.carservice.port.usecase.ListRepairersUseCase;
+import com.andersenlab.carservice.port.usecase.exception.RepairerWithSameIdExists;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,9 @@ final class RepairerService implements AddRepairerUseCase, ListRepairersUseCase,
 
     @Override
     public void add(UUID id, String name) {
+        if (repairerStore.has(id)) {
+            throw new RepairerWithSameIdExists();
+        }
         repairerStore.save(new RepairerStore.RepairerEntity(id, name));
     }
 

@@ -69,7 +69,7 @@ final class OrderService
 
     @Override
     public void assignRepairer(UUID orderId, UUID repairerId) {
-        if (repairerStore.hasNot(repairerId)) {
+        if (!repairerStore.has(repairerId)) {
             throw new RepairerWasNotFound();
         }
         orderStore.save(order(orderId).assignRepairer(repairerId).entity());
