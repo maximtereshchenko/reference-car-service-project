@@ -115,9 +115,7 @@ class OrderTests {
     @Test
     void givenOrderDoNotExist_whenViewOrder_thenOrderWasNotFoundThrown(
             CarServiceModule module,
-            UUID garageSlot1,
-            UUID orderId1,
-            ManualClock clock
+            UUID orderId1
     ) {
         var useCase = module.viewOrderUseCase();
 

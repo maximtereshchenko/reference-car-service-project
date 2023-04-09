@@ -33,7 +33,8 @@ final class EndToEndTests {
         input("""
                 help
                 exit
-                """);
+                """
+        );
 
         Main.main(ARGS);
 
@@ -47,7 +48,8 @@ final class EndToEndTests {
         input("""
                 repairers add John
                 exit
-                """);
+                """
+        );
 
         Main.main(ARGS);
 
@@ -69,6 +71,20 @@ final class EndToEndTests {
     }
 
     @Test
+    void addRepairerWithNonUUIDId() {
+        input(
+                """
+                        repairers add this-is-not-uuid John
+                        exit
+                        """
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Wrong arguments");
+    }
+
+    @Test
     void listRepairers(UUID repairerId1) {
         input("""
                 repairers add %s John
@@ -81,6 +97,20 @@ final class EndToEndTests {
         Main.main(ARGS);
 
         assertThat(output.toString()).contains("Repairer added " + repairerId1, "1) " + repairerId1 + ", John");
+    }
+
+    @Test
+    void listRepairersWithNotEnoughArguments() {
+        input(
+                """
+                        repairers list
+                        exit
+                        """
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Wrong arguments");
     }
 
     @Test
@@ -103,7 +133,8 @@ final class EndToEndTests {
         input("""
                 garage-slots add
                 exit
-                """);
+                """
+        );
 
         Main.main(ARGS);
 
@@ -159,7 +190,8 @@ final class EndToEndTests {
         input("""
                 orders create 100
                 exit
-                """);
+                """
+        );
 
         Main.main(ARGS);
 

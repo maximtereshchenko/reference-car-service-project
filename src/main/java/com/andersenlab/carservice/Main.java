@@ -8,9 +8,9 @@ import com.andersenlab.carservice.application.command.*;
 import com.andersenlab.carservice.domain.CarServiceModule;
 
 import java.time.Clock;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 final class Main {
 
@@ -53,9 +53,12 @@ final class Main {
                 .run();
     }
 
-    private static Collection<Command> allCommands(List<CompositeCommand> mainCommands) {
-        var all = new ArrayList<Command>(mainCommands);
-        all.add(new Help(mainCommands));
-        return all;
+    private static Collection<? extends Command> allCommands(List<? extends Command> mainCommands) {
+        return Stream.concat(
+                        mainCommands.stream(),
+                        Stream.of(new Help(mainCommands))
+                )
+                .map(GenericExceptionHandlingCommand::new)
+                .toList();
     }
 }
