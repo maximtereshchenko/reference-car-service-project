@@ -331,6 +331,21 @@ final class EndToEndTests {
         assertThat(output.toString()).contains("Order completed");
     }
 
+    @Test
+    void cancelOrder(UUID orderId) {
+        input("""
+                orders create %s 100
+                orders cancel %s
+                exit
+                """
+                .formatted(orderId, orderId)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString()).contains("Order canceled");
+    }
+
     private void input(String commands) {
         System.setIn(new ByteArrayInputStream(commands.getBytes(StandardCharsets.UTF_8)));
     }

@@ -1,0 +1,33 @@
+package com.andersenlab.carservice.application.command;
+
+import com.andersenlab.carservice.port.usecase.CancelOrderUseCase;
+
+import java.io.PrintStream;
+import java.util.List;
+import java.util.UUID;
+
+public final class CancelOrder extends NamedCommandWithDescription {
+
+    private final CancelOrderUseCase useCase;
+
+    public CancelOrder(CancelOrderUseCase useCase) {
+        super("cancel");
+        this.useCase = useCase;
+    }
+
+    @Override
+    List<String> expectedArguments() {
+        return List.of("id");
+    }
+
+    @Override
+    String description() {
+        return "cancel an order";
+    }
+
+    @Override
+    void executeIfMatched(PrintStream output, List<String> arguments) {
+        useCase.cancel(UUID.fromString(arguments.get(0)));
+        output.println("Order canceled");
+    }
+}

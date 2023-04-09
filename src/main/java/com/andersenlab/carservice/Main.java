@@ -56,7 +56,8 @@ final class Main {
                                 new AssignRepairerToOrder(module.assignRepairerToOrderUseCase())
                         ),
                         new ViewOrder(module.viewOrderUseCase()),
-                        new CompleteOrder(module.completeOrderUseCase())
+                        new CompleteOrder(module.completeOrderUseCase()),
+                        new CancelOrder(module.cancelOrderUseCase())
                 )
         );
     }
