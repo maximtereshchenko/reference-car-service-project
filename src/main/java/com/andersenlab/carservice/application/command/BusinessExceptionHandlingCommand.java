@@ -32,6 +32,8 @@ public final class BusinessExceptionHandlingCommand implements Command {
             output.println("Order has no garage slot assigned");
         } catch (OrderHasNoRepairersAssigned e) {
             output.println("Order has no repairers assigned");
+        } catch (OrderHasBeenAlreadyCompleted e) {
+            output.println("Order has been already completed");
         }
     }
 }
