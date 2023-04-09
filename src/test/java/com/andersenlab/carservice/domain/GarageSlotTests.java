@@ -18,7 +18,12 @@ class GarageSlotTests {
         module.addGarageSlotUseCase().add(garageSlotId);
 
         assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID))
-                .containsExactly(new ListGarageSlotsUseCase.GarageSlotView(garageSlotId));
+                .containsExactly(
+                        new ListGarageSlotsUseCase.GarageSlotView(
+                                garageSlotId,
+                                ListGarageSlotsUseCase.GarageSlotStatus.AVAILABLE
+                        )
+                );
     }
 
     @Test
@@ -28,5 +33,30 @@ class GarageSlotTests {
         module.deleteGarageSlotUseCase().delete(garageSlotId);
 
         assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID)).isEmpty();
+    }
+
+    @Test
+    void givenSomeGarageSlots_whenListGarageSlotsByStatus_thenTheyShouldBeSortedByStatus(
+            CarServiceModule module,
+            UUID garageSlotId1,
+            UUID garageSlotId2,
+            UUID orderId
+    ) {
+        module.addGarageSlotUseCase().add(garageSlotId1);
+        module.addGarageSlotUseCase().add(garageSlotId2);
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageSlotId1);
+
+        assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.STATUS))
+                .containsExactly(
+                        new ListGarageSlotsUseCase.GarageSlotView(
+                                garageSlotId2,
+                                ListGarageSlotsUseCase.GarageSlotStatus.AVAILABLE
+                        ),
+                        new ListGarageSlotsUseCase.GarageSlotView(
+                                garageSlotId1,
+                                ListGarageSlotsUseCase.GarageSlotStatus.ASSIGNED
+                        )
+                );
     }
 }

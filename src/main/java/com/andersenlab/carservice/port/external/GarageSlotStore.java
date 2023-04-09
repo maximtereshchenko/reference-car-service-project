@@ -13,9 +13,15 @@ public interface GarageSlotStore {
 
     boolean hasNot(UUID id);
 
+    GarageSlotEntity getById(UUID id);
+
     enum Sort {
-        ID
+        ID, STATUS
     }
 
-    record GarageSlotEntity(UUID id) {}
+    enum GarageSlotStatus {
+        AVAILABLE, ASSIGNED
+    }
+
+    record GarageSlotEntity(UUID id, GarageSlotStatus status) {}
 }

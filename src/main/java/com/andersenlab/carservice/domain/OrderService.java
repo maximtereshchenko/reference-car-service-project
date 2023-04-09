@@ -57,6 +57,7 @@ final class OrderService
         if (garageSlotService.hasNotGarageSlot(garageSlotId)) {
             throw new GarageSlotWasNotFound();
         }
+        garageSlotService.markGarageSlotAsAssigned(garageSlotId);
         orderStore.save(order(orderId).assignGarageSlot(garageSlotId).entity());
     }
 

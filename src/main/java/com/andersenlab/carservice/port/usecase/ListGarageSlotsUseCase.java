@@ -8,8 +8,12 @@ public interface ListGarageSlotsUseCase {
     List<GarageSlotView> list(Sort sort);
 
     enum Sort {
-        ID
+        ID, STATUS
     }
 
-    record GarageSlotView(UUID id) {}
+    enum GarageSlotStatus {
+        AVAILABLE, ASSIGNED
+    }
+
+    record GarageSlotView(UUID id, GarageSlotStatus status) {}
 }

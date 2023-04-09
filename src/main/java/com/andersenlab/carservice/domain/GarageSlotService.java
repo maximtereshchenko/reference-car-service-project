@@ -18,14 +18,15 @@ final class GarageSlotService implements AddGarageSlotUseCase, ListGarageSlotsUs
 
     @Override
     public void add(UUID id) {
-        garageSlotStore.save(new GarageSlotStore.GarageSlotEntity(id));
+        garageSlotStore.save(new GarageSlot(id).entity());
     }
 
     @Override
     public List<GarageSlotView> list(Sort sort) {
         return garageSlotStore.findAllSorted(GarageSlotStore.Sort.valueOf(sort.name()))
                 .stream()
-                .map(garageSlotEntity -> new GarageSlotView(garageSlotEntity.id()))
+                .map(GarageSlot::new)
+                .map(GarageSlot::view)
                 .toList();
     }
 
@@ -36,5 +37,13 @@ final class GarageSlotService implements AddGarageSlotUseCase, ListGarageSlotsUs
 
     boolean hasNotGarageSlot(UUID id) {
         return garageSlotStore.hasNot(id);
+    }
+
+    void markGarageSlotAsAssigned(UUID id) {
+        garageSlotStore.save(
+                new GarageSlot(garageSlotStore.getById(id))
+                        .asAssigned()
+                        .entity()
+        );
     }
 }

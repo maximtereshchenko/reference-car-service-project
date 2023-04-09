@@ -8,7 +8,8 @@ public final class InMemoryGarageSlotStore implements GarageSlotStore {
 
     private final Map<UUID, GarageSlotEntity> map = new HashMap<>();
     private final Map<Sort, Comparator<GarageSlotEntity>> comparators = Map.of(
-            Sort.ID, Comparator.comparing(GarageSlotEntity::id)
+            Sort.ID, Comparator.comparing(GarageSlotEntity::id),
+            Sort.STATUS, Comparator.comparing(GarageSlotEntity::status)
     );
 
     @Override
@@ -31,5 +32,10 @@ public final class InMemoryGarageSlotStore implements GarageSlotStore {
     @Override
     public boolean hasNot(UUID id) {
         return !map.containsKey(id);
+    }
+
+    @Override
+    public GarageSlotEntity getById(UUID id) {
+        return map.get(id);
     }
 }
