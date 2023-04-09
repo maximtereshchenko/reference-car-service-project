@@ -415,6 +415,24 @@ class OrderTests {
     }
 
     @Test
+    void givenOrderCompleted_whenCancelOrder_thenOrderHasBeenAlreadyCompletedThrown(
+            CarServiceModule module,
+            UUID repairerId,
+            UUID garageSlotId,
+            UUID orderId
+    ) {
+        module.addRepairerUseCase().add(repairerId, "John");
+        module.addGarageSlotUseCase().add(garageSlotId);
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageSlotId);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairerId);
+        module.completeOrderUseCase().complete(orderId);
+        var useCase = module.cancelOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.cancel(orderId)).isInstanceOf(OrderHasBeenAlreadyCompleted.class);
+    }
+
+    @Test
     void givenOrderExists_whenCancelOrder_thenOrderShouldBeCanceled(
             CarServiceModule module,
             UUID orderId,
