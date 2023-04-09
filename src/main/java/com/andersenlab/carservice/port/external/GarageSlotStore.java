@@ -11,7 +11,7 @@ public interface GarageSlotStore {
 
     void delete(UUID id);
 
-    boolean hasNot(UUID id);
+    boolean has(UUID id);
 
     GarageSlotEntity getById(UUID id);
 

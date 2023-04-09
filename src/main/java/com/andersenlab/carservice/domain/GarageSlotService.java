@@ -5,6 +5,7 @@ import com.andersenlab.carservice.port.usecase.AddGarageSlotUseCase;
 import com.andersenlab.carservice.port.usecase.DeleteGarageSlotUseCase;
 import com.andersenlab.carservice.port.usecase.ListGarageSlotsUseCase;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotIsAssigned;
+import com.andersenlab.carservice.port.usecase.exception.GarageSlotWithSameIdExists;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,9 @@ final class GarageSlotService implements AddGarageSlotUseCase, ListGarageSlotsUs
 
     @Override
     public void add(UUID id) {
+        if (garageSlotStore.has(id)) {
+            throw new GarageSlotWithSameIdExists();
+        }
         garageSlotStore.save(new GarageSlot(id).entity());
     }
 
@@ -40,7 +44,7 @@ final class GarageSlotService implements AddGarageSlotUseCase, ListGarageSlotsUs
     }
 
     boolean hasNotGarageSlot(UUID id) {
-        return garageSlotStore.hasNot(id);
+        return !garageSlotStore.has(id);
     }
 
     void markGarageSlotAsAssigned(UUID id) {

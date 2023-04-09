@@ -26,6 +26,8 @@ public final class BusinessExceptionHandlingCommand implements Command {
             output.println("Garage slot is assigned");
         } catch (GarageSlotWasNotFound e) {
             output.println("Garage slot was not found");
+        } catch (GarageSlotWithSameIdExists e) {
+            output.println("Garage slot with same ID exists");
         } catch (OrderHasBeenAlreadyCompleted e) {
             output.println("Order has been already completed");
         } catch (OrderHasNoGarageSlotAssigned e) {

@@ -31,7 +31,10 @@ class RepairerTests {
     }
 
     @Test
-    void givenRepairerExists_whenAddRepairer_thenRepairerWithSameIdExistsThrown(CarServiceModule module, UUID repairerId) {
+    void givenRepairerExists_whenAddRepairer_thenRepairerWithSameIdExistsThrown(
+            CarServiceModule module,
+            UUID repairerId
+    ) {
         var useCase = module.addRepairerUseCase();
         useCase.add(repairerId, "John");
 

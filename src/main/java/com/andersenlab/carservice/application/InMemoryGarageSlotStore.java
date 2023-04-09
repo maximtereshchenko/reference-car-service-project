@@ -30,8 +30,8 @@ public final class InMemoryGarageSlotStore implements GarageSlotStore {
     }
 
     @Override
-    public boolean hasNot(UUID id) {
-        return !map.containsKey(id);
+    public boolean has(UUID id) {
+        return map.containsKey(id);
     }
 
     @Override
@@ -41,7 +41,7 @@ public final class InMemoryGarageSlotStore implements GarageSlotStore {
 
     @Override
     public boolean hasGarageSlotWithStatusAssigned(UUID id) {
-        if (hasNot(id)) {
+        if (!has(id)) {
             return false;
         }
         return map.get(id).status() == GarageSlotStatus.ASSIGNED;

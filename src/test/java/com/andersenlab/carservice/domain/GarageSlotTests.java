@@ -4,6 +4,7 @@ import com.andersenlab.carservice.extension.CarServiceExtension;
 import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListGarageSlotsUseCase;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotIsAssigned;
+import com.andersenlab.carservice.port.usecase.exception.GarageSlotWithSameIdExists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -26,6 +27,17 @@ class GarageSlotTests {
                                 ListGarageSlotsUseCase.GarageSlotStatus.AVAILABLE
                         )
                 );
+    }
+
+    @Test
+    void givenGarageSlotExists_whenAddGarageSlot_thenGarageSlotWithSameIdExistsThrown(
+            CarServiceModule module,
+            UUID garageSlotId
+    ) {
+        var useCase = module.addGarageSlotUseCase();
+        useCase.add(garageSlotId);
+
+        assertThatThrownBy(() -> useCase.add(garageSlotId)).isInstanceOf(GarageSlotWithSameIdExists.class);
     }
 
     @Test
