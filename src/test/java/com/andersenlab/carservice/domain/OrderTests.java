@@ -199,6 +199,36 @@ class OrderTests {
         assertThatThrownBy(() -> useCase.assignRepairer(orderId1, repairer1)).isInstanceOf(RepairerWasNotFound.class);
     }
 
+    @Test
+    void givenOrderHasGarageSlotAndAtLeastOneRepairerAssigned_whenCompleteOrder_thenOrderShouldBeCompleted(
+            CarServiceModule module,
+            UUID repairer1,
+            UUID garageSlot1,
+            UUID orderId1,
+            ManualClock clock
+    ) {
+        module.addGarageSlotUseCase().add(garageSlot1);
+        module.addRepairerUseCase().add(repairer1, "John");
+        module.createOrderUseCase().create(orderId1, 100);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId1, garageSlot1);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId1, repairer1);
+
+        module.completeOrderUseCase().complete(orderId1);
+
+        assertThat(module.viewOrderUseCase().view(orderId1))
+                .isEqualTo(
+                        new ViewOrderUseCase.OrderView(
+                                orderId1,
+                                100,
+                                OrderStatus.COMPLETED,
+                                Optional.of(garageSlot1),
+                                Set.of(repairer1),
+                                clock.instant(),
+                                Optional.of(clock.instant())
+                        )
+                );
+    }
+
     private ListOrdersUseCase.OrderView orderView(UUID id, int price, Instant timestamp) {
         return new ListOrdersUseCase.OrderView(
                 id,

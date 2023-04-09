@@ -4,6 +4,7 @@ import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Optional;
@@ -74,6 +75,20 @@ final class Order {
                         Set.copyOf(copy),
                         entity.created(),
                         entity.closed()
+                )
+        );
+    }
+
+    Order complete(Clock clock) {
+        return new Order(
+                new OrderStore.OrderEntity(
+                        entity.id(),
+                        entity.price(),
+                        OrderStore.OrderStatus.COMPLETED,
+                        entity.garageSlotId(),
+                        entity.repairers(),
+                        entity.created(),
+                        Optional.of(clock.instant())
                 )
         );
     }

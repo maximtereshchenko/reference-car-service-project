@@ -67,4 +67,8 @@ public final class CarServiceModule {
     public AssignRepairerToOrderUseCase assignRepairerToOrderUseCase() {
         return orderService;
     }
+
+    public CompleteOrderUseCase completeOrderUseCase() {
+        return orderService;
+    }
 }

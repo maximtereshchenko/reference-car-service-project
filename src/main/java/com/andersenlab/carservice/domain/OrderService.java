@@ -17,7 +17,7 @@ final class OrderService
         ListOrdersUseCase,
         AssignGarageSlotToOrderUseCase,
         ViewOrderUseCase,
-        AssignRepairerToOrderUseCase {
+        AssignRepairerToOrderUseCase, CompleteOrderUseCase {
 
     private final OrderStore orderStore;
     private final GarageSlotStore garageSlotStore;
@@ -57,19 +57,12 @@ final class OrderService
         if (garageSlotStore.hasNot(garageSlotId)) {
             throw new GarageSlotWasNotFound();
         }
-        var order = orderStore.findById(orderId)
-                .map(Order::new)
-                .orElseThrow(OrderWasNotFound::new);
-
-        orderStore.save(order.assignGarageSlot(garageSlotId).entity());
+        orderStore.save(order(orderId).assignGarageSlot(garageSlotId).entity());
     }
 
     @Override
     public ViewOrderUseCase.OrderView view(UUID id) {
-        return orderStore.findById(id)
-                .map(Order::new)
-                .map(Order::view)
-                .orElseThrow(OrderWasNotFound::new);
+        return order(id).view();
     }
 
     @Override
@@ -77,10 +70,21 @@ final class OrderService
         if (repairerStore.hasNot(repairerId)) {
             throw new RepairerWasNotFound();
         }
-        var order = orderStore.findById(orderId)
+        orderStore.save(order(orderId).assignRepairer(repairerId).entity());
+    }
+
+    @Override
+    public void complete(UUID id) {
+        orderStore.save(
+                order(id)
+                        .complete(clock)
+                        .entity()
+        );
+    }
+
+    private Order order(UUID id) {
+        return orderStore.findById(id)
                 .map(Order::new)
                 .orElseThrow(OrderWasNotFound::new);
-
-        orderStore.save(order.assignRepairer(repairerId).entity());
     }
 }
