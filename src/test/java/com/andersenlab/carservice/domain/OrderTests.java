@@ -286,6 +286,17 @@ class OrderTests {
                 );
     }
 
+    @Test
+    void givenOrderDoNotExist_whenCancelOrder_thenOrderWasNotFoundThrown(
+            CarServiceModule module,
+            UUID orderId,
+            ManualClock clock
+    ) {
+        var useCase = module.cancelOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.cancel(orderId)).isInstanceOf(OrderWasNotFound.class);
+    }
+
     private ListOrdersUseCase.OrderView orderView(UUID id, int price, Instant timestamp) {
         return new ListOrdersUseCase.OrderView(
                 id,
