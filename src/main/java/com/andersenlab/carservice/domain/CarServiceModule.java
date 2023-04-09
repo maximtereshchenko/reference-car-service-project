@@ -21,7 +21,7 @@ public final class CarServiceModule {
     ) {
         repairerService = new RepairerService(repairerStore);
         garageSlotService = new GarageSlotService(garageSlotStore);
-        orderService = new OrderService(orderStore, garageSlotStore, clock);
+        orderService = new OrderService(orderStore, garageSlotStore, repairerStore, clock);
     }
 
     public AddRepairerUseCase addRepairerUseCase() {
@@ -61,6 +61,10 @@ public final class CarServiceModule {
     }
 
     public ViewOrderUseCase viewOrderUseCase() {
+        return orderService;
+    }
+
+    public AssignRepairerToOrderUseCase assignRepairerToOrderUseCase() {
         return orderService;
     }
 }

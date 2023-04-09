@@ -3,6 +3,7 @@ package com.andersenlab.carservice.port.external;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface OrderStore {
@@ -26,6 +27,7 @@ public interface OrderStore {
             long price,
             OrderStatus status,
             Optional<UUID> garageSlotId,
+            Set<UUID> repairers,
             Instant created,
             Optional<Instant> closed
     ) {}

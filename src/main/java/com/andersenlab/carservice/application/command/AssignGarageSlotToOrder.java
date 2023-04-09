@@ -29,7 +29,7 @@ public final class AssignGarageSlotToOrder extends NamedCommandWithDescription {
     void executeIfMatched(PrintStream output, List<String> arguments) {
         var orderId = UUID.fromString(arguments.get(0));
         var garageSlotId = UUID.fromString(arguments.get(1));
-        useCase.assign(orderId, garageSlotId);
+        useCase.assignGarageSlot(orderId, garageSlotId);
         output.println("Garage slot " + garageSlotId + " assigned to order " + orderId);
     }
 }

@@ -2,23 +2,32 @@ package com.andersenlab.carservice.domain;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.external.OrderStore;
+import com.andersenlab.carservice.port.external.RepairerStore;
 import com.andersenlab.carservice.port.usecase.*;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotWasNotFound;
 import com.andersenlab.carservice.port.usecase.exception.OrderWasNotFound;
+import com.andersenlab.carservice.port.usecase.exception.RepairerWasNotFound;
 
 import java.time.Clock;
 import java.util.List;
 import java.util.UUID;
 
-final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, AssignGarageSlotToOrderUseCase, ViewOrderUseCase {
+final class OrderService
+        implements CreateOrderUseCase,
+        ListOrdersUseCase,
+        AssignGarageSlotToOrderUseCase,
+        ViewOrderUseCase,
+        AssignRepairerToOrderUseCase {
 
     private final OrderStore orderStore;
     private final GarageSlotStore garageSlotStore;
+    private final RepairerStore repairerStore;
     private final Clock clock;
 
-    OrderService(OrderStore orderStore, GarageSlotStore garageSlotStore, Clock clock) {
+    OrderService(OrderStore orderStore, GarageSlotStore garageSlotStore, RepairerStore repairerStore, Clock clock) {
         this.orderStore = orderStore;
         this.garageSlotStore = garageSlotStore;
+        this.repairerStore = repairerStore;
         this.clock = clock;
     }
 
@@ -44,7 +53,7 @@ final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, Assig
     }
 
     @Override
-    public void assign(UUID orderId, UUID garageSlotId) {
+    public void assignGarageSlot(UUID orderId, UUID garageSlotId) {
         if (garageSlotStore.notExist(garageSlotId)) {
             throw new GarageSlotWasNotFound();
         }
@@ -61,5 +70,17 @@ final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, Assig
                 .map(Order::new)
                 .map(Order::view)
                 .orElseThrow(OrderWasNotFound::new);
+    }
+
+    @Override
+    public void assignRepairer(UUID orderId, UUID repairerId) {
+        if (repairerStore.notExist(repairerId)) {
+            throw new RepairerWasNotFound();
+        }
+        var order = orderStore.findById(orderId)
+                .map(Order::new)
+                .orElseThrow(OrderWasNotFound::new);
+
+        orderStore.save(order.assignRepairer(repairerId).entity());
     }
 }

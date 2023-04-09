@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,7 +98,7 @@ class OrderTests {
         module.addGarageSlotUseCase().add(garageSlot1);
         module.createOrderUseCase().create(orderId1, 100);
 
-        module.assignGarageSlotToOrderUseCase().assign(orderId1, garageSlot1);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId1, garageSlot1);
 
         assertThat(module.viewOrderUseCase().view(orderId1))
                 .isEqualTo(
@@ -106,6 +107,7 @@ class OrderTests {
                                 100,
                                 OrderStatus.IN_PROCESS,
                                 Optional.of(garageSlot1),
+                                Set.of(),
                                 clock.instant(),
                                 Optional.empty()
                         )
@@ -131,7 +133,7 @@ class OrderTests {
         module.createOrderUseCase().create(orderId1, 100);
         var useCase = module.assignGarageSlotToOrderUseCase();
 
-        assertThatThrownBy(() -> useCase.assign(orderId1, garageSlot1)).isInstanceOf(GarageSlotWasNotFound.class);
+        assertThatThrownBy(() -> useCase.assignGarageSlot(orderId1, garageSlot1)).isInstanceOf(GarageSlotWasNotFound.class);
     }
 
     @Test
@@ -143,7 +145,33 @@ class OrderTests {
         module.addGarageSlotUseCase().add(garageSlot1);
         var useCase = module.assignGarageSlotToOrderUseCase();
 
-        assertThatThrownBy(() -> useCase.assign(orderId1, garageSlot1)).isInstanceOf(OrderWasNotFound.class);
+        assertThatThrownBy(() -> useCase.assignGarageSlot(orderId1, garageSlot1)).isInstanceOf(OrderWasNotFound.class);
+    }
+
+    @Test
+    void givenRepairerExists_whenAssignRepairer_thenOrderHasThatRepairerAssigned(
+            CarServiceModule module,
+            UUID repairer1,
+            UUID orderId1,
+            ManualClock clock
+    ) {
+        module.addRepairerUseCase().add(repairer1, "John");
+        module.createOrderUseCase().create(orderId1, 100);
+
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId1, repairer1);
+
+        assertThat(module.viewOrderUseCase().view(orderId1))
+                .isEqualTo(
+                        new ViewOrderUseCase.OrderView(
+                                orderId1,
+                                100,
+                                OrderStatus.IN_PROCESS,
+                                Optional.empty(),
+                                Set.of(repairer1),
+                                clock.instant(),
+                                Optional.empty()
+                        )
+                );
     }
 
     private ListOrdersUseCase.OrderView orderView(UUID id, int price, Instant timestamp) {

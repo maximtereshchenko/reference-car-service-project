@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface AssignGarageSlotToOrderUseCase {
 
-    void assign(UUID orderId, UUID garageSlotId);
+    void assignGarageSlot(UUID orderId, UUID garageSlotId);
 }

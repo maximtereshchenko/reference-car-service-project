@@ -28,4 +28,9 @@ public final class InMemoryRepairerStore implements RepairerStore {
     public void delete(UUID id) {
         map.remove(id);
     }
+
+    @Override
+    public boolean notExist(UUID repairerId) {
+        return !map.containsKey(repairerId);
+    }
 }
