@@ -88,6 +88,36 @@ class OrderTests {
     }
 
     @Test
+    void givenSomeOrders_whenListByStatus_thenTheyShouldBeSortedByStatus(
+            CarServiceModule module,
+            UUID orderId1,
+            UUID orderId2,
+            ManualClock clock
+    ) {
+        module.createOrderUseCase().create(orderId1, 100);
+        module.createOrderUseCase().create(orderId2, 100);
+        module.cancelOrderUseCase().cancel(orderId1);
+
+        assertThat(module.listOrdersUseCase().list(ListOrdersUseCase.Sort.STATUS))
+                .containsExactly(
+                        new ListOrdersUseCase.OrderView(
+                                orderId2,
+                                100,
+                                OrderStatus.IN_PROCESS,
+                                clock.instant(),
+                                Optional.empty()
+                        ),
+                        new ListOrdersUseCase.OrderView(
+                                orderId1,
+                                100,
+                                OrderStatus.CANCELED,
+                                clock.instant(),
+                                Optional.of(clock.instant())
+                        )
+                );
+    }
+
+    @Test
     void givenGarageSlotExists_whenAssignGarageSlot_thenOrderHasThatGarageSlotAssigned(
             CarServiceModule module,
             UUID garageSlot,
