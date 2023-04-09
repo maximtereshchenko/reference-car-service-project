@@ -11,6 +11,8 @@ public interface GarageSlotStore {
 
     void delete(UUID id);
 
+    boolean notExist(UUID id);
+
     enum Sort {
         ID
     }

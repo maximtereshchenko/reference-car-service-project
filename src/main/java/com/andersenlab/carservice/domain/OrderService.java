@@ -1,7 +1,9 @@
 package com.andersenlab.carservice.domain;
 
+import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.usecase.*;
+import com.andersenlab.carservice.port.usecase.exception.GarageSlotWasNotFound;
 
 import java.time.Clock;
 import java.util.List;
@@ -11,10 +13,12 @@ import java.util.UUID;
 final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, AssignGarageSlotToOrderUseCase, ViewOrderUseCase {
 
     private final OrderStore orderStore;
+    private final GarageSlotStore garageSlotStore;
     private final Clock clock;
 
-    OrderService(OrderStore orderStore, Clock clock) {
+    OrderService(OrderStore orderStore, GarageSlotStore garageSlotStore, Clock clock) {
         this.orderStore = orderStore;
+        this.garageSlotStore = garageSlotStore;
         this.clock = clock;
     }
 
@@ -41,6 +45,9 @@ final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, Assig
 
     @Override
     public void assign(UUID orderId, UUID garageSlotId) {
+        if (garageSlotStore.notExist(garageSlotId)) {
+            throw new GarageSlotWasNotFound();
+        }
         orderStore.findById(orderId)
                 .map(Order::new)
                 .map(order -> order.assignGarageSlot(garageSlotId))

@@ -6,6 +6,7 @@ import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListOrdersUseCase;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
+import com.andersenlab.carservice.port.usecase.exception.GarageSlotWasNotFound;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith({CarServiceExtension.class, PredictableUUIDExtension.class})
 class OrderTests {
@@ -107,6 +109,18 @@ class OrderTests {
                                 Optional.empty()
                         )
                 );
+    }
+
+    @Test
+    void givenGarageSlotDoNotExist_whenAssignGarageSlot_thenGarageSlotWasNotFoundThrown(
+            CarServiceModule module,
+            UUID garageSlot1,
+            UUID orderId1
+    ) {
+        module.createOrderUseCase().create(orderId1, 100);
+        var useCase = module.assignGarageSlotToOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.assign(orderId1, garageSlot1)).isInstanceOf(GarageSlotWasNotFound.class);
     }
 
     private ListOrdersUseCase.OrderView orderView(UUID id, int price, Instant timestamp) {

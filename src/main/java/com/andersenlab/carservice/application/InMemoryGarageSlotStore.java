@@ -27,4 +27,9 @@ public final class InMemoryGarageSlotStore implements GarageSlotStore {
     public void delete(UUID id) {
         map.remove(id);
     }
+
+    @Override
+    public boolean notExist(UUID id) {
+        return !map.containsKey(id);
+    }
 }
