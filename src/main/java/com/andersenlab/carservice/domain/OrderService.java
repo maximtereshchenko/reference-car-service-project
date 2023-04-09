@@ -4,6 +4,7 @@ import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.usecase.*;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotWasNotFound;
+import com.andersenlab.carservice.port.usecase.exception.OrderWasNotFound;
 
 import java.time.Clock;
 import java.util.List;
@@ -48,11 +49,11 @@ final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, Assig
         if (garageSlotStore.notExist(garageSlotId)) {
             throw new GarageSlotWasNotFound();
         }
-        orderStore.findById(orderId)
+        var order = orderStore.findById(orderId)
                 .map(Order::new)
-                .map(order -> order.assignGarageSlot(garageSlotId))
-                .map(Order::entity)
-                .ifPresent(orderStore::save);
+                .orElseThrow(OrderWasNotFound::new);
+
+        orderStore.save(order.assignGarageSlot(garageSlotId).entity());
     }
 
     @Override

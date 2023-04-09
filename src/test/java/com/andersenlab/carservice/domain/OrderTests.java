@@ -7,6 +7,7 @@ import com.andersenlab.carservice.port.usecase.ListOrdersUseCase;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotWasNotFound;
+import com.andersenlab.carservice.port.usecase.exception.OrderWasNotFound;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -121,6 +122,18 @@ class OrderTests {
         var useCase = module.assignGarageSlotToOrderUseCase();
 
         assertThatThrownBy(() -> useCase.assign(orderId1, garageSlot1)).isInstanceOf(GarageSlotWasNotFound.class);
+    }
+
+    @Test
+    void givenOrderDoNotExist_whenAssignGarageSlot_thenOrderWasNotFoundThrown(
+            CarServiceModule module,
+            UUID garageSlot1,
+            UUID orderId1
+    ) {
+        module.addGarageSlotUseCase().add(garageSlot1);
+        var useCase = module.assignGarageSlotToOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.assign(orderId1, garageSlot1)).isInstanceOf(OrderWasNotFound.class);
     }
 
     private ListOrdersUseCase.OrderView orderView(UUID id, int price, Instant timestamp) {
