@@ -11,11 +11,19 @@ public interface RepairerStore {
 
     void delete(UUID id);
 
-    boolean has(UUID repairerId);
+    boolean has(UUID id);
+
+    boolean hasRepairerWithStatusAssigned(UUID id);
+
+    RepairerEntity getById(UUID id);
 
     enum Sort {
-        ID, NAME
+        ID, NAME, STATUS
     }
 
-    record RepairerEntity(UUID id, String name) {}
+    enum RepairerStatus {
+        AVAILABLE, ASSIGNED
+    }
+
+    record RepairerEntity(UUID id, String name, RepairerStatus status) {}
 }

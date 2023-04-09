@@ -8,8 +8,12 @@ public interface ListRepairersUseCase {
     List<RepairerView> list(Sort sort);
 
     enum Sort {
-        ID, NAME
+        ID, NAME, STATUS
     }
 
-    record RepairerView(UUID id, String name) {}
+    enum RepairerStatus {
+        AVAILABLE, ASSIGNED
+    }
+
+    record RepairerView(UUID id, String name, RepairerStatus status) {}
 }

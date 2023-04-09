@@ -33,4 +33,8 @@ final class GarageSlotService implements AddGarageSlotUseCase, ListGarageSlotsUs
     public void delete(UUID id) {
         garageSlotStore.delete(id);
     }
+
+    boolean hasNotGarageSlot(UUID id) {
+        return garageSlotStore.hasNot(id);
+    }
 }

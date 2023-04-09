@@ -21,7 +21,13 @@ class RepairerTests {
         module.addRepairerUseCase().add(repairerId, "John");
 
         assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.NAME))
-                .containsExactly(new ListRepairersUseCase.RepairerView(repairerId, "John"));
+                .containsExactly(
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId,
+                                "John",
+                                ListRepairersUseCase.RepairerStatus.AVAILABLE
+                        )
+                );
     }
 
     @Test
@@ -43,8 +49,16 @@ class RepairerTests {
 
         assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.NAME))
                 .containsExactly(
-                        new ListRepairersUseCase.RepairerView(repairerId2, "Andrei"),
-                        new ListRepairersUseCase.RepairerView(repairerId1, "John")
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId2,
+                                "Andrei",
+                                ListRepairersUseCase.RepairerStatus.AVAILABLE
+                        ),
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId1,
+                                "John",
+                                ListRepairersUseCase.RepairerStatus.AVAILABLE
+                        )
                 );
     }
 
@@ -59,8 +73,43 @@ class RepairerTests {
 
         assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.ID))
                 .containsExactly(
-                        new ListRepairersUseCase.RepairerView(repairerId1, "John"),
-                        new ListRepairersUseCase.RepairerView(repairerId2, "Andrei")
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId1,
+                                "John",
+                                ListRepairersUseCase.RepairerStatus.AVAILABLE
+                        ),
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId2,
+                                "Andrei",
+                                ListRepairersUseCase.RepairerStatus.AVAILABLE
+                        )
+                );
+    }
+
+    @Test
+    void givenSomeRepairers_whenListByStatus_thenTheyShouldBeSortedByStatus(
+            CarServiceModule module,
+            UUID repairerId1,
+            UUID repairerId2,
+            UUID orderId
+    ) {
+        module.addRepairerUseCase().add(repairerId1, "John");
+        module.addRepairerUseCase().add(repairerId2, "Andrei");
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairerId1);
+
+        assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.STATUS))
+                .containsExactly(
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId2,
+                                "Andrei",
+                                ListRepairersUseCase.RepairerStatus.AVAILABLE
+                        ),
+                        new ListRepairersUseCase.RepairerView(
+                                repairerId1,
+                                "John",
+                                ListRepairersUseCase.RepairerStatus.ASSIGNED
+                        )
                 );
     }
 

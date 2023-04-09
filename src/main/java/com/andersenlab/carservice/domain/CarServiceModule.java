@@ -19,9 +19,9 @@ public final class CarServiceModule {
             OrderStore orderStore,
             Clock clock
     ) {
-        repairerService = new RepairerService(repairerStore, orderStore);
+        repairerService = new RepairerService(repairerStore);
         garageSlotService = new GarageSlotService(garageSlotStore);
-        orderService = new OrderService(orderStore, garageSlotStore, repairerStore, clock, new OrderFactory());
+        orderService = new OrderService(orderStore, garageSlotService, repairerService, clock, new OrderFactory());
     }
 
     public AddRepairerUseCase addRepairerUseCase() {

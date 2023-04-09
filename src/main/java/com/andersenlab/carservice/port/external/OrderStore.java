@@ -14,8 +14,6 @@ public interface OrderStore {
 
     Collection<OrderProjection> findAllSorted(Sort sort);
 
-    boolean hasProcessingOrderWithRepairerAssigned(UUID repairerId);
-
     enum Sort {
         ID, PRICE, STATUS, CREATION_TIMESTAMP, CLOSING_TIMESTAMP
     }

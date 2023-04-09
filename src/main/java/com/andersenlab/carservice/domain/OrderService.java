@@ -1,8 +1,6 @@
 package com.andersenlab.carservice.domain;
 
-import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.external.OrderStore;
-import com.andersenlab.carservice.port.external.RepairerStore;
 import com.andersenlab.carservice.port.usecase.*;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotWasNotFound;
 import com.andersenlab.carservice.port.usecase.exception.OrderWasNotFound;
@@ -22,21 +20,21 @@ final class OrderService
         CancelOrderUseCase {
 
     private final OrderStore orderStore;
-    private final GarageSlotStore garageSlotStore;
-    private final RepairerStore repairerStore;
+    private final GarageSlotService garageSlotService;
+    private final RepairerService repairerService;
     private final Clock clock;
     private final OrderFactory orderFactory;
 
     OrderService(
             OrderStore orderStore,
-            GarageSlotStore garageSlotStore,
-            RepairerStore repairerStore,
+            GarageSlotService garageSlotService,
+            RepairerService repairerService,
             Clock clock,
             OrderFactory orderFactory
     ) {
         this.orderStore = orderStore;
-        this.garageSlotStore = garageSlotStore;
-        this.repairerStore = repairerStore;
+        this.garageSlotService = garageSlotService;
+        this.repairerService = repairerService;
         this.clock = clock;
         this.orderFactory = orderFactory;
     }
@@ -56,7 +54,7 @@ final class OrderService
 
     @Override
     public void assignGarageSlot(UUID orderId, UUID garageSlotId) {
-        if (garageSlotStore.hasNot(garageSlotId)) {
+        if (garageSlotService.hasNotGarageSlot(garageSlotId)) {
             throw new GarageSlotWasNotFound();
         }
         orderStore.save(order(orderId).assignGarageSlot(garageSlotId).entity());
@@ -69,9 +67,10 @@ final class OrderService
 
     @Override
     public void assignRepairer(UUID orderId, UUID repairerId) {
-        if (!repairerStore.has(repairerId)) {
+        if (repairerService.hasNotRepairer(repairerId)) {
             throw new RepairerWasNotFound();
         }
+        repairerService.markRepairerAsAssigned(repairerId);
         orderStore.save(order(orderId).assignRepairer(repairerId).entity());
     }
 

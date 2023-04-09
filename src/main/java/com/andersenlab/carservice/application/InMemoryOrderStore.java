@@ -43,16 +43,6 @@ public final class InMemoryOrderStore implements OrderStore {
                 .toList();
     }
 
-    @Override
-    public boolean hasProcessingOrderWithRepairerAssigned(UUID repairerId) {
-        return map.values()
-                .stream()
-                .filter(orderEntity -> orderEntity.status() == OrderStatus.IN_PROCESS)
-                .map(OrderEntity::repairers)
-                .flatMap(Collection::stream)
-                .anyMatch(repairerId::equals);
-    }
-
     private static final class OptionalComparator<T, C extends Comparable<C>> implements Comparator<T> {
 
         private final Function<T, Optional<C>> extractor;
