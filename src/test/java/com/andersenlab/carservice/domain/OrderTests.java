@@ -174,6 +174,21 @@ class OrderTests {
     }
 
     @Test
+    void givenCanceledOrder_whenAssignGarageSlot_thenOrderHasBeenAlreadyCanceledThrown(
+            CarServiceModule module,
+            UUID garageSlot,
+            UUID orderId
+    ) {
+        module.addGarageSlotUseCase().add(garageSlot);
+        module.createOrderUseCase().create(orderId, 100);
+        module.cancelOrderUseCase().cancel(orderId);
+        var useCase = module.assignGarageSlotToOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.assignGarageSlot(orderId, garageSlot))
+                .isInstanceOf(OrderHasBeenAlreadyCanceled.class);
+    }
+
+    @Test
     void givenOrderDoNotExist_whenViewOrder_thenOrderWasNotFoundThrown(
             CarServiceModule module,
             UUID orderId
