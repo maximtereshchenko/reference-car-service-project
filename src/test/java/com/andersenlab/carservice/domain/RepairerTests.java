@@ -3,6 +3,7 @@ package com.andersenlab.carservice.domain;
 import com.andersenlab.carservice.extension.CarServiceExtension;
 import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListRepairersUseCase;
+import com.andersenlab.carservice.port.usecase.exception.RepairerIsAssigned;
 import com.andersenlab.carservice.port.usecase.exception.RepairerWithSameIdExists;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,5 +71,19 @@ class RepairerTests {
         module.deleteRepairerUseCase().delete(repairerId);
 
         assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.ID)).isEmpty();
+    }
+
+    @Test
+    void givenRepairerAssignedToProcessingOrder_whenDeleteRepairer_thenRepairerIsAssignedThrown(
+            CarServiceModule module,
+            UUID repairerId,
+            UUID orderId
+    ) {
+        module.addRepairerUseCase().add(repairerId, "John");
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairerId);
+        var useCase = module.deleteRepairerUseCase();
+
+        assertThatThrownBy(() -> useCase.delete(repairerId)).isInstanceOf(RepairerIsAssigned.class);
     }
 }
