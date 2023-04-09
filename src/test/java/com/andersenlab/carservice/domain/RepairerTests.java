@@ -160,7 +160,7 @@ class RepairerTests {
 
         module.completeOrderUseCase().complete(orderId);
 
-        assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.STATUS))
+        assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.ID))
                 .containsExactly(
                         new ListRepairersUseCase.RepairerView(
                                 repairerId,
@@ -180,7 +180,7 @@ class RepairerTests {
         module.createOrderUseCase().create(orderId, 100);
         module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairerId);
 
-        assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.STATUS))
+        assertThat(module.listRepairersUserCase().list(ListRepairersUseCase.Sort.ID))
                 .containsExactly(
                         new ListRepairersUseCase.RepairerView(
                                 repairerId,

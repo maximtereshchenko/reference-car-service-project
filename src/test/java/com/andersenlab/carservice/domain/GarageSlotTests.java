@@ -75,4 +75,37 @@ class GarageSlotTests {
 
         assertThatThrownBy(() -> useCase.delete(garageSlotId)).isInstanceOf(GarageSlotIsAssigned.class);
     }
+
+    @Test
+    void givenGarageSlotAssignedToProcessingOrder_whenCompleteOrder_thenGarageSlotShouldBeAvailableAgain(
+            CarServiceModule module,
+            UUID garageId,
+            UUID repairerId,
+            UUID orderId
+    ) {
+        module.addGarageSlotUseCase().add(garageId);
+        module.addRepairerUseCase().add(repairerId, "John");
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageId);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairerId);
+
+        assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID))
+                .containsExactly(
+                        new ListGarageSlotsUseCase.GarageSlotView(
+                                garageId,
+                                ListGarageSlotsUseCase.GarageSlotStatus.ASSIGNED
+                        )
+                );
+
+        module.completeOrderUseCase().complete(orderId);
+
+        assertThat(module.listGarageSlotsUseCase().list(ListGarageSlotsUseCase.Sort.ID))
+                .containsExactly(
+                        new ListGarageSlotsUseCase.GarageSlotView(
+                                garageId,
+                                ListGarageSlotsUseCase.GarageSlotStatus.AVAILABLE
+                        )
+                );
+    }
+
 }
