@@ -37,7 +37,7 @@ final class EndToEndTests {
 
         Main.main(ARGS);
 
-        var printed = this.output.toString();
+        var printed = output.toString();
         assertThat(printed.lines().count()).isGreaterThan(1);
         assertThat(printed).contains("help - print all available commands");
     }
@@ -213,6 +213,32 @@ final class EndToEndTests {
         Main.main(ARGS);
 
         assertThat(output.toString()).contains("Garage slot " + garageSlotId1 + " assigned to order " + orderId1);
+    }
+
+    @Test
+    void viewOrder(UUID orderId1) {
+        input("""
+                orders create %s 100
+                orders view %s
+                exit
+                """
+                .formatted(orderId1, orderId1)
+        );
+
+        Main.main(ARGS);
+
+        assertThat(output.toString())
+                .contains(
+                        """
+                                ID: %s
+                                Price: 100
+                                Status: IN_PROCESS
+                                Garage slot: NONE
+                                Created:\
+                                """
+                                .formatted(orderId1),
+                        "Closed: NONE"
+                );
     }
 
     private void input(String commands) {

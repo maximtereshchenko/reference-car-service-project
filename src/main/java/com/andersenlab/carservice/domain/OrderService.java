@@ -8,7 +8,6 @@ import com.andersenlab.carservice.port.usecase.exception.OrderWasNotFound;
 
 import java.time.Clock;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, AssignGarageSlotToOrderUseCase, ViewOrderUseCase {
@@ -37,8 +36,8 @@ final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, Assig
                                 orderEntity.id(),
                                 orderEntity.price(),
                                 OrderStatus.valueOf(orderEntity.status().name()),
-                                orderEntity.creation(),
-                                orderEntity.closing()
+                                orderEntity.created(),
+                                orderEntity.closed()
                         )
                 )
                 .toList();
@@ -57,9 +56,10 @@ final class OrderService implements CreateOrderUseCase, ListOrdersUseCase, Assig
     }
 
     @Override
-    public Optional<ViewOrderUseCase.OrderView> view(UUID id) {
+    public ViewOrderUseCase.OrderView view(UUID id) {
         return orderStore.findById(id)
                 .map(Order::new)
-                .map(Order::view);
+                .map(Order::view)
+                .orElseThrow(OrderWasNotFound::new);
     }
 }

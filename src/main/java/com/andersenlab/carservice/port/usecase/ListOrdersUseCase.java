@@ -13,5 +13,5 @@ public interface ListOrdersUseCase {
         ID, PRICE, STATUS, CREATION_TIMESTAMP, CLOSING_TIMESTAMP
     }
 
-    record OrderView(UUID id, long price, OrderStatus status, Instant creation, Optional<Instant> closing) {}
+    record OrderView(UUID id, long price, OrderStatus status, Instant created, Optional<Instant> closed) {}
 }

@@ -12,8 +12,8 @@ public final class InMemoryOrderStore implements OrderStore {
             Sort.ID, Comparator.comparing(OrderEntity::id),
             Sort.PRICE, Comparator.comparing(OrderEntity::price),
             Sort.STATUS, Comparator.comparing(OrderEntity::status),
-            Sort.CREATION_TIMESTAMP, Comparator.comparing(OrderEntity::creation),
-            Sort.CLOSING_TIMESTAMP, new OptionalComparator<>(OrderEntity::closing)
+            Sort.CREATION_TIMESTAMP, Comparator.comparing(OrderEntity::created),
+            Sort.CLOSING_TIMESTAMP, new OptionalComparator<>(OrderEntity::closed)
     );
 
     @Override
@@ -36,8 +36,8 @@ public final class InMemoryOrderStore implements OrderStore {
                                 orderEntity.id(),
                                 orderEntity.price(),
                                 orderEntity.status(),
-                                orderEntity.creation(),
-                                orderEntity.closing()
+                                orderEntity.created(),
+                                orderEntity.closed()
                         )
                 )
                 .toList();

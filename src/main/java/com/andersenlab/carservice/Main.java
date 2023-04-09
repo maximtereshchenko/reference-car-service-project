@@ -41,7 +41,8 @@ final class Main {
                         new CompositeCommand(
                                 "assign",
                                 new AssignGarageSlotToOrder(module.assignGarageSlotToOrderUseCase())
-                        )
+                        ),
+                        new ViewOrder(module.viewOrderUseCase())
                 )
         );
         new TextInterface(

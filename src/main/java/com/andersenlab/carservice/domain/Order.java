@@ -35,8 +35,8 @@ final class Order {
                 entity.price(),
                 OrderStatus.valueOf(entity.status().name()),
                 entity.garageSlotId(),
-                entity.creation(),
-                entity.closing()
+                entity.created(),
+                entity.closed()
         );
     }
 
@@ -51,8 +51,8 @@ final class Order {
                         entity.price(),
                         entity.status(),
                         Optional.of(garageSlotId),
-                        entity.creation(),
-                        entity.closing()
+                        entity.created(),
+                        entity.closed()
                 )
         );
     }

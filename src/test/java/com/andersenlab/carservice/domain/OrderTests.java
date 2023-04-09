@@ -100,7 +100,7 @@ class OrderTests {
         module.assignGarageSlotToOrderUseCase().assign(orderId1, garageSlot1);
 
         assertThat(module.viewOrderUseCase().view(orderId1))
-                .contains(
+                .isEqualTo(
                         new ViewOrderUseCase.OrderView(
                                 orderId1,
                                 100,
@@ -110,6 +110,18 @@ class OrderTests {
                                 Optional.empty()
                         )
                 );
+    }
+
+    @Test
+    void givenOrderDoNotExist_whenViewOrder_thenOrderWasNotFoundThrown(
+            CarServiceModule module,
+            UUID garageSlot1,
+            UUID orderId1,
+            ManualClock clock
+    ) {
+        var useCase = module.viewOrderUseCase();
+
+        assertThatThrownBy(() -> useCase.view(orderId1)).isInstanceOf(OrderWasNotFound.class);
     }
 
     @Test

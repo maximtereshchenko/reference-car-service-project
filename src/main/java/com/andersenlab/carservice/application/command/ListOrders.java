@@ -41,8 +41,8 @@ public final class ListOrders extends NamedCommandWithDescription {
                     order.id(),
                     order.price(),
                     order.status(),
-                    order.creation(),
-                    order.closing()
+                    order.created(),
+                    order.closed()
                             .map(Objects::toString)
                             .orElse("NONE")
             );

@@ -26,9 +26,9 @@ public interface OrderStore {
             long price,
             OrderStatus status,
             Optional<UUID> garageSlotId,
-            Instant creation,
-            Optional<Instant> closing
+            Instant created,
+            Optional<Instant> closed
     ) {}
 
-    record OrderProjection(UUID id, long price, OrderStatus status, Instant creation, Optional<Instant> closing) {}
+    record OrderProjection(UUID id, long price, OrderStatus status, Instant created, Optional<Instant> closed) {}
 }
