@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.jackson)
     implementation(libs.jackson.datatype.jsr310)
     implementation(libs.jackson.datatype.jdk8)
+    implementation(libs.logback)
 
     testCompileOnly(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)

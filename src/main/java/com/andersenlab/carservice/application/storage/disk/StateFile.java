@@ -4,6 +4,8 @@ import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.external.RepairerStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +14,8 @@ import java.util.Collection;
 import java.util.List;
 
 final class StateFile {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StateFile.class);
 
     private final Path path;
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
@@ -24,6 +28,7 @@ final class StateFile {
         try {
             return objectMapper.readValue(Files.newBufferedReader(path), State.class);
         } catch (IOException e) {
+            LOG.warn("Could not read state", e);
             return new State();
         }
     }

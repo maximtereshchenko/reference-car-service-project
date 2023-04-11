@@ -1,9 +1,14 @@
 package com.andersenlab.carservice.application.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.PrintStream;
 import java.util.List;
 
 public final class GenericExceptionHandlingCommand implements Command {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GenericExceptionHandlingCommand.class);
 
     private final Command original;
 
@@ -21,6 +26,7 @@ public final class GenericExceptionHandlingCommand implements Command {
         try {
             original.execute(output, arguments);
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            LOG.warn("Caught generic exception", e);
             output.println("Wrong arguments");
         }
     }
