@@ -24,7 +24,7 @@ final class StateFile {
         try {
             return objectMapper.readValue(Files.newBufferedReader(path), State.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return new State();
         }
     }
 
@@ -41,6 +41,10 @@ final class StateFile {
             this.garageSlots = List.copyOf(garageSlots);
             this.orders = List.copyOf(orders);
             this.repairers = List.copyOf(repairers);
+        }
+
+        State() {
+            this(List.of(), List.of(), List.of());
         }
     }
 }

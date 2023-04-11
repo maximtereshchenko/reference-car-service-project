@@ -18,15 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class StateFilesTests {
 
     @Test
-    void givenFileExists_whenRead_thenStateReturned() throws URISyntaxException {
-        var stateFile = new StateFile(
-                Paths.get(
-                        Thread.currentThread()
-                                .getContextClassLoader()
-                                .getResource("state.json")
-                                .toURI()
-                )
-        );
+    void givenFileExists_whenRead_thenExpectedStateReturned() {
+        var stateFile = new StateFile(Paths.get("src/test/resources/state.json"));
 
         assertThat(stateFile.read()).isEqualTo(
                 new StateFile.State(
@@ -56,5 +49,12 @@ final class StateFilesTests {
                         )
                 )
         );
+    }
+
+    @Test
+    void givenFileDoNotExist_whenRead_thenEmptyStateReturned() {
+        var stateFile = new StateFile(Paths.get("non-existent-file.json"));
+
+        assertThat(stateFile.read()).isEqualTo(new StateFile.State());
     }
 }
