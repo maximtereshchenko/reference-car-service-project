@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application;
+package com.andersenlab.carservice.application.storage.inmemory;
 
 import com.andersenlab.carservice.port.external.OrderStore;
 

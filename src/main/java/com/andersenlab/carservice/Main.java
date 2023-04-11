@@ -1,15 +1,14 @@
 package com.andersenlab.carservice;
 
-import com.andersenlab.carservice.application.InMemoryGarageSlotStore;
-import com.andersenlab.carservice.application.InMemoryOrderStore;
-import com.andersenlab.carservice.application.InMemoryRepairerStore;
+import com.andersenlab.carservice.application.storage.inmemory.InMemoryGarageSlotStore;
+import com.andersenlab.carservice.application.storage.inmemory.InMemoryOrderStore;
+import com.andersenlab.carservice.application.storage.inmemory.InMemoryRepairerStore;
 import com.andersenlab.carservice.application.TextInterface;
 import com.andersenlab.carservice.application.command.*;
 import com.andersenlab.carservice.domain.CarServiceModule;
 
 import java.time.Clock;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -33,7 +32,7 @@ final class Main {
         );
     }
 
-    private static List<Command> mainCommands(CarServiceModule module) {
+    private static Collection<Command> mainCommands(CarServiceModule module) {
         return Stream.of(
                         allPrefixed(
                                 "repairers",
@@ -73,7 +72,7 @@ final class Main {
                 .map(command -> new PrefixedCommand(prefix, command));
     }
 
-    private static Collection<? extends Command> allCommands(List<Command> mainCommands) {
+    private static Collection<? extends Command> allCommands(Collection<Command> mainCommands) {
         return Stream.concat(
                         mainCommands.stream(),
                         Stream.of(new Help(mainCommands))

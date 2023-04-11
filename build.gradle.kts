@@ -14,6 +14,10 @@ group = "com.andersenlab.carservice"
 version = "1.0"
 
 dependencies {
+    implementation(libs.jackson)
+    implementation(libs.jackson.datatype.jsr310)
+    implementation(libs.jackson.datatype.jdk8)
+
     testCompileOnly(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
     testImplementation(libs.assertj)

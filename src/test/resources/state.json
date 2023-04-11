@@ -1,0 +1,26 @@
+{
+  "garageSlots": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "status": "AVAILABLE"
+    }
+  ],
+  "orders": [
+    {
+      "id": "00000000-0000-0000-0000-000000000002",
+      "price": 100,
+      "status": "IN_PROCESS",
+      "garageSlotId": null,
+      "repairers": [],
+      "created": "2000-01-01T00:00:00.00Z",
+      "closed": null
+    }
+  ],
+  "repairers": [
+    {
+      "id": "00000000-0000-0000-0000-000000000003",
+      "name": "John",
+      "status": "AVAILABLE"
+    }
+  ]
+}
