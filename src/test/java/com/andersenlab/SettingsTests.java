@@ -11,7 +11,7 @@ class SettingsTests {
 
     @Test
     void givenFileExists_whenReadSettings_thenExpectedSettingsReturned() {
-        var settings = Settings.from(Paths.get("src/test/resources/application.toml"));
+        var settings = Settings.from(Paths.get("src/test/resources/test.toml"));
 
         assertThat(settings.stateFilePath()).isEqualTo(Paths.get("state.json"));
         assertThat(settings.isGarageSlotAdditionEnabled()).isFalse();

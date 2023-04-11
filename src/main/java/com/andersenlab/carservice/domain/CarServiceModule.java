@@ -12,18 +12,21 @@ public final class CarServiceModule {
     private final RepairerService repairerService;
     private final GarageSlotService garageSlotService;
     private final OrderService orderService;
-    private final boolean isGarageSlotAdditionDisabled;
+    private final boolean isGarageSlotAdditionEnabled;
+    private final boolean isGarageSlotDeletionEnabled;
 
     private CarServiceModule(
             RepairerService repairerService,
             GarageSlotService garageSlotService,
             OrderService orderService,
-            boolean isGarageSlotAdditionDisabled
+            boolean isGarageSlotAdditionEnabled,
+            boolean isGarageSlotDeletionEnabled
     ) {
         this.repairerService = repairerService;
         this.garageSlotService = garageSlotService;
         this.orderService = orderService;
-        this.isGarageSlotAdditionDisabled = isGarageSlotAdditionDisabled;
+        this.isGarageSlotAdditionEnabled = isGarageSlotAdditionEnabled;
+        this.isGarageSlotDeletionEnabled = isGarageSlotDeletionEnabled;
     }
 
     public AddRepairerUseCase addRepairerUseCase() {
@@ -39,10 +42,10 @@ public final class CarServiceModule {
     }
 
     public AddGarageSlotUseCase addGarageSlotUseCase() {
-        if (isGarageSlotAdditionDisabled) {
-            return new DisabledAddGarageSlotUseCase();
+        if (isGarageSlotAdditionEnabled) {
+            return garageSlotService;
         }
-        return garageSlotService;
+        return new DisabledAddGarageSlotUseCase();
     }
 
     public ListGarageSlotsUseCase listGarageSlotsUseCase() {
@@ -50,7 +53,10 @@ public final class CarServiceModule {
     }
 
     public DeleteGarageSlotUseCase deleteGarageSlotUseCase() {
-        return garageSlotService;
+        if (isGarageSlotDeletionEnabled) {
+            return garageSlotService;
+        }
+        return new DisabledDeleteGarageSlotUseCase();
     }
 
     public CreateOrderUseCase createOrderUseCase() {
@@ -87,7 +93,8 @@ public final class CarServiceModule {
         private GarageSlotStore garageSlotStore;
         private OrderStore orderStore;
         private Clock clock;
-        private boolean isGarageSlotAdditionDisabled;
+        private boolean isGarageSlotAdditionEnabled = true;
+        private boolean isGarageSlotDeletionEnabled = true;
 
         public Builder withRepairerStore(RepairerStore repairerStore) {
             this.repairerStore = repairerStore;
@@ -109,8 +116,13 @@ public final class CarServiceModule {
             return this;
         }
 
-        public Builder disableGarageSlotAddition(boolean isGarageSlotAdditionDisabled) {
-            this.isGarageSlotAdditionDisabled = isGarageSlotAdditionDisabled;
+        public Builder enableGarageSlotAddition(boolean isGarageSlotAdditionEnabled) {
+            this.isGarageSlotAdditionEnabled = isGarageSlotAdditionEnabled;
+            return this;
+        }
+
+        public Builder enableGarageSlotDeletion(boolean isGarageSlotDeletionEnabled) {
+            this.isGarageSlotDeletionEnabled = isGarageSlotDeletionEnabled;
             return this;
         }
 
@@ -121,7 +133,8 @@ public final class CarServiceModule {
                     repairerService,
                     garageSlotService,
                     new OrderService(orderStore, garageSlotService, repairerService, clock, new OrderFactory()),
-                    isGarageSlotAdditionDisabled
+                    isGarageSlotAdditionEnabled,
+                    isGarageSlotDeletionEnabled
             );
         }
     }

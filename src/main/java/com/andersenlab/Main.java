@@ -8,15 +8,17 @@ import com.andersenlab.carservice.application.storage.OnDiskRepairerStore;
 import com.andersenlab.carservice.application.storage.StateFile;
 import com.andersenlab.carservice.domain.CarServiceModule;
 
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.time.Clock;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 final class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws URISyntaxException {
         new TextInterface(
                 System.in,
                 System.out,
@@ -25,14 +27,30 @@ final class Main {
                 .run();
     }
 
-    private static CarServiceModule module() {
-        var stateFile = new StateFile(Paths.get("state.json"));
+    private static CarServiceModule module() throws URISyntaxException {
+        var settings = settings();
+        var stateFile = new StateFile(settings.stateFilePath());
         return new CarServiceModule.Builder()
                 .withRepairerStore(new OnDiskRepairerStore(stateFile))
                 .withGarageSlotStore(new OnDiskGarageSlotStore(stateFile))
                 .withOrderStore(new OnDiskOrderStore(stateFile))
                 .withClock(Clock.systemDefaultZone())
+                .enableGarageSlotAddition(settings.isGarageSlotAdditionEnabled())
+                .enableGarageSlotDeletion(settings.isGarageSlotDeletionEnabled())
                 .build();
+    }
+
+    private static Settings settings() throws URISyntaxException {
+        return Settings.from(
+                Paths.get(
+                        Objects.requireNonNull(
+                                        Thread.currentThread()
+                                                .getContextClassLoader()
+                                                .getResource("application.toml")
+                                )
+                                .toURI()
+                )
+        );
     }
 
     private static Collection<Command> mainCommands(CarServiceModule module) {

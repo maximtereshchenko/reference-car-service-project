@@ -11,6 +11,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -34,7 +35,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void help() {
+    void help() throws URISyntaxException {
         input(
                 """
                 help
@@ -50,7 +51,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void addRepairerWithoutId() {
+    void addRepairerWithoutId() throws URISyntaxException {
         input(
                 """
                 repairers add John
@@ -64,7 +65,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void addRepairerWithId(UUID repairerId) {
+    void addRepairerWithId(UUID repairerId) throws URISyntaxException {
         input(
                 """
                 repairers add %s John
@@ -79,7 +80,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void addRepairerWithNonUUIDId() {
+    void addRepairerWithNonUUIDId() throws URISyntaxException {
         input(
                 """
                 repairers add this-is-not-uuid John
@@ -93,7 +94,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void listRepairers(UUID repairerId) {
+    void listRepairers(UUID repairerId) throws URISyntaxException {
         input(
                 """
                 repairers add %s John
@@ -117,7 +118,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void listRepairersWithNotEnoughArguments() {
+    void listRepairersWithNotEnoughArguments() throws URISyntaxException {
         input(
                 """
                 repairers list
@@ -131,7 +132,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void deleteRepairerById(UUID repairerId) {
+    void deleteRepairerById(UUID repairerId) throws URISyntaxException {
         input(
                 """
                 repairers add %s John
@@ -147,7 +148,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void addGarageSlotWithoutId() {
+    void addGarageSlotWithoutId() throws URISyntaxException {
         input(
                 """
                 garage-slots add
@@ -161,7 +162,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void addGarageSlotWithId(UUID garageSlotId) {
+    void addGarageSlotWithId(UUID garageSlotId) throws URISyntaxException {
         input(
                 """
                 garage-slots add %s
@@ -176,7 +177,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void listGarageSlots(UUID garageSlotId) {
+    void listGarageSlots(UUID garageSlotId) throws URISyntaxException {
         input(
                 """
                 garage-slots add %s
@@ -200,7 +201,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void deleteGarageSlotById(UUID garageSlotId) {
+    void deleteGarageSlotById(UUID garageSlotId) throws URISyntaxException {
         input(
                 """
                 garage-slots add %s
@@ -216,7 +217,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void createOrderWithoutId() {
+    void createOrderWithoutId() throws URISyntaxException {
         input(
                 """
                 orders create 100
@@ -230,7 +231,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void createOrderWithId(UUID orderId) {
+    void createOrderWithId(UUID orderId) throws URISyntaxException {
         input(
                 """
                 orders create %s 100
@@ -245,7 +246,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void listOrders(UUID orderId) {
+    void listOrders(UUID orderId) throws URISyntaxException {
         input(
                 """
                 orders create %s 100
@@ -269,7 +270,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void assignGarageSlotToOrder(UUID garageSlotId, UUID orderId) {
+    void assignGarageSlotToOrder(UUID garageSlotId, UUID orderId) throws URISyntaxException {
         input(
                 """
                 garage-slots add %s
@@ -286,7 +287,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void assignNonExistentGarageSlotToOrder(UUID garageSlotId, UUID orderId) {
+    void assignNonExistentGarageSlotToOrder(UUID garageSlotId, UUID orderId) throws URISyntaxException {
         input(
                 """
                 orders create %s 100
@@ -302,7 +303,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void viewOrder(UUID orderId) {
+    void viewOrder(UUID orderId) throws URISyntaxException {
         input(
                 """
                 orders create %s 100
@@ -330,7 +331,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void assignRepairerToOrder(UUID repairerId, UUID orderId) {
+    void assignRepairerToOrder(UUID repairerId, UUID orderId) throws URISyntaxException {
         input(
                 """
                 repairers add %s John
@@ -347,7 +348,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void completeOrder(UUID repairerId, UUID garageSlotId, UUID orderId) {
+    void completeOrder(UUID repairerId, UUID garageSlotId, UUID orderId) throws URISyntaxException {
         input(
                 """
                 repairers add %s John
@@ -374,7 +375,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void cancelOrder(UUID orderId) {
+    void cancelOrder(UUID orderId) throws URISyntaxException {
         input(
                 """
                 orders create %s 100
@@ -390,7 +391,7 @@ final class EndToEndTests {
     }
 
     @Test
-    void fullScenario(UUID garageSlotId, UUID repairerId, UUID orderId1, UUID orderId2) {
+    void fullScenario(UUID garageSlotId, UUID repairerId, UUID orderId1, UUID orderId2) throws URISyntaxException {
         input(
                 """
                 garage-slots add %s

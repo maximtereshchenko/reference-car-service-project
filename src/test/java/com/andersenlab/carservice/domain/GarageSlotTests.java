@@ -4,6 +4,7 @@ import com.andersenlab.carservice.extension.CarServiceExtension;
 import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListGarageSlotsUseCase;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotAdditionIsDisabled;
+import com.andersenlab.carservice.port.usecase.exception.GarageSlotDeletionIsDisabled;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotIsAssigned;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotWithSameIdExists;
 import org.junit.jupiter.api.Test;
@@ -155,9 +156,20 @@ class GarageSlotTests {
             CarServiceModule.Builder builder,
             UUID garageSlotId
     ) {
-        var module = builder.disableGarageSlotAddition(true).build();
+        var module = builder.enableGarageSlotAddition(false).build();
         var useCase = module.addGarageSlotUseCase();
 
         assertThatThrownBy(() -> useCase.add(garageSlotId)).isInstanceOf(GarageSlotAdditionIsDisabled.class);
+    }
+
+    @Test
+    void givenGarageSlotDeletionIsDisabled_whenDeleteGarageSlot_thenGarageSlotDeletionIsDisabledThrown(
+            CarServiceModule.Builder builder,
+            UUID garageSlotId
+    ) {
+        var module = builder.enableGarageSlotDeletion(false).build();
+        var useCase = module.deleteGarageSlotUseCase();
+
+        assertThatThrownBy(() -> useCase.delete(garageSlotId)).isInstanceOf(GarageSlotDeletionIsDisabled.class);
     }
 }

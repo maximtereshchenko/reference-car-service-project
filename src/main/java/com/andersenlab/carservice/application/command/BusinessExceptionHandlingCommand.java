@@ -29,6 +29,9 @@ public final class BusinessExceptionHandlingCommand implements Command {
         } catch (GarageSlotAdditionIsDisabled e) {
             log(e);
             output.println("Garage slot addition is disabled");
+        } catch (GarageSlotDeletionIsDisabled e) {
+            log(e);
+            output.println("Garage slot deletion is disabled");
         } catch (GarageSlotIsAssigned e) {
             log(e);
             output.println("Garage slot is assigned");
