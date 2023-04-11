@@ -27,11 +27,11 @@ public final class CarServiceExtension implements ParameterResolver {
         if (parameterContext.getParameter().getType() == ManualClock.class) {
             return clock;
         }
-        return new CarServiceModule(
-                new InMemoryRepairerStore(),
-                new InMemoryGarageSlotStore(),
-                new InMemoryOrderStore(),
-                clock
-        );
+        return new CarServiceModule.Builder()
+                .withRepairerStore(new InMemoryRepairerStore())
+                .withGarageSlotStore(new InMemoryGarageSlotStore())
+                .withOrderStore(new InMemoryOrderStore())
+                .withClock(clock)
+                .build();
     }
 }

@@ -13,15 +13,14 @@ public final class CarServiceModule {
     private final GarageSlotService garageSlotService;
     private final OrderService orderService;
 
-    public CarServiceModule(
-            RepairerStore repairerStore,
-            GarageSlotStore garageSlotStore,
-            OrderStore orderStore,
-            Clock clock
+    private CarServiceModule(
+            RepairerService repairerService,
+            GarageSlotService garageSlotService,
+            OrderService orderService
     ) {
-        repairerService = new RepairerService(repairerStore);
-        garageSlotService = new GarageSlotService(garageSlotStore);
-        orderService = new OrderService(orderStore, garageSlotService, repairerService, clock, new OrderFactory());
+        this.repairerService = repairerService;
+        this.garageSlotService = garageSlotService;
+        this.orderService = orderService;
     }
 
     public AddRepairerUseCase addRepairerUseCase() {
@@ -74,5 +73,43 @@ public final class CarServiceModule {
 
     public CancelOrderUseCase cancelOrderUseCase() {
         return orderService;
+    }
+
+    public static final class Builder {
+
+        private RepairerStore repairerStore;
+        private GarageSlotStore garageSlotStore;
+        private OrderStore orderStore;
+        private Clock clock;
+
+        public Builder withRepairerStore(RepairerStore repairerStore) {
+            this.repairerStore = repairerStore;
+            return this;
+        }
+
+        public Builder withGarageSlotStore(GarageSlotStore garageSlotStore) {
+            this.garageSlotStore = garageSlotStore;
+            return this;
+        }
+
+        public Builder withOrderStore(OrderStore orderStore) {
+            this.orderStore = orderStore;
+            return this;
+        }
+
+        public Builder withClock(Clock clock) {
+            this.clock = clock;
+            return this;
+        }
+
+        public CarServiceModule build() {
+            var repairerService = new RepairerService(repairerStore);
+            var garageSlotService = new GarageSlotService(garageSlotStore);
+            return new CarServiceModule(
+                    repairerService,
+                    garageSlotService,
+                    new OrderService(orderStore, garageSlotService, repairerService, clock, new OrderFactory())
+            );
+        }
     }
 }

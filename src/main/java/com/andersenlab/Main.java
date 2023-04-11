@@ -27,12 +27,12 @@ final class Main {
 
     private static CarServiceModule module() {
         var stateFile = new StateFile(Paths.get("state.json"));
-        return new CarServiceModule(
-                new OnDiskRepairerStore(stateFile),
-                new OnDiskGarageSlotStore(stateFile),
-                new OnDiskOrderStore(stateFile),
-                Clock.systemDefaultZone()
-        );
+        return new CarServiceModule.Builder()
+                .withRepairerStore(new OnDiskRepairerStore(stateFile))
+                .withGarageSlotStore(new OnDiskGarageSlotStore(stateFile))
+                .withOrderStore(new OnDiskOrderStore(stateFile))
+                .withClock(Clock.systemDefaultZone())
+                .build();
     }
 
     private static Collection<Command> mainCommands(CarServiceModule module) {
