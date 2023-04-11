@@ -1,4 +1,4 @@
-package com.andersenlab.carservice;
+package com.andersenlab;
 
 import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import org.junit.jupiter.api.BeforeEach;

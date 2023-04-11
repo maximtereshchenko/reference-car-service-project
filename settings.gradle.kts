@@ -26,6 +26,7 @@ dependencyResolutionManagement {
 
             library("assertj", "org.assertj:assertj-core:3.23.1")
             library("logback", "ch.qos.logback:logback-classic:1.4.6")
+            library("tomlj", "org.tomlj:tomlj:1.1.0")
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.andersenlab.carservice;
+package com.andersenlab;
 
 import com.andersenlab.carservice.application.TextInterface;
 import com.andersenlab.carservice.application.command.*;
