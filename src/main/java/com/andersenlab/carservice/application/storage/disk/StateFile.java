@@ -28,6 +28,14 @@ final class StateFile {
         }
     }
 
+    void write(State state) {
+        try {
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(Files.newBufferedWriter(path), state);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     record State(
             Collection<GarageSlotStore.GarageSlotEntity> garageSlots,
             Collection<OrderStore.OrderEntity> orders,
