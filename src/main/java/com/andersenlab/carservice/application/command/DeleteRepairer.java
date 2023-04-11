@@ -27,7 +27,8 @@ public final class DeleteRepairer extends NamedCommandWithDescription {
 
     @Override
     void executeIfMatched(PrintStream output, List<String> arguments) {
-        useCase.delete(UUID.fromString(arguments.get(0)));
-        output.println("Repairer deleted");
+        var id = UUID.fromString(arguments.get(0));
+        useCase.delete(id);
+        output.println("Repairer deleted " + id);
     }
 }

@@ -31,14 +31,14 @@ public final class ViewOrder extends NamedCommandWithDescription {
         var order = userCase.view(UUID.fromString(arguments.get(0)));
         output.printf(
                 """
-                        ID: %s
-                        Price: %s
-                        Status: %s
-                        Garage slot: %s
-                        Repairers: %s
-                        Created: %S
-                        Closed: %s
-                        """,
+                ID: %s
+                Price: %s
+                Status: %s
+                Garage slot: %s
+                Repairers: %s
+                Created: %S
+                Closed: %s
+                """,
                 order.id(),
                 order.price(),
                 order.status(),

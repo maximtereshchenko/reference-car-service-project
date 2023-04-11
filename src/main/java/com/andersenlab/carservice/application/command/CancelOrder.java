@@ -27,7 +27,8 @@ public final class CancelOrder extends NamedCommandWithDescription {
 
     @Override
     void executeIfMatched(PrintStream output, List<String> arguments) {
-        useCase.cancel(UUID.fromString(arguments.get(0)));
-        output.println("Order canceled");
+        var id = UUID.fromString(arguments.get(0));
+        useCase.cancel(id);
+        output.println("Order canceled " + id);
     }
 }

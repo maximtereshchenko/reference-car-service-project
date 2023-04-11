@@ -27,7 +27,8 @@ public final class TextInterface {
 
     public void run() {
         try (var scanner = new Scanner(inputStream, StandardCharsets.UTF_8)) {
-            printStream.println("""
+            printStream.println(
+                    """
                     Welcome to "Car Service Inc."!
                     """
             );

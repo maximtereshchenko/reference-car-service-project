@@ -2,11 +2,13 @@ package com.andersenlab.carservice;
 
 import com.andersenlab.carservice.application.TextInterface;
 import com.andersenlab.carservice.application.command.*;
-import com.andersenlab.carservice.application.storage.inmemory.InMemoryGarageSlotStore;
+import com.andersenlab.carservice.application.storage.disk.OnDiskGarageSlotStore;
+import com.andersenlab.carservice.application.storage.disk.StateFile;
 import com.andersenlab.carservice.application.storage.inmemory.InMemoryOrderStore;
 import com.andersenlab.carservice.application.storage.inmemory.InMemoryRepairerStore;
 import com.andersenlab.carservice.domain.CarServiceModule;
 
+import java.nio.file.Paths;
 import java.time.Clock;
 import java.util.Collection;
 import java.util.function.Function;
@@ -24,9 +26,10 @@ final class Main {
     }
 
     private static CarServiceModule module() {
+        var stateFile = new StateFile(Paths.get("state.json"));
         return new CarServiceModule(
                 new InMemoryRepairerStore(),
-                new InMemoryGarageSlotStore(),
+                new OnDiskGarageSlotStore(stateFile),
                 new InMemoryOrderStore(),
                 Clock.systemDefaultZone()
         );

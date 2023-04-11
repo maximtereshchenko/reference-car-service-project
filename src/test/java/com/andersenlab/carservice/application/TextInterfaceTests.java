@@ -1,6 +1,7 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
-import com.andersenlab.carservice.application.TextInterface;
+import com.andersenlab.carservice.application.command.Command;
+import com.andersenlab.carservice.application.command.PrefixedCommand;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -19,10 +20,12 @@ final class TextInterfaceTests {
     @Test
     void givenEchoCommand_whenExecute_thenArgumentsPrinted() {
         var textInterface = new TextInterface(
-                input("""
+                input(
+                        """
                         echo hello world
                         exit
-                        """),
+                        """
+                ),
                 new PrintStream(output, true, StandardCharsets.UTF_8),
                 new EchoCommand()
         );
@@ -35,10 +38,12 @@ final class TextInterfaceTests {
     @Test
     void givenCompositeCommand_whenExecute_thenArgumentsPrinted() {
         var textInterface = new TextInterface(
-                input("""
+                input(
+                        """
                         composite echo hello world
                         exit
-                        """),
+                        """
+                ),
                 new PrintStream(output, true, StandardCharsets.UTF_8),
                 new PrefixedCommand("composite", new EchoCommand())
         );
@@ -52,20 +57,19 @@ final class TextInterfaceTests {
         return new ByteArrayInputStream(commands.getBytes(StandardCharsets.UTF_8));
     }
 
-    private static final class EchoCommand extends NamedCommand {
-
-        EchoCommand() {
-            super("echo");
-        }
-
-        @Override
-        public void executeIfMatched(PrintStream output, List<String> arguments) {
-            output.println(String.join(" ", arguments));
-        }
+    private static final class EchoCommand implements Command {
 
         @Override
         public void printDescription(PrintStream output) {
             // empty
+        }
+
+        @Override
+        public void execute(PrintStream output, List<String> arguments) {
+            if (!arguments.get(0).equals("echo")) {
+                return;
+            }
+            output.println(String.join(" ", arguments.subList(1, arguments.size())));
         }
     }
 }

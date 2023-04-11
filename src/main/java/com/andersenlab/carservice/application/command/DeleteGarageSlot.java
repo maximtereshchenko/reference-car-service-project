@@ -27,7 +27,8 @@ public final class DeleteGarageSlot extends NamedCommandWithDescription {
 
     @Override
     void executeIfMatched(PrintStream output, List<String> arguments) {
-        useCase.delete(UUID.fromString(arguments.get(0)));
-        output.println("Garage slot deleted");
+        var id = UUID.fromString(arguments.get(0));
+        useCase.delete(id);
+        output.println("Garage slot deleted " + id);
     }
 }

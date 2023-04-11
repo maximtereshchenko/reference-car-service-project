@@ -27,7 +27,8 @@ public final class CompleteOrder extends NamedCommandWithDescription {
 
     @Override
     void executeIfMatched(PrintStream output, List<String> arguments) {
-        useCase.complete(UUID.fromString(arguments.get(0)));
-        output.println("Order completed");
+        var id = UUID.fromString(arguments.get(0));
+        useCase.complete(id);
+        output.println("Order completed " + id);
     }
 }

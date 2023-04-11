@@ -13,14 +13,14 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
-final class StateFile {
+public final class StateFile {
 
     private static final Logger LOG = LoggerFactory.getLogger(StateFile.class);
 
     private final Path path;
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
-    StateFile(Path path) {
+    public StateFile(Path path) {
         this.path = path;
     }
 
@@ -58,6 +58,18 @@ final class StateFile {
 
         State() {
             this(List.of(), List.of(), List.of());
+        }
+
+        State withGarageSlots(Collection<GarageSlotStore.GarageSlotEntity> garageSlots) {
+            return new State(garageSlots, orders, repairers);
+        }
+
+        State withOrders(Collection<OrderStore.OrderEntity> orders) {
+            return new State(garageSlots, orders, repairers);
+        }
+
+        State withRepairers(Collection<RepairerStore.RepairerEntity> repairers) {
+            return new State(garageSlots, orders, repairers);
         }
     }
 }
