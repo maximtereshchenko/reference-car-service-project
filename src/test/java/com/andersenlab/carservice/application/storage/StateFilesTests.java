@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.storage.disk;
+package com.andersenlab.carservice.application.storage;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.external.OrderStore;
@@ -49,7 +49,7 @@ final class StateFilesTests {
         var stateFile = new StateFile(directory);
         var state = new StateFile.State();
 
-        assertThatThrownBy(() -> stateFile.write(state)).isInstanceOf(CanNotWriteState.class);
+        assertThatThrownBy(() -> stateFile.write(state)).isInstanceOf(StateFile.CanNotWriteState.class);
     }
 
     private StateFile.State state() {

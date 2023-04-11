@@ -2,10 +2,7 @@ package com.andersenlab.carservice;
 
 import com.andersenlab.carservice.application.TextInterface;
 import com.andersenlab.carservice.application.command.*;
-import com.andersenlab.carservice.application.storage.disk.OnDiskGarageSlotStore;
-import com.andersenlab.carservice.application.storage.disk.StateFile;
-import com.andersenlab.carservice.application.storage.inmemory.InMemoryOrderStore;
-import com.andersenlab.carservice.application.storage.inmemory.InMemoryRepairerStore;
+import com.andersenlab.carservice.application.storage.*;
 import com.andersenlab.carservice.domain.CarServiceModule;
 
 import java.nio.file.Paths;
@@ -30,7 +27,7 @@ final class Main {
         return new CarServiceModule(
                 new InMemoryRepairerStore(),
                 new OnDiskGarageSlotStore(stateFile),
-                new InMemoryOrderStore(),
+                new OnDiskOrderStore(stateFile),
                 Clock.systemDefaultZone()
         );
     }

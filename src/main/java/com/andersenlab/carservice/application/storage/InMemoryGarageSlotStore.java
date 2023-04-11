@@ -1,16 +1,16 @@
-package com.andersenlab.carservice.application.storage.inmemory;
+package com.andersenlab.carservice.application.storage;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public final class InMemoryGarageSlotStore implements GarageSlotStore {
 
     private final Map<UUID, GarageSlotEntity> map = new HashMap<>();
-    private final Map<Sort, Comparator<GarageSlotEntity>> comparators = Map.of(
-            Sort.ID, Comparator.comparing(GarageSlotEntity::id),
-            Sort.STATUS, Comparator.comparing(GarageSlotEntity::status)
-    );
+    private final Comparators comparators = Comparators.create();
 
     @Override
     public void save(GarageSlotEntity garageSlotEntity) {
@@ -20,7 +20,7 @@ public final class InMemoryGarageSlotStore implements GarageSlotStore {
     @Override
     public Collection<GarageSlotEntity> findAllSorted(Sort sort) {
         return map.values().stream()
-                .sorted(comparators.get(sort))
+                .sorted(comparators.comparator(sort))
                 .toList();
     }
 

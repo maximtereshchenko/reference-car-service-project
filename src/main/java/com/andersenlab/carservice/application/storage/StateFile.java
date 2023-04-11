@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.storage.disk;
+package com.andersenlab.carservice.application.storage;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.external.OrderStore;
@@ -70,6 +70,13 @@ public final class StateFile {
 
         State withRepairers(Collection<RepairerStore.RepairerEntity> repairers) {
             return new State(garageSlots, orders, repairers);
+        }
+    }
+
+    public final class CanNotWriteState extends RuntimeException {
+
+        CanNotWriteState(Throwable cause) {
+            super(cause);
         }
     }
 }
