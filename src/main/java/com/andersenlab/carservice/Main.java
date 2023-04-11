@@ -1,10 +1,10 @@
 package com.andersenlab.carservice;
 
+import com.andersenlab.carservice.application.TextInterface;
+import com.andersenlab.carservice.application.command.*;
 import com.andersenlab.carservice.application.storage.inmemory.InMemoryGarageSlotStore;
 import com.andersenlab.carservice.application.storage.inmemory.InMemoryOrderStore;
 import com.andersenlab.carservice.application.storage.inmemory.InMemoryRepairerStore;
-import com.andersenlab.carservice.application.TextInterface;
-import com.andersenlab.carservice.application.command.*;
 import com.andersenlab.carservice.domain.CarServiceModule;
 
 import java.time.Clock;

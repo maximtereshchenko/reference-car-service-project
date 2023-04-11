@@ -6,6 +6,7 @@ import com.andersenlab.carservice.port.external.RepairerStore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 final class StateFilesTests {
 
@@ -41,6 +43,14 @@ final class StateFilesTests {
 
         assertThat(actualStateFile)
                 .hasSameTextualContentAs(Paths.get("src/test/resources/state.json"));
+    }
+
+    @Test
+    void givenStateCanNotBeWritten_whenWrite_thenCanNotWriteStateThrown(@TempDir Path directory) {
+        var stateFile = new StateFile(directory);
+        var state = new StateFile.State();
+
+        assertThatThrownBy(() -> stateFile.write(state)).isInstanceOf(CanNotWriteState.class);
     }
 
     private StateFile.State state() {

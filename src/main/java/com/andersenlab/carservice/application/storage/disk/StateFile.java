@@ -32,7 +32,7 @@ final class StateFile {
         try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(Files.newBufferedWriter(path), state);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new CanNotWriteState(e);
         }
     }
 
