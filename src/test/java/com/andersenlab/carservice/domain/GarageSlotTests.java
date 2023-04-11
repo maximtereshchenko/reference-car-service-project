@@ -3,6 +3,7 @@ package com.andersenlab.carservice.domain;
 import com.andersenlab.carservice.extension.CarServiceExtension;
 import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListGarageSlotsUseCase;
+import com.andersenlab.carservice.port.usecase.exception.GarageSlotAdditionIsDisabled;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotIsAssigned;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotWithSameIdExists;
 import org.junit.jupiter.api.Test;
@@ -147,5 +148,16 @@ class GarageSlotTests {
                                 ListGarageSlotsUseCase.GarageSlotStatus.AVAILABLE
                         )
                 );
+    }
+
+    @Test
+    void givenGarageSlotAdditionIsDisabled_whenAddGarageSlot_thenGarageSlotAdditionIsDisabledThrown(
+            CarServiceModule.Builder builder,
+            UUID garageSlotId
+    ) {
+        var module = builder.disableGarageSlotAddition(true).build();
+        var useCase = module.addGarageSlotUseCase();
+
+        assertThatThrownBy(() -> useCase.add(garageSlotId)).isInstanceOf(GarageSlotAdditionIsDisabled.class);
     }
 }

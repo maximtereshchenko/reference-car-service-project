@@ -12,15 +12,18 @@ public final class CarServiceModule {
     private final RepairerService repairerService;
     private final GarageSlotService garageSlotService;
     private final OrderService orderService;
+    private final boolean isGarageSlotAdditionDisabled;
 
     private CarServiceModule(
             RepairerService repairerService,
             GarageSlotService garageSlotService,
-            OrderService orderService
+            OrderService orderService,
+            boolean isGarageSlotAdditionDisabled
     ) {
         this.repairerService = repairerService;
         this.garageSlotService = garageSlotService;
         this.orderService = orderService;
+        this.isGarageSlotAdditionDisabled = isGarageSlotAdditionDisabled;
     }
 
     public AddRepairerUseCase addRepairerUseCase() {
@@ -36,6 +39,9 @@ public final class CarServiceModule {
     }
 
     public AddGarageSlotUseCase addGarageSlotUseCase() {
+        if (isGarageSlotAdditionDisabled) {
+            return new DisabledAddGarageSlotUseCase();
+        }
         return garageSlotService;
     }
 
@@ -81,6 +87,7 @@ public final class CarServiceModule {
         private GarageSlotStore garageSlotStore;
         private OrderStore orderStore;
         private Clock clock;
+        private boolean isGarageSlotAdditionDisabled;
 
         public Builder withRepairerStore(RepairerStore repairerStore) {
             this.repairerStore = repairerStore;
@@ -102,13 +109,19 @@ public final class CarServiceModule {
             return this;
         }
 
+        public Builder disableGarageSlotAddition(boolean isGarageSlotAdditionDisabled) {
+            this.isGarageSlotAdditionDisabled = isGarageSlotAdditionDisabled;
+            return this;
+        }
+
         public CarServiceModule build() {
             var repairerService = new RepairerService(repairerStore);
             var garageSlotService = new GarageSlotService(garageSlotStore);
             return new CarServiceModule(
                     repairerService,
                     garageSlotService,
-                    new OrderService(orderStore, garageSlotService, repairerService, clock, new OrderFactory())
+                    new OrderService(orderStore, garageSlotService, repairerService, clock, new OrderFactory()),
+                    isGarageSlotAdditionDisabled
             );
         }
     }

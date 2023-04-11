@@ -10,7 +10,7 @@ public final class PredictableUUIDExtension implements ParameterResolver {
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        return UUID.class.isAssignableFrom(parameterContext.getParameter().getType());
+        return parameterContext.getParameter().getType() == UUID.class;
     }
 
     @Override

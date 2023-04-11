@@ -18,20 +18,26 @@ public final class CarServiceExtension implements ParameterResolver {
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
         var type = parameterContext.getParameter().getType();
-        return type == CarServiceModule.class || type == ManualClock.class;
+        return type == CarServiceModule.class ||
+                type == ManualClock.class ||
+                type == CarServiceModule.Builder.class;
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+        var type = parameterContext.getParameter().getType();
         var clock = clocks.computeIfAbsent(extensionContext.getUniqueId(), id -> new ManualClock());
-        if (parameterContext.getParameter().getType() == ManualClock.class) {
+        if (type == ManualClock.class) {
             return clock;
         }
-        return new CarServiceModule.Builder()
+        var builder = new CarServiceModule.Builder()
                 .withRepairerStore(new InMemoryRepairerStore())
                 .withGarageSlotStore(new InMemoryGarageSlotStore())
                 .withOrderStore(new InMemoryOrderStore())
-                .withClock(clock)
-                .build();
+                .withClock(clock);
+        if (type == CarServiceModule.Builder.class) {
+            return builder;
+        }
+        return builder.build();
     }
 }

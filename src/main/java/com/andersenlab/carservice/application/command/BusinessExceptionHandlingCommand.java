@@ -26,6 +26,9 @@ public final class BusinessExceptionHandlingCommand implements Command {
     public void execute(PrintStream output, List<String> arguments) {
         try {
             original.execute(output, arguments);
+        } catch (GarageSlotAdditionIsDisabled e) {
+            log(e);
+            output.println("Garage slot addition is disabled");
         } catch (GarageSlotIsAssigned e) {
             log(e);
             output.println("Garage slot is assigned");
