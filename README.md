@@ -23,3 +23,10 @@ This is a reference project for Java intensive course.
 ```bash
 ./gradlew --console plain -q run
 ```
+
+## Tags
+
+Git tags used to mark different stages in projects' lifecycle. You can use them to quickly navigate to and inspect the
+state.
+
+* **stage-1** - All required use cases implemented. Unit tests in place. CI configured
