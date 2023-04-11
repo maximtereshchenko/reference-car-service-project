@@ -2,28 +2,27 @@ package com.andersenlab.carservice.application.storage;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
 
 public final class OnDiskGarageSlotStore implements GarageSlotStore {
 
     private final StateFile stateFile;
-    private final Map<Sort, Comparator<GarageSlotEntity>> comparators = Map.of(
-            Sort.ID, Comparator.comparing(GarageSlotEntity::id),
-            Sort.STATUS, Comparator.comparing(GarageSlotEntity::status)
-    );
+    private final Comparators comparators = Comparators.create();
 
     public OnDiskGarageSlotStore(StateFile stateFile) {
         this.stateFile = stateFile;
     }
 
     @Override
-    public void save(GarageSlotEntity repairerEntity) {
-        if (has(repairerEntity.id())) {
-            delete(repairerEntity.id());
+    public void save(GarageSlotEntity garageSlotEntity) {
+        if (has(garageSlotEntity.id())) {
+            delete(garageSlotEntity.id());
         }
         var state = stateFile.read();
         var copy = new ArrayList<>(state.garageSlots());
-        copy.add(repairerEntity);
+        copy.add(garageSlotEntity);
         stateFile.write(state.withGarageSlots(copy));
     }
 
@@ -32,7 +31,7 @@ public final class OnDiskGarageSlotStore implements GarageSlotStore {
         return stateFile.read()
                 .garageSlots()
                 .stream()
-                .sorted(comparators.get(sort))
+                .sorted(comparators.comparator(sort))
                 .toList();
     }
 
@@ -41,7 +40,7 @@ public final class OnDiskGarageSlotStore implements GarageSlotStore {
         var state = stateFile.read();
         var updated = state.garageSlots()
                 .stream()
-                .filter(garageSlotEntity -> garageSlotEntity.id() != id)
+                .filter(garageSlotEntity -> !garageSlotEntity.id().equals(id))
                 .toList();
         stateFile.write(state.withGarageSlots(updated));
     }

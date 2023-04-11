@@ -73,7 +73,7 @@ public final class StateFile {
         }
     }
 
-    public final class CanNotWriteState extends RuntimeException {
+    public static final class CanNotWriteState extends RuntimeException {
 
         CanNotWriteState(Throwable cause) {
             super(cause);
