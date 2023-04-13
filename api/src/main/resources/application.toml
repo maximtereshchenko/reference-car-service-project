@@ -1,0 +1,5 @@
+[application]
+stateFile.path = "state.json"
+[application.garageSlots]
+addition.enabled = true
+deletion.enabled = true

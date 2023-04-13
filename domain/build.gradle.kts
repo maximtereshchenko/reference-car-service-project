@@ -7,6 +7,7 @@ application {
 }
 
 dependencies {
+    implementation(project(":api"))
     implementation(libs.jackson)
     implementation(libs.jackson.datatype.jsr310)
     implementation(libs.jackson.datatype.jdk8)

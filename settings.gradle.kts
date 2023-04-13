@@ -1,6 +1,7 @@
 rootProject.name = "reference-car-service-project"
 
 include("domain")
+include("api")
 
 dependencyResolutionManagement {
     versionCatalogs {
