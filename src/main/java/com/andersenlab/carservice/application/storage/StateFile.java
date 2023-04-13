@@ -25,8 +25,8 @@ public final class StateFile {
     }
 
     State read() {
-        try {
-            return objectMapper.readValue(Files.newBufferedReader(path), State.class);
+        try (var reader = Files.newBufferedReader(path)) {
+            return objectMapper.readValue(reader, State.class);
         } catch (IOException e) {
             LOG.warn("Could not read state", e);
             return new State();
@@ -34,8 +34,8 @@ public final class StateFile {
     }
 
     void write(State state) {
-        try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(Files.newBufferedWriter(path), state);
+        try (var writer = Files.newBufferedWriter(path)) {
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, state);
         } catch (IOException e) {
             throw new CanNotWriteState(e);
         }
