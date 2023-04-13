@@ -156,7 +156,7 @@ class GarageSlotTests {
             CarServiceModule.Builder builder,
             UUID garageSlotId
     ) {
-        var module = builder.enableGarageSlotAddition(false).build();
+        var module = builder.garageSlotAdditionEnabled(false).build();
         var useCase = module.addGarageSlotUseCase();
 
         assertThatThrownBy(() -> useCase.add(garageSlotId)).isInstanceOf(GarageSlotAdditionIsDisabled.class);
@@ -167,7 +167,7 @@ class GarageSlotTests {
             CarServiceModule.Builder builder,
             UUID garageSlotId
     ) {
-        var module = builder.enableGarageSlotDeletion(false).build();
+        var module = builder.garageSlotDeletionEnabled(false).build();
         var useCase = module.deleteGarageSlotUseCase();
 
         assertThatThrownBy(() -> useCase.delete(garageSlotId)).isInstanceOf(GarageSlotDeletionIsDisabled.class);

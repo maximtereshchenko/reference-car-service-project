@@ -116,12 +116,12 @@ public final class CarServiceModule {
             return this;
         }
 
-        public Builder enableGarageSlotAddition(boolean isGarageSlotAdditionEnabled) {
+        public Builder garageSlotAdditionEnabled(boolean isGarageSlotAdditionEnabled) {
             this.isGarageSlotAdditionEnabled = isGarageSlotAdditionEnabled;
             return this;
         }
 
-        public Builder enableGarageSlotDeletion(boolean isGarageSlotDeletionEnabled) {
+        public Builder garageSlotDeletionEnabled(boolean isGarageSlotDeletionEnabled) {
             this.isGarageSlotDeletionEnabled = isGarageSlotDeletionEnabled;
             return this;
         }

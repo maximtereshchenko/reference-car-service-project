@@ -35,8 +35,8 @@ final class Main {
                 .withGarageSlotStore(new OnDiskGarageSlotStore(stateFile))
                 .withOrderStore(new OnDiskOrderStore(stateFile))
                 .withClock(Clock.systemDefaultZone())
-                .enableGarageSlotAddition(settings.isGarageSlotAdditionEnabled())
-                .enableGarageSlotDeletion(settings.isGarageSlotDeletionEnabled())
+                .garageSlotAdditionEnabled(settings.isGarageSlotAdditionEnabled())
+                .garageSlotDeletionEnabled(settings.isGarageSlotDeletionEnabled())
                 .build();
     }
 
