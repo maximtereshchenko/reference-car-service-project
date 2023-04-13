@@ -1,5 +1,7 @@
 rootProject.name = "reference-car-service-project"
 
+include("domain")
+
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
