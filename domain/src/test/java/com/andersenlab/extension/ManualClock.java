@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.extension;
+package com.andersenlab.extension;
 
 import java.time.Clock;
 import java.time.Instant;

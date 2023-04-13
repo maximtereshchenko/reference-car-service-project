@@ -1,9 +1,17 @@
 plugins {
-    java
+    application
+}
+
+application {
+    mainClass.set("com.andersenlab.carservice.Main")
 }
 
 dependencies {
     implementation(project(":api"))
+    implementation(project(":domain"))
+    implementation(project(":storage"))
+    implementation(project(":command-line-interface"))
+    implementation(project(":settings"))
 
     testCompileOnly(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
@@ -11,8 +19,10 @@ dependencies {
     testImplementation(testFixtures(project(":common")))
 }
 
-
 tasks {
+    named<JavaExec>("run") {
+        standardInput = System.`in`
+    }
     test {
         useJUnitPlatform()
     }

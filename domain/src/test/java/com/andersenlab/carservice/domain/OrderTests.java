@@ -1,12 +1,12 @@
 package com.andersenlab.carservice.domain;
 
-import com.andersenlab.carservice.extension.CarServiceExtension;
-import com.andersenlab.carservice.extension.ManualClock;
-import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListOrdersUseCase;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
 import com.andersenlab.carservice.port.usecase.exception.*;
+import com.andersenlab.extension.CarServiceExtension;
+import com.andersenlab.extension.ManualClock;
+import com.andersenlab.extension.PredictableUUIDExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 

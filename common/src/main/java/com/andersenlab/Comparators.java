@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.storage;
+package com.andersenlab;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.external.OrderStore;
@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-final class Comparators {
+public final class Comparators {
 
     private final Map<GarageSlotStore.Sort, Comparator<GarageSlotStore.GarageSlotEntity>> garageSlotComparators =
             Map.of(
@@ -35,7 +35,7 @@ final class Comparators {
         // hidden
     }
 
-    static Comparators create() {
+    public static Comparators create() {
         var comparators = new Comparators();
         if (
                 hasNotEnoughGarageEntityComparators(comparators) ||
@@ -59,15 +59,15 @@ final class Comparators {
         return comparators.orderEntityComparators.size() < OrderStore.Sort.values().length;
     }
 
-    Comparator<GarageSlotStore.GarageSlotEntity> comparator(GarageSlotStore.Sort sort) {
+    public Comparator<GarageSlotStore.GarageSlotEntity> comparator(GarageSlotStore.Sort sort) {
         return garageSlotComparators.get(sort);
     }
 
-    Comparator<RepairerStore.RepairerEntity> comparator(RepairerStore.Sort sort) {
+    public Comparator<RepairerStore.RepairerEntity> comparator(RepairerStore.Sort sort) {
         return repairerEntityComparators.get(sort);
     }
 
-    Comparator<OrderStore.OrderEntity> comparator(OrderStore.Sort sort) {
+    public Comparator<OrderStore.OrderEntity> comparator(OrderStore.Sort sort) {
         return orderEntityComparators.get(sort);
     }
 

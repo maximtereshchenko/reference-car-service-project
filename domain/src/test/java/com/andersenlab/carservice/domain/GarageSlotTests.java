@@ -1,12 +1,12 @@
 package com.andersenlab.carservice.domain;
 
-import com.andersenlab.carservice.extension.CarServiceExtension;
-import com.andersenlab.carservice.extension.PredictableUUIDExtension;
 import com.andersenlab.carservice.port.usecase.ListGarageSlotsUseCase;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotAdditionIsDisabled;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotDeletionIsDisabled;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotIsAssigned;
 import com.andersenlab.carservice.port.usecase.exception.GarageSlotWithSameIdExists;
+import com.andersenlab.extension.CarServiceExtension;
+import com.andersenlab.extension.PredictableUUIDExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
