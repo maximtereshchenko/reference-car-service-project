@@ -8,9 +8,7 @@ application {
 
 dependencies {
     implementation(project(":api"))
-    implementation(libs.jackson)
-    implementation(libs.jackson.datatype.jsr310)
-    implementation(libs.jackson.datatype.jdk8)
+    implementation(project(":storage"))
     implementation(libs.logback)
     implementation(libs.tomlj)
 
