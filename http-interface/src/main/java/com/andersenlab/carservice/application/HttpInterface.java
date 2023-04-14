@@ -1,11 +1,15 @@
 package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.domain.CarServiceModule;
+import jakarta.servlet.DispatcherType;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+
+import java.util.EnumSet;
 
 public final class HttpInterface {
 
@@ -22,6 +26,28 @@ public final class HttpInterface {
         connector.setPort(8080);
 
         var servletHandler = new ServletHandler();
+        addServlets(module, servletHandler);
+        addFilters(servletHandler);
+
+        server.setConnectors(new Connector[]{connector});
+        server.setHandler(servletHandler);
+        return new HttpInterface(server);
+    }
+
+    private static void addFilters(ServletHandler servletHandler) {
+        servletHandler.addFilterWithMapping(
+                new FilterHolder(new BusinessExceptionHandlingFilter()),
+                "/*",
+                EnumSet.of(DispatcherType.REQUEST)
+        );
+        servletHandler.addFilterWithMapping(
+                new FilterHolder(new GenericExceptionHandlingFilter()),
+                "/*",
+                EnumSet.of(DispatcherType.REQUEST)
+        );
+    }
+
+    private static void addServlets(CarServiceModule module, ServletHandler servletHandler) {
         servletHandler.addServletWithMapping(
                 new ServletHolder(
                         new RepairersServlet(
@@ -85,10 +111,6 @@ public final class HttpInterface {
                 ),
                 "/garage-slots/*"
         );
-
-        server.setConnectors(new Connector[]{connector});
-        server.setHandler(servletHandler);
-        return new HttpInterface(server);
     }
 
     public void run() {

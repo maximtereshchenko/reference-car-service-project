@@ -76,6 +76,20 @@ final class EndToEndTests {
 
     @Test
     @Order(1)
+    void createRepairerWithSameId(UUID repairerId) throws Exception {
+        var response = post(
+                "/repairers",
+                Map.of(
+                        "id", repairerId.toString(),
+                        "name", "John"
+                )
+        );
+
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    @Order(2)
     void listRepairers(UUID repairerId) throws Exception {
         var response = get(
                 "/repairers?sort=id",
@@ -95,7 +109,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     void createGarageSlot(UUID garageSlot) throws Exception {
         var response = post(
                 "/garage-slots",
@@ -108,7 +122,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     void listGarageSlots(UUID garageSlot) throws Exception {
         var response = get(
                 "/garage-slots?sort=id",
@@ -127,7 +141,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     void createOrder(UUID orderId1) throws Exception {
         var response = post(
                 "/orders",
@@ -143,7 +157,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     void cancelOrder(UUID orderId1) throws Exception {
         var response = post("/orders/cancel", Map.of("id", orderId1.toString()));
 
@@ -151,7 +165,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     void assignGarageSlot(UUID orderId2, UUID garageSlot) throws Exception {
         post(
                 "/orders",
@@ -172,7 +186,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void assignRepairer(UUID orderId2, UUID repairerId) throws Exception {
         var response = post(
                 "/orders/assign/repairer",
@@ -186,7 +200,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     void completeOrder(UUID orderId2) throws Exception {
         var response = post(
                 "/orders/complete",
@@ -197,7 +211,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId) throws Exception {
         var response = get(
                 "/orders/" + orderId2,
@@ -220,7 +234,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     void listOrders(UUID orderId1, UUID orderId2) throws Exception {
         var response = get(
                 "/orders?sort=id",
@@ -248,7 +262,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     void deleteRepairer(UUID repairerId) throws Exception {
         var response = delete("/repairers/" + repairerId);
 
@@ -256,11 +270,25 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(11)
+    @Order(13)
     void deleteGarageSlot(UUID garageSlotId) throws Exception {
         var response = delete("/garage-slots/" + garageSlotId);
 
         assertThat(response.statusCode()).isEqualTo(204);
+    }
+
+    @Test
+    @Order(14)
+    void listOrdersWithoutSortParameter() throws Exception {
+        var response = HttpClient.newHttpClient()
+                .send(
+                        request("/orders")
+                                .GET()
+                                .build(),
+                        HttpResponse.BodyHandlers.discarding()
+                );
+
+        assertThat(response.statusCode()).isEqualTo(400);
     }
 
     private HttpResponse<Void> delete(String uri) throws Exception {
