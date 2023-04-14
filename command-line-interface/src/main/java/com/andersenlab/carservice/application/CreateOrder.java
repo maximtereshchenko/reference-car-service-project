@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.CreateOrderUseCase;
 
@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
 
-public final class CreateOrder extends NamedCommandWithDescription {
+final class CreateOrder extends NamedCommandWithDescription {
 
     private final CreateOrderUseCase useCase;
 
-    public CreateOrder(CreateOrderUseCase useCase) {
+    CreateOrder(CreateOrderUseCase useCase) {
         super("create");
         this.useCase = useCase;
     }

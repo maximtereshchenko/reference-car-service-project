@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.AssignGarageSlotToOrderUseCase;
 
@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
 
-public final class AssignGarageSlotToOrder extends NamedCommandWithDescription {
+final class AssignGarageSlotToOrder extends NamedCommandWithDescription {
 
     private final AssignGarageSlotToOrderUseCase useCase;
 
-    public AssignGarageSlotToOrder(AssignGarageSlotToOrderUseCase useCase) {
+    AssignGarageSlotToOrder(AssignGarageSlotToOrderUseCase useCase) {
         super("garage-slot");
         this.useCase = useCase;
     }

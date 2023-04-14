@@ -7,7 +7,7 @@ import com.andersenlab.carservice.port.usecase.*;
 
 import java.time.Clock;
 
-public final class CarServiceModule {
+public final class Module implements CarServiceModule {
 
     private final RepairerService repairerService;
     private final GarageSlotService garageSlotService;
@@ -15,7 +15,7 @@ public final class CarServiceModule {
     private final boolean isGarageSlotAdditionEnabled;
     private final boolean isGarageSlotDeletionEnabled;
 
-    private CarServiceModule(
+    private Module(
             RepairerService repairerService,
             GarageSlotService garageSlotService,
             OrderService orderService,
@@ -29,18 +29,22 @@ public final class CarServiceModule {
         this.isGarageSlotDeletionEnabled = isGarageSlotDeletionEnabled;
     }
 
+    @Override
     public AddRepairerUseCase addRepairerUseCase() {
         return repairerService;
     }
 
+    @Override
     public ListRepairersUseCase listRepairersUserCase() {
         return repairerService;
     }
 
+    @Override
     public DeleteRepairerUseCase deleteRepairerUseCase() {
         return repairerService;
     }
 
+    @Override
     public AddGarageSlotUseCase addGarageSlotUseCase() {
         if (isGarageSlotAdditionEnabled) {
             return garageSlotService;
@@ -48,10 +52,12 @@ public final class CarServiceModule {
         return new DisabledAddGarageSlotUseCase();
     }
 
+    @Override
     public ListGarageSlotsUseCase listGarageSlotsUseCase() {
         return garageSlotService;
     }
 
+    @Override
     public DeleteGarageSlotUseCase deleteGarageSlotUseCase() {
         if (isGarageSlotDeletionEnabled) {
             return garageSlotService;
@@ -59,30 +65,37 @@ public final class CarServiceModule {
         return new DisabledDeleteGarageSlotUseCase();
     }
 
+    @Override
     public CreateOrderUseCase createOrderUseCase() {
         return orderService;
     }
 
+    @Override
     public ListOrdersUseCase listOrdersUseCase() {
         return orderService;
     }
 
+    @Override
     public AssignGarageSlotToOrderUseCase assignGarageSlotToOrderUseCase() {
         return orderService;
     }
 
+    @Override
     public ViewOrderUseCase viewOrderUseCase() {
         return orderService;
     }
 
+    @Override
     public AssignRepairerToOrderUseCase assignRepairerToOrderUseCase() {
         return orderService;
     }
 
+    @Override
     public CompleteOrderUseCase completeOrderUseCase() {
         return orderService;
     }
 
+    @Override
     public CancelOrderUseCase cancelOrderUseCase() {
         return orderService;
     }
@@ -129,7 +142,7 @@ public final class CarServiceModule {
         public CarServiceModule build() {
             var repairerService = new RepairerService(repairerStore);
             var garageSlotService = new GarageSlotService(garageSlotStore);
-            return new CarServiceModule(
+            return new Module(
                     repairerService,
                     garageSlotService,
                     new OrderService(orderStore, garageSlotService, repairerService, clock, new OrderFactory()),

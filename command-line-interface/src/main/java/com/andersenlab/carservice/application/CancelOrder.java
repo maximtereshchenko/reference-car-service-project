@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.CancelOrderUseCase;
 
@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
 
-public final class CancelOrder extends NamedCommandWithDescription {
+final class CancelOrder extends NamedCommandWithDescription {
 
     private final CancelOrderUseCase useCase;
 
-    public CancelOrder(CancelOrderUseCase useCase) {
+    CancelOrder(CancelOrderUseCase useCase) {
         super("cancel");
         this.useCase = useCase;
     }

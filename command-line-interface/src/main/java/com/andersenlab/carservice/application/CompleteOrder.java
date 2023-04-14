@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.CompleteOrderUseCase;
 
@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
 
-public final class CompleteOrder extends NamedCommandWithDescription {
+final class CompleteOrder extends NamedCommandWithDescription {
 
     private final CompleteOrderUseCase useCase;
 
-    public CompleteOrder(CompleteOrderUseCase useCase) {
+    CompleteOrder(CompleteOrderUseCase useCase) {
         super("complete");
         this.useCase = useCase;
     }

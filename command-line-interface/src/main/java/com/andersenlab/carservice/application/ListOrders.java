@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.ListOrdersUseCase;
 
@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public final class ListOrders extends NamedCommandWithDescription {
+final class ListOrders extends NamedCommandWithDescription {
 
     private final ListOrdersUseCase userCase;
 
-    public ListOrders(ListOrdersUseCase userCase) {
+    ListOrders(ListOrdersUseCase userCase) {
         super("list");
         this.userCase = userCase;
     }

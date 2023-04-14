@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.exception.*;
 import org.slf4j.Logger;
@@ -7,13 +7,13 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintStream;
 import java.util.List;
 
-public final class BusinessExceptionHandlingCommand implements Command {
+final class BusinessExceptionHandlingCommand implements Command {
 
     private static final Logger LOG = LoggerFactory.getLogger(BusinessExceptionHandlingCommand.class);
 
     private final Command original;
 
-    public BusinessExceptionHandlingCommand(Command original) {
+    BusinessExceptionHandlingCommand(Command original) {
         this.original = original;
     }
 

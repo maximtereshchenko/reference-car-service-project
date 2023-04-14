@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.AddGarageSlotUseCase;
 
@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
 
-public final class AddGarageSlot extends NamedCommandWithDescription {
+final class AddGarageSlot extends NamedCommandWithDescription {
 
     private final AddGarageSlotUseCase useCase;
 
-    public AddGarageSlot(AddGarageSlotUseCase useCase) {
+    AddGarageSlot(AddGarageSlotUseCase useCase) {
         super("add");
         this.useCase = useCase;
     }

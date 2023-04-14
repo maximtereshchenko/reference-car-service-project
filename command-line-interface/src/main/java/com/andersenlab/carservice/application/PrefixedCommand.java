@@ -1,13 +1,13 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import java.io.PrintStream;
 import java.util.List;
 
-public final class PrefixedCommand extends NamedCommand {
+final class PrefixedCommand extends NamedCommand {
 
     private final Command original;
 
-    public PrefixedCommand(String prefix, Command original) {
+    PrefixedCommand(String prefix, Command original) {
         super(prefix);
         this.original = original;
     }

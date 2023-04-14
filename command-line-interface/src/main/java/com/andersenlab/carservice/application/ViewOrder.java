@@ -1,17 +1,17 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
 
 import java.io.PrintStream;
 import java.util.*;
 
-public final class ViewOrder extends NamedCommandWithDescription {
+final class ViewOrder extends NamedCommandWithDescription {
 
     private static final String NONE = "NONE";
 
     private final ViewOrderUseCase userCase;
 
-    public ViewOrder(ViewOrderUseCase userCase) {
+    ViewOrder(ViewOrderUseCase userCase) {
         super("view");
         this.userCase = userCase;
     }

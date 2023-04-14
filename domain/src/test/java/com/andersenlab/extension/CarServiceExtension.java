@@ -4,6 +4,7 @@ import com.andersenlab.carservice.application.storage.InMemoryGarageSlotStore;
 import com.andersenlab.carservice.application.storage.InMemoryOrderStore;
 import com.andersenlab.carservice.application.storage.InMemoryRepairerStore;
 import com.andersenlab.carservice.domain.CarServiceModule;
+import com.andersenlab.carservice.domain.Module;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -20,7 +21,7 @@ public final class CarServiceExtension implements ParameterResolver {
         var type = parameterContext.getParameter().getType();
         return type == CarServiceModule.class ||
                 type == ManualClock.class ||
-                type == CarServiceModule.Builder.class;
+                type == Module.Builder.class;
     }
 
     @Override
@@ -30,12 +31,12 @@ public final class CarServiceExtension implements ParameterResolver {
         if (type == ManualClock.class) {
             return clock;
         }
-        var builder = new CarServiceModule.Builder()
+        var builder = new Module.Builder()
                 .withRepairerStore(new InMemoryRepairerStore())
                 .withGarageSlotStore(new InMemoryGarageSlotStore())
                 .withOrderStore(new InMemoryOrderStore())
                 .withClock(clock);
-        if (type == CarServiceModule.Builder.class) {
+        if (type == Module.Builder.class) {
             return builder;
         }
         return builder.build();

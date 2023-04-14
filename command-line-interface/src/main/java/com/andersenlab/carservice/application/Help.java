@@ -1,14 +1,14 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.List;
 
-public final class Help extends NamedCommandWithDescription {
+final class Help extends NamedCommandWithDescription {
 
     private final Collection<Command> commands;
 
-    public Help(Collection<? extends Command> commands) {
+    Help(Collection<? extends Command> commands) {
         super("help");
         this.commands = List.copyOf(commands);
     }

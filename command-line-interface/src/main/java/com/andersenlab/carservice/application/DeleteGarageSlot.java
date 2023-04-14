@@ -1,16 +1,16 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
-import com.andersenlab.carservice.port.usecase.DeleteRepairerUseCase;
+import com.andersenlab.carservice.port.usecase.DeleteGarageSlotUseCase;
 
 import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
 
-public final class DeleteRepairer extends NamedCommandWithDescription {
+final class DeleteGarageSlot extends NamedCommandWithDescription {
 
-    private final DeleteRepairerUseCase useCase;
+    private final DeleteGarageSlotUseCase useCase;
 
-    public DeleteRepairer(DeleteRepairerUseCase useCase) {
+    DeleteGarageSlot(DeleteGarageSlotUseCase useCase) {
         super("delete");
         this.useCase = useCase;
     }
@@ -22,13 +22,13 @@ public final class DeleteRepairer extends NamedCommandWithDescription {
 
     @Override
     String description() {
-        return "delete a repairer with given ID";
+        return "delete a garage slot with given ID";
     }
 
     @Override
     void executeIfMatched(PrintStream output, List<String> arguments) {
         var id = UUID.fromString(arguments.get(0));
         useCase.delete(id);
-        output.println("Repairer deleted " + id);
+        output.println("Garage slot deleted " + id);
     }
 }

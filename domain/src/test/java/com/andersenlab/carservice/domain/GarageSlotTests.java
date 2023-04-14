@@ -153,7 +153,7 @@ class GarageSlotTests {
 
     @Test
     void givenGarageSlotAdditionIsDisabled_whenAddGarageSlot_thenGarageSlotAdditionIsDisabledThrown(
-            CarServiceModule.Builder builder,
+            Module.Builder builder,
             UUID garageSlotId
     ) {
         var module = builder.garageSlotAdditionEnabled(false).build();
@@ -164,7 +164,7 @@ class GarageSlotTests {
 
     @Test
     void givenGarageSlotDeletionIsDisabled_whenDeleteGarageSlot_thenGarageSlotDeletionIsDisabledThrown(
-            CarServiceModule.Builder builder,
+            Module.Builder builder,
             UUID garageSlotId
     ) {
         var module = builder.garageSlotDeletionEnabled(false).build();

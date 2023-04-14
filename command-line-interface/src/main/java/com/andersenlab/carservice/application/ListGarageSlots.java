@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.ListGarageSlotsUseCase;
 
@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
 
-public final class ListGarageSlots extends NamedCommandWithDescription {
+final class ListGarageSlots extends NamedCommandWithDescription {
 
     private final ListGarageSlotsUseCase userCase;
 
-    public ListGarageSlots(ListGarageSlotsUseCase userCase) {
+    ListGarageSlots(ListGarageSlotsUseCase userCase) {
         super("list");
         this.userCase = userCase;
     }

@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.ListRepairersUseCase;
 
@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Locale;
 
-public final class ListRepairers extends NamedCommandWithDescription {
+final class ListRepairers extends NamedCommandWithDescription {
 
     private final ListRepairersUseCase userCase;
 
-    public ListRepairers(ListRepairersUseCase userCase) {
+    ListRepairers(ListRepairersUseCase userCase) {
         super("list");
         this.userCase = userCase;
     }

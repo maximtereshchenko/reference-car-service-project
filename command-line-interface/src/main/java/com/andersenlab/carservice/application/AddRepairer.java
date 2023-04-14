@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.AddRepairerUseCase;
 
@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
 
-public final class AddRepairer extends NamedCommandWithDescription {
+final class AddRepairer extends NamedCommandWithDescription {
 
     private final AddRepairerUseCase useCase;
 
-    public AddRepairer(AddRepairerUseCase useCase) {
+    AddRepairer(AddRepairerUseCase useCase) {
         super("add");
         this.useCase = useCase;
     }

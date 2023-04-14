@@ -1,7 +1,5 @@
 package com.andersenlab.carservice.application;
 
-import com.andersenlab.carservice.application.command.Command;
-import com.andersenlab.carservice.application.command.PrefixedCommand;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;

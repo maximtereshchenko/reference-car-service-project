@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.command;
+package com.andersenlab.carservice.application;
 
 import com.andersenlab.carservice.port.usecase.AssignRepairerToOrderUseCase;
 
@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
 
-public final class AssignRepairerToOrder extends NamedCommandWithDescription {
+final class AssignRepairerToOrder extends NamedCommandWithDescription {
 
     private final AssignRepairerToOrderUseCase useCase;
 
-    public AssignRepairerToOrder(AssignRepairerToOrderUseCase useCase) {
+    AssignRepairerToOrder(AssignRepairerToOrderUseCase useCase) {
         super("repairer");
         this.useCase = useCase;
     }
