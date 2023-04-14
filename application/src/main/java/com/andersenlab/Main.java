@@ -1,6 +1,6 @@
 package com.andersenlab;
 
-import com.andersenlab.carservice.application.TextInterface;
+import com.andersenlab.carservice.application.HttpInterface;
 import com.andersenlab.carservice.application.storage.OnDiskGarageSlotStore;
 import com.andersenlab.carservice.application.storage.OnDiskOrderStore;
 import com.andersenlab.carservice.application.storage.OnDiskRepairerStore;
@@ -16,7 +16,7 @@ import java.util.Objects;
 final class Main {
 
     public static void main(String[] args) throws URISyntaxException {
-        TextInterface.forModule(module()).run();
+        HttpInterface.forModule(module()).run();
     }
 
     private static CarServiceModule module() throws URISyntaxException {

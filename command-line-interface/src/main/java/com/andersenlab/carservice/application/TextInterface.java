@@ -21,7 +21,7 @@ public final class TextInterface {
         this(inputStream, printStream, List.of(commands));
     }
 
-    TextInterface(InputStream inputStream, PrintStream printStream, Collection<? extends Command> commands) {
+    private TextInterface(InputStream inputStream, PrintStream printStream, Collection<? extends Command> commands) {
         this.inputStream = inputStream;
         this.printStream = printStream;
         this.commands = List.copyOf(commands);

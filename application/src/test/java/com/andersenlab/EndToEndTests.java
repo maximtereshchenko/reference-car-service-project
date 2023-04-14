@@ -1,483 +1,380 @@
 package com.andersenlab;
 
+import com.andersenlab.carservice.application.HttpInterface;
+import com.andersenlab.carservice.application.storage.OnDiskGarageSlotStore;
+import com.andersenlab.carservice.application.storage.OnDiskOrderStore;
+import com.andersenlab.carservice.application.storage.OnDiskRepairerStore;
+import com.andersenlab.carservice.application.storage.StateFile;
+import com.andersenlab.carservice.domain.Module;
+import com.andersenlab.carservice.port.usecase.*;
 import com.andersenlab.extension.PredictableUUIDExtension;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.api.io.TempDir;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.UUID;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.ByteBuffer;
+import java.nio.file.Path;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.*;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Flow;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Execution(ExecutionMode.SAME_THREAD)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(PredictableUUIDExtension.class)
 final class EndToEndTests {
 
-    private static final String[] ARGS = {};
-    private static final String TIMESTAMP_PATTERN = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{2,}Z";
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    private final Instant timestamp = Instant.parse("2000-01-01T00:00:00.00Z");
+    private HttpInterface httpInterface;
 
-    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
+    @BeforeAll
+    void setUp(@TempDir Path temporary) {
+        var stateFile = new StateFile(temporary.resolve("state.json"));
+        httpInterface = HttpInterface.forModule(
+                new Module.Builder()
+                        .withRepairerStore(new OnDiskRepairerStore(stateFile))
+                        .withGarageSlotStore(new OnDiskGarageSlotStore(stateFile))
+                        .withOrderStore(new OnDiskOrderStore(stateFile))
+                        .withClock(Clock.fixed(timestamp, ZoneOffset.UTC))
+                        .build()
+        );
+        httpInterface.run();
+    }
 
-    @BeforeEach
-    void setUp() throws IOException {
-        System.setOut(new PrintStream(output, true, StandardCharsets.UTF_8));
-        Files.deleteIfExists(Paths.get("state.json"));
+    @AfterAll
+    void cleanUp() {
+        httpInterface.stop();
     }
 
     @Test
-    void help() throws URISyntaxException {
-        input(
-                """
-                help
-                exit
-                """
+    @Order(0)
+    void createRepairer(UUID repairerId) throws Exception {
+        var response = post(
+                "/repairers",
+                Map.of(
+                        "id", repairerId.toString(),
+                        "name", "John"
+                ),
+                new TypeReference<UUID>() {}
         );
 
-        Main.main(ARGS);
-
-        var printed = output.toString();
-        assertThat(printed.lines().count()).isGreaterThan(1);
-        assertThat(printed).contains("help - print all available commands");
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body()).isEqualTo(repairerId);
     }
 
     @Test
-    void addRepairerWithoutId() throws URISyntaxException {
-        input(
-                """
-                repairers add John
-                exit
-                """
+    @Order(1)
+    void listRepairers(UUID repairerId) throws Exception {
+        var response = get(
+                "/repairers?sort=id",
+                new TypeReference<Collection<ListRepairersUseCase.RepairerView>>() {}
         );
 
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Repairer added");
-    }
-
-    @Test
-    void addRepairerWithId(UUID repairerId) throws URISyntaxException {
-        input(
-                """
-                repairers add %s John
-                exit
-                """
-                        .formatted(repairerId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Repairer added " + repairerId);
-    }
-
-    @Test
-    void addRepairerWithNonUUIDId() throws URISyntaxException {
-        input(
-                """
-                repairers add this-is-not-uuid John
-                exit
-                """
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Wrong arguments");
-    }
-
-    @Test
-    void listRepairers(UUID repairerId) throws URISyntaxException {
-        input(
-                """
-                repairers add %s John
-                repairers list name
-                exit
-                """
-                        .formatted(repairerId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString())
-                .contains(
-                        "Repairer added " + repairerId,
-                        """
-                        ID, name, status
-                        1) %s, John, AVAILABLE
-                        """
-                                .formatted(repairerId)
-                );
-    }
-
-    @Test
-    void listRepairersWithNotEnoughArguments() throws URISyntaxException {
-        input(
-                """
-                repairers list
-                exit
-                """
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Wrong arguments");
-    }
-
-    @Test
-    void deleteRepairerById(UUID repairerId) throws URISyntaxException {
-        input(
-                """
-                repairers add %s John
-                repairers delete %s
-                exit
-                """
-                        .formatted(repairerId, repairerId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Repairer deleted " + repairerId);
-    }
-
-    @Test
-    void addGarageSlotWithoutId() throws URISyntaxException {
-        input(
-                """
-                garage-slots add
-                exit
-                """
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Garage slot added");
-    }
-
-    @Test
-    void addGarageSlotWithId(UUID garageSlotId) throws URISyntaxException {
-        input(
-                """
-                garage-slots add %s
-                exit
-                """
-                        .formatted(garageSlotId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Garage slot added " + garageSlotId);
-    }
-
-    @Test
-    void listGarageSlots(UUID garageSlotId) throws URISyntaxException {
-        input(
-                """
-                garage-slots add %s
-                garage-slots list id
-                exit
-                """
-                        .formatted(garageSlotId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString())
-                .contains(
-                        "Garage slot added " + garageSlotId,
-                        """
-                        ID, status
-                        1) %s, AVAILABLE
-                        """
-                                .formatted(garageSlotId)
-                );
-    }
-
-    @Test
-    void deleteGarageSlotById(UUID garageSlotId) throws URISyntaxException {
-        input(
-                """
-                garage-slots add %s
-                garage-slots delete %s
-                exit
-                """
-                        .formatted(garageSlotId, garageSlotId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Garage slot deleted " + garageSlotId);
-    }
-
-    @Test
-    void createOrderWithoutId() throws URISyntaxException {
-        input(
-                """
-                orders create 100
-                exit
-                """
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Order created");
-    }
-
-    @Test
-    void createOrderWithId(UUID orderId) throws URISyntaxException {
-        input(
-                """
-                orders create %s 100
-                exit
-                """
-                        .formatted(orderId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Order created " + orderId);
-    }
-
-    @Test
-    void listOrders(UUID orderId) throws URISyntaxException {
-        input(
-                """
-                orders create %s 100
-                orders list id
-                exit
-                """
-                        .formatted(orderId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString())
-                .contains("Order created " + orderId)
-                .containsPattern(
-                        """
-                        ID, price, status, created at, closed at
-                        1\\) %s, 100, IN_PROCESS, %s, NONE
-                        """
-                                .formatted(orderId, TIMESTAMP_PATTERN)
-                );
-    }
-
-    @Test
-    void assignGarageSlotToOrder(UUID garageSlotId, UUID orderId) throws URISyntaxException {
-        input(
-                """
-                garage-slots add %s
-                orders create %s 100
-                orders assign garage-slot %s %s
-                exit
-                """
-                        .formatted(garageSlotId, orderId, orderId, garageSlotId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Garage slot " + garageSlotId + " assigned to order " + orderId);
-    }
-
-    @Test
-    void assignNonExistentGarageSlotToOrder(UUID garageSlotId, UUID orderId) throws URISyntaxException {
-        input(
-                """
-                orders create %s 100
-                orders assign garage-slot %s %s
-                exit
-                """
-                        .formatted(orderId, orderId, garageSlotId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Garage slot was not found");
-    }
-
-    @Test
-    void viewOrder(UUID orderId) throws URISyntaxException {
-        input(
-                """
-                orders create %s 100
-                orders view %s
-                exit
-                """
-                        .formatted(orderId, orderId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString())
-                .containsPattern(
-                        """
-                        ID: %s
-                        Price: 100
-                        Status: IN_PROCESS
-                        Garage slot: NONE
-                        Repairers: NONE
-                        Created: %s
-                        Closed: NONE
-                        """
-                                .formatted(orderId, TIMESTAMP_PATTERN)
-                );
-    }
-
-    @Test
-    void assignRepairerToOrder(UUID repairerId, UUID orderId) throws URISyntaxException {
-        input(
-                """
-                repairers add %s John
-                orders create %s 100
-                orders assign repairer %s %s
-                exit
-                """
-                        .formatted(repairerId, orderId, orderId, repairerId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Repairer " + repairerId + " assigned to order " + orderId);
-    }
-
-    @Test
-    void completeOrder(UUID repairerId, UUID garageSlotId, UUID orderId) throws URISyntaxException {
-        input(
-                """
-                repairers add %s John
-                garage-slots add %s
-                orders create %s 100
-                orders assign repairer %s %s
-                orders assign garage-slot %s %s
-                orders complete %s
-                exit
-                """
-                        .formatted(
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body())
+                .singleElement()
+                .isEqualTo(
+                        new ListRepairersUseCase.RepairerView(
                                 repairerId,
-                                garageSlotId,
-                                orderId,
-                                orderId, repairerId,
-                                orderId, garageSlotId,
-                                orderId
+                                "John",
+                                ListRepairersUseCase.RepairerStatus.AVAILABLE
                         )
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Order completed " + orderId);
-    }
-
-    @Test
-    void cancelOrder(UUID orderId) throws URISyntaxException {
-        input(
-                """
-                orders create %s 100
-                orders cancel %s
-                exit
-                """
-                        .formatted(orderId, orderId)
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString()).contains("Order canceled " + orderId);
-    }
-
-    @Test
-    void fullScenario(UUID garageSlotId, UUID repairerId, UUID orderId1, UUID orderId2) throws URISyntaxException {
-        input(
-                """
-                garage-slots add %s
-                garage-slots list id
-                repairers add %s John
-                repairers list id
-                orders create %s 100
-                orders cancel %s
-                orders create %s 100
-                orders assign garage-slot %s %s
-                orders assign repairer %s %s
-                orders complete %s
-                orders view %s
-                orders list id
-                garage-slots delete %s
-                repairers delete %s
-                exit
-                """
-                        .formatted(
-                                garageSlotId,
-                                repairerId,
-                                orderId1,
-                                orderId1,
-                                orderId2,
-                                orderId2, garageSlotId,
-                                orderId2, repairerId,
-                                orderId2,
-                                orderId2,
-                                garageSlotId,
-                                repairerId
-                        )
-        );
-
-        Main.main(ARGS);
-
-        assertThat(output.toString())
-                .contains(
-                        "Garage slot added " + garageSlotId,
-                        """
-                        ID, status
-                        1) %s, AVAILABLE
-                        """
-                                .formatted(garageSlotId),
-                        "Repairer added " + repairerId,
-                        """
-                        ID, name, status
-                        1) %s, John, AVAILABLE
-                        """
-                                .formatted(repairerId),
-                        "Order created " + orderId1,
-                        "Order canceled " + orderId1,
-                        "Order created " + orderId2,
-                        "Garage slot %s assigned to order %s".formatted(garageSlotId, orderId2),
-                        "Repairer %s assigned to order %s".formatted(repairerId, orderId2),
-                        "Order completed " + orderId2
-                )
-                .containsPattern(
-                        """
-                        ID: %s
-                        Price: 100
-                        Status: COMPLETED
-                        Garage slot: %s
-                        Repairers: %s
-                        Created: %s
-                        Closed: %s
-                        """
-                                .formatted(orderId2, garageSlotId, repairerId, TIMESTAMP_PATTERN, TIMESTAMP_PATTERN)
-                )
-                .containsPattern(
-                        """
-                        ID, price, status, created at, closed at
-                        1\\) %s, 100, CANCELED, %s, %s
-                        2\\) %s, 100, COMPLETED, %s, %s
-                        """
-                                .formatted(
-                                        orderId1, TIMESTAMP_PATTERN, TIMESTAMP_PATTERN,
-                                        orderId2, TIMESTAMP_PATTERN, TIMESTAMP_PATTERN
-                                )
-                )
-                .contains(
-                        "Garage slot deleted " + garageSlotId,
-                        "Repairer deleted " + repairerId
                 );
     }
 
-    private void input(String commands) {
-        System.setIn(new ByteArrayInputStream(commands.getBytes(StandardCharsets.UTF_8)));
+    @Test
+    @Order(2)
+    void createGarageSlot(UUID garageSlot) throws Exception {
+        var response = post(
+                "/garage-slots",
+                Map.of("id", garageSlot.toString()),
+                new TypeReference<UUID>() {}
+        );
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body()).isEqualTo(garageSlot);
+    }
+
+    @Test
+    @Order(3)
+    void listGarageSlots(UUID garageSlot) throws Exception {
+        var response = get(
+                "/garage-slots?sort=id",
+                new TypeReference<Collection<ListGarageSlotsUseCase.GarageSlotView>>() {}
+        );
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body())
+                .singleElement()
+                .isEqualTo(
+                        new ListGarageSlotsUseCase.GarageSlotView(
+                                garageSlot,
+                                ListGarageSlotsUseCase.GarageSlotStatus.AVAILABLE
+                        )
+                );
+    }
+
+    @Test
+    @Order(4)
+    void createOrder(UUID orderId1) throws Exception {
+        var response = post(
+                "/orders",
+                Map.of(
+                        "id", orderId1.toString(),
+                        "price", "100"
+                ),
+                new TypeReference<UUID>() {}
+        );
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body()).isEqualTo(orderId1);
+    }
+
+    @Test
+    @Order(5)
+    void cancelOrder(UUID orderId1) throws Exception {
+        var response = post("/orders/cancel", Map.of("id", orderId1.toString()));
+
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    @Order(6)
+    void assignGarageSlot(UUID orderId2, UUID garageSlot) throws Exception {
+        post(
+                "/orders",
+                Map.of(
+                        "id", orderId2.toString(),
+                        "price", "100"
+                )
+        );
+        var response = post(
+                "/orders/assign/garage-slot",
+                Map.of(
+                        "id", orderId2.toString(),
+                        "garageSlotId", garageSlot.toString()
+                )
+        );
+
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    @Order(7)
+    void assignRepairer(UUID orderId2, UUID repairerId) throws Exception {
+        var response = post(
+                "/orders/assign/repairer",
+                Map.of(
+                        "id", orderId2.toString(),
+                        "repairerId", repairerId.toString()
+                )
+        );
+
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    @Order(8)
+    void completeOrder(UUID orderId2) throws Exception {
+        var response = post(
+                "/orders/complete",
+                Map.of("id", orderId2.toString())
+        );
+
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    @Order(9)
+    void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId) throws Exception {
+        var response = get(
+                "/orders/" + orderId2,
+                new TypeReference<ViewOrderUseCase.OrderView>() {}
+        );
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body())
+                .isEqualTo(
+                        new ViewOrderUseCase.OrderView(
+                                orderId2,
+                                100,
+                                OrderStatus.COMPLETED,
+                                Optional.of(garageSlotId),
+                                Set.of(repairerId),
+                                timestamp,
+                                Optional.of(timestamp)
+                        )
+                );
+    }
+
+    @Test
+    @Order(10)
+    void listOrders(UUID orderId1, UUID orderId2) throws Exception {
+        var response = get(
+                "/orders?sort=id",
+                new TypeReference<Collection<ListOrdersUseCase.OrderView>>() {}
+        );
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body())
+                .containsExactly(
+                        new ListOrdersUseCase.OrderView(
+                                orderId1,
+                                100,
+                                OrderStatus.CANCELED,
+                                timestamp,
+                                Optional.of(timestamp)
+                        ),
+                        new ListOrdersUseCase.OrderView(
+                                orderId2,
+                                100,
+                                OrderStatus.COMPLETED,
+                                timestamp,
+                                Optional.of(timestamp)
+                        )
+                );
+    }
+
+    @Test
+    @Order(11)
+    void deleteRepairer(UUID repairerId) throws Exception {
+        var response = delete("/repairers/" + repairerId);
+
+        assertThat(response.statusCode()).isEqualTo(204);
+    }
+
+    @Test
+    @Order(11)
+    void deleteGarageSlot(UUID garageSlotId) throws Exception {
+        var response = delete("/garage-slots/" + garageSlotId);
+
+        assertThat(response.statusCode()).isEqualTo(204);
+    }
+
+    private HttpResponse<Void> delete(String uri) throws Exception {
+        return HttpClient.newHttpClient()
+                .send(
+                        request(uri)
+                                .DELETE()
+                                .build(),
+                        HttpResponse.BodyHandlers.discarding()
+                );
+    }
+
+    private <T> HttpResponse<T> post(String uri, Map<String, String> body, TypeReference<T> typeReference)
+            throws Exception {
+        return HttpClient.newHttpClient()
+                .send(
+                        request(uri)
+                                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body)))
+                                .build(),
+                        new JsonBodyHandler<>(objectMapper, typeReference)
+                );
+    }
+
+    private HttpResponse<Void> post(String uri, Map<String, String> body) throws Exception {
+        return HttpClient.newHttpClient()
+                .send(
+                        request(uri)
+                                .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body)))
+                                .build(),
+                        HttpResponse.BodyHandlers.discarding()
+                );
+    }
+
+    private <T> HttpResponse<T> get(String uri, TypeReference<T> typeReference) throws Exception {
+        return HttpClient.newHttpClient()
+                .send(
+                        request(uri)
+                                .GET()
+                                .build(),
+                        new JsonBodyHandler<>(objectMapper, typeReference)
+                );
+    }
+
+    private HttpRequest.Builder request(String uri) {
+        return HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080" + uri))
+                .header("Content-Type", "application/json");
+    }
+
+    private static final class JsonBodyHandler<T> implements HttpResponse.BodyHandler<T> {
+
+        private final ObjectMapper objectMapper;
+        private final TypeReference<T> typeReference;
+        private final HttpResponse.BodyHandler<String> original = HttpResponse.BodyHandlers.ofString();
+
+        private JsonBodyHandler(ObjectMapper objectMapper, TypeReference<T> typeReference) {
+            this.objectMapper = objectMapper;
+            this.typeReference = typeReference;
+        }
+
+        @Override
+        public HttpResponse.BodySubscriber<T> apply(HttpResponse.ResponseInfo responseInfo) {
+            return new JsonBodySubscriber<>(objectMapper, typeReference, original.apply(responseInfo));
+        }
+
+        private static final class JsonBodySubscriber<T> implements HttpResponse.BodySubscriber<T> {
+
+            private final ObjectMapper objectMapper;
+            private final TypeReference<T> typeReference;
+            private final HttpResponse.BodySubscriber<String> original;
+
+            private JsonBodySubscriber(
+                    ObjectMapper objectMapper,
+                    TypeReference<T> typeReference,
+                    HttpResponse.BodySubscriber<String> original
+            ) {
+                this.objectMapper = objectMapper;
+                this.typeReference = typeReference;
+                this.original = original;
+            }
+
+            @Override
+            public CompletionStage<T> getBody() {
+                return original.getBody()
+                        .thenApply(this::json);
+            }
+
+            @Override
+            public void onSubscribe(Flow.Subscription subscription) {
+                original.onSubscribe(subscription);
+            }
+
+            @Override
+            public void onNext(List<ByteBuffer> item) {
+                original.onNext(item);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                original.onError(throwable);
+            }
+
+            @Override
+            public void onComplete() {
+                original.onComplete();
+            }
+
+            private T json(String raw) {
+                try {
+                    return objectMapper.readValue(raw, typeReference);
+                } catch (JsonProcessingException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
     }
 }
