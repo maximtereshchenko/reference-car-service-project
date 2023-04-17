@@ -43,11 +43,15 @@ public final class JettyExtension implements BeforeAllCallback, AfterAllCallback
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        return parameterContext.getParameter().getType() == Instant.class;
+        var type = parameterContext.getParameter().getType();
+        return type == Instant.class || type == JsonHttpClient.class;
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return timestamp;
+        if (parameterContext.getParameter().getType() == Instant.class) {
+            return timestamp;
+        }
+        return new JsonHttpClient();
     }
 }
