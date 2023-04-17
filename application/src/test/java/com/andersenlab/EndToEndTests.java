@@ -13,7 +13,6 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith({PredictableUUIDExtension.class, JettyExtension.class})
 final class EndToEndTests {
