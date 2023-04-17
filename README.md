@@ -32,3 +32,4 @@ state.
 * **stage-1** - All required use cases implemented. Unit tests in place. CI configured
 * **stage-2** - Application state saved on disk instead of keeping it in memory. Application can be configured using '
   application.toml' file
+* **stage-3** - Application can be interacted with through HTTP requests instead of console interface
