@@ -1,5 +1,6 @@
 package com.andersenlab;
 
+import com.andersenlab.application.storage.ThreadSafeOrderStore;
 import com.andersenlab.application.storage.ThreadSafeRepairerStore;
 import com.andersenlab.carservice.application.HttpInterface;
 import com.andersenlab.carservice.application.storage.OnDiskGarageSlotStore;
@@ -26,7 +27,7 @@ final class Main {
         return new Module.Builder()
                 .withRepairerStore(new ThreadSafeRepairerStore(new OnDiskRepairerStore(stateFile)))
                 .withGarageSlotStore(new OnDiskGarageSlotStore(stateFile))
-                .withOrderStore(new OnDiskOrderStore(stateFile))
+                .withOrderStore(new ThreadSafeOrderStore(new OnDiskOrderStore(stateFile)))
                 .withClock(Clock.systemDefaultZone())
                 .garageSlotAdditionEnabled(settings.isGarageSlotAdditionEnabled())
                 .garageSlotDeletionEnabled(settings.isGarageSlotDeletionEnabled())
