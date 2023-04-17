@@ -1,29 +1,20 @@
 package com.andersenlab;
 
-import com.andersenlab.carservice.application.HttpInterface;
-import com.andersenlab.carservice.application.storage.OnDiskGarageSlotStore;
-import com.andersenlab.carservice.application.storage.OnDiskOrderStore;
-import com.andersenlab.carservice.application.storage.OnDiskRepairerStore;
-import com.andersenlab.carservice.application.storage.StateFile;
-import com.andersenlab.carservice.domain.Module;
 import com.andersenlab.carservice.port.usecase.*;
+import com.andersenlab.extension.JettyExtension;
 import com.andersenlab.extension.PredictableUUIDExtension;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
-import java.nio.file.Path;
-import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Flow;
@@ -32,31 +23,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ExtendWith(PredictableUUIDExtension.class)
+@ExtendWith({PredictableUUIDExtension.class, JettyExtension.class})
 final class EndToEndTests {
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-    private final Instant timestamp = Instant.parse("2000-01-01T00:00:00.00Z");
-    private HttpInterface httpInterface;
-
-    @BeforeAll
-    void setUp(@TempDir Path temporary) {
-        var stateFile = new StateFile(temporary.resolve("state.json"));
-        httpInterface = HttpInterface.forModule(
-                new Module.Builder()
-                        .withRepairerStore(new OnDiskRepairerStore(stateFile))
-                        .withGarageSlotStore(new OnDiskGarageSlotStore(stateFile))
-                        .withOrderStore(new OnDiskOrderStore(stateFile))
-                        .withClock(Clock.fixed(timestamp, ZoneOffset.UTC))
-                        .build()
-        );
-        httpInterface.run();
-    }
-
-    @AfterAll
-    void cleanUp() {
-        httpInterface.stop();
-    }
 
     @Test
     @Order(0)
@@ -67,7 +37,8 @@ final class EndToEndTests {
                         "id", repairerId.toString(),
                         "name", "John"
                 ),
-                new TypeReference<UUID>() {}
+                new TypeReference<UUID>() {
+                }
         );
 
         assertThat(response.statusCode()).isEqualTo(200);
@@ -93,7 +64,8 @@ final class EndToEndTests {
     void listRepairers(UUID repairerId) throws Exception {
         var response = get(
                 "/repairers?sort=id",
-                new TypeReference<Collection<ListRepairersUseCase.RepairerView>>() {}
+                new TypeReference<Collection<ListRepairersUseCase.RepairerView>>() {
+                }
         );
 
         assertThat(response.statusCode()).isEqualTo(200);
@@ -114,7 +86,8 @@ final class EndToEndTests {
         var response = post(
                 "/garage-slots",
                 Map.of("id", garageSlot.toString()),
-                new TypeReference<UUID>() {}
+                new TypeReference<UUID>() {
+                }
         );
 
         assertThat(response.statusCode()).isEqualTo(200);
@@ -126,7 +99,8 @@ final class EndToEndTests {
     void listGarageSlots(UUID garageSlot) throws Exception {
         var response = get(
                 "/garage-slots?sort=id",
-                new TypeReference<Collection<ListGarageSlotsUseCase.GarageSlotView>>() {}
+                new TypeReference<Collection<ListGarageSlotsUseCase.GarageSlotView>>() {
+                }
         );
 
         assertThat(response.statusCode()).isEqualTo(200);
@@ -149,7 +123,8 @@ final class EndToEndTests {
                         "id", orderId1.toString(),
                         "price", "100"
                 ),
-                new TypeReference<UUID>() {}
+                new TypeReference<UUID>() {
+                }
         );
 
         assertThat(response.statusCode()).isEqualTo(200);
@@ -212,10 +187,11 @@ final class EndToEndTests {
 
     @Test
     @Order(10)
-    void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId) throws Exception {
+    void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId, Instant timestamp) throws Exception {
         var response = get(
                 "/orders/" + orderId2,
-                new TypeReference<ViewOrderUseCase.OrderView>() {}
+                new TypeReference<ViewOrderUseCase.OrderView>() {
+                }
         );
 
         assertThat(response.statusCode()).isEqualTo(200);
@@ -235,10 +211,11 @@ final class EndToEndTests {
 
     @Test
     @Order(11)
-    void listOrders(UUID orderId1, UUID orderId2) throws Exception {
+    void listOrders(UUID orderId1, UUID orderId2, Instant timestamp) throws Exception {
         var response = get(
                 "/orders?sort=id",
-                new TypeReference<Collection<ListOrdersUseCase.OrderView>>() {}
+                new TypeReference<Collection<ListOrdersUseCase.OrderView>>() {
+                }
         );
 
         assertThat(response.statusCode()).isEqualTo(200);
