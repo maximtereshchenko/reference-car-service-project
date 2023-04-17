@@ -21,7 +21,7 @@ This is a reference project for Java intensive course.
 ## How to run?
 
 ```bash
-./gradlew --console plain -q run
+./gradlew application:run
 ```
 
 ## Tags

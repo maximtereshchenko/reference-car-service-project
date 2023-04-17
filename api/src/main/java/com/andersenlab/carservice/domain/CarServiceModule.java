@@ -3,6 +3,7 @@ package com.andersenlab.carservice.domain;
 import com.andersenlab.carservice.port.usecase.*;
 
 public interface CarServiceModule {
+
     AddRepairerUseCase addRepairerUseCase();
 
     ListRepairersUseCase listRepairersUserCase();

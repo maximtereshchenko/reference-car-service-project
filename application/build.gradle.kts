@@ -3,7 +3,7 @@ plugins {
 }
 
 application {
-    mainClass.set("com.andersenlab.carservice.Main")
+    mainClass.set("com.andersenlab.Main")
 }
 
 dependencies {
