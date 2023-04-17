@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,10 +32,12 @@ final class ThreadSafetyTests {
                 .toList();
 
         latch.countDown();
+        executorService.shutdown();
 
         for (var future : futures) {
             future.get().onComplete();
         }
+        executorService.awaitTermination(1, TimeUnit.SECONDS);
 
         var response = client.get(
                 "/garage-slots?sort=id",
