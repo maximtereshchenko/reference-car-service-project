@@ -1,11 +1,8 @@
 package com.andersenlab.extension;
 
+import com.andersenlab.Main;
+import com.andersenlab.StaticSettings;
 import com.andersenlab.carservice.application.HttpInterface;
-import com.andersenlab.carservice.application.storage.OnDiskGarageSlotStore;
-import com.andersenlab.carservice.application.storage.OnDiskOrderStore;
-import com.andersenlab.carservice.application.storage.OnDiskRepairerStore;
-import com.andersenlab.carservice.application.storage.StateFile;
-import com.andersenlab.carservice.domain.Module;
 import org.junit.jupiter.api.extension.*;
 
 import java.nio.file.Files;
@@ -23,14 +20,9 @@ public final class JettyExtension implements BeforeAllCallback, AfterAllCallback
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
         temporaryDirectory = Files.createTempDirectory(null);
-        var stateFile = new StateFile(temporaryDirectory.resolve("state.json"));
-        httpInterface = HttpInterface.forModule(
-                new Module.Builder()
-                        .withRepairerStore(new OnDiskRepairerStore(stateFile))
-                        .withGarageSlotStore(new OnDiskGarageSlotStore(stateFile))
-                        .withOrderStore(new OnDiskOrderStore(stateFile))
-                        .withClock(Clock.fixed(timestamp, ZoneOffset.UTC))
-                        .build()
+        httpInterface = Main.httpInterface(
+                new StaticSettings(temporaryDirectory.resolve("state.json")),
+                Clock.fixed(timestamp, ZoneOffset.UTC)
         );
         httpInterface.run();
     }

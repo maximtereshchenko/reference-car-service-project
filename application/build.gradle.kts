@@ -21,6 +21,7 @@ dependencies {
     testImplementation(libs.jackson.datatype.jdk8)
     testImplementation(libs.jackson.datatype.jsr310)
     testImplementation(testFixtures(project(":common")))
+    testImplementation(testFixtures(project(":settings")))
 }
 
 tasks {
