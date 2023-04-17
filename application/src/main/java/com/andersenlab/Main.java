@@ -1,5 +1,6 @@
 package com.andersenlab;
 
+import com.andersenlab.application.storage.ThreadSafeRepairerStore;
 import com.andersenlab.carservice.application.HttpInterface;
 import com.andersenlab.carservice.application.storage.OnDiskGarageSlotStore;
 import com.andersenlab.carservice.application.storage.OnDiskOrderStore;
@@ -23,7 +24,7 @@ final class Main {
         var settings = settings();
         var stateFile = new StateFile(settings.stateFilePath());
         return new Module.Builder()
-                .withRepairerStore(new OnDiskRepairerStore(stateFile))
+                .withRepairerStore(new ThreadSafeRepairerStore(new OnDiskRepairerStore(stateFile)))
                 .withGarageSlotStore(new OnDiskGarageSlotStore(stateFile))
                 .withOrderStore(new OnDiskOrderStore(stateFile))
                 .withClock(Clock.systemDefaultZone())
