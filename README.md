@@ -33,3 +33,4 @@ state.
 * **stage-2** - Application state saved on disk instead of keeping it in memory. Application can be configured using '
   application.toml' file
 * **stage-3** - Application can be interacted with through HTTP requests instead of console interface
+* **stage-4** - Application state saved in database using JDBC instead of disk.
