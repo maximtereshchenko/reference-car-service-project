@@ -9,10 +9,14 @@ application {
 dependencies {
     implementation(project(":api"))
     implementation(project(":domain"))
-    implementation(project(":storage"))
+    implementation(project(":on-disk-storage"))
+    implementation(project(":jdbc-storage"))
     implementation(project(":common"))
     implementation(project(":http-interface"))
     implementation(project(":settings"))
+    implementation(libs.h2)
+    implementation(libs.hikari)
+    implementation(libs.flyway)
 
     testCompileOnly(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
@@ -25,9 +29,6 @@ dependencies {
 }
 
 tasks {
-    named<JavaExec>("run") {
-        standardInput = System.`in`
-    }
     test {
         useJUnitPlatform()
     }

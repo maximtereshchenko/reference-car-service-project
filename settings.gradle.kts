@@ -2,7 +2,8 @@ rootProject.name = "reference-car-service-project"
 
 include("domain")
 include("api")
-include("storage")
+include("on-disk-storage")
+include("jdbc-storage")
 include("command-line-interface")
 include("application")
 include("settings")
@@ -37,6 +38,9 @@ dependencyResolutionManagement {
             library("logback", "ch.qos.logback:logback-classic:1.4.6")
             library("tomlj", "org.tomlj:tomlj:1.1.0")
             library("jetty", "org.eclipse.jetty:jetty-webapp:11.0.14")
+            library("h2", "com.h2database:h2:2.1.214")
+            library("hikari", "com.zaxxer:HikariCP:5.0.1")
+            library("flyway", "org.flywaydb:flyway-core:9.16.3")
         }
     }
 }

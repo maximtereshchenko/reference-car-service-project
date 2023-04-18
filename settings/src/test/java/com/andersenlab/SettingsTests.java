@@ -14,6 +14,7 @@ class SettingsTests {
         var settings = TomlSettings.from(Paths.get("src/test/resources/test.toml"));
 
         assertThat(settings.stateFilePath()).isEqualTo(Paths.get("state.json"));
+        assertThat(settings.jdbcUrl()).isEqualTo("url");
         assertThat(settings.isGarageSlotAdditionEnabled()).isFalse();
         assertThat(settings.isGarageSlotDeletionEnabled()).isTrue();
     }

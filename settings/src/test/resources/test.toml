@@ -1,5 +1,6 @@
 [application]
 stateFile.path = "state.json"
+jdbc.url = "url"
 [application.garageSlots]
 addition.enabled = false
 deletion.enabled = true

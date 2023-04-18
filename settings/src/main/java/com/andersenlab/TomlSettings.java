@@ -15,6 +15,7 @@ public final class TomlSettings implements Settings {
     private static final String STATE_FILE_PATH_PROPERTY = "application.stateFile.path";
     private static final String GARAGE_SLOT_ADDITION_ENABLED_PROPERTY = "application.garageSlots.addition.enabled";
     private static final String GARAGE_SLOT_DELETION_ENABLED_PROPERTY = "application.garageSlots.deletion.enabled";
+    private static final String JDBC_URL_PROPERTY = "application.jdbc.url";
 
     private final TomlTable table;
 
@@ -49,13 +50,19 @@ public final class TomlSettings implements Settings {
         return !(
                 tomlTable.contains(STATE_FILE_PATH_PROPERTY) &&
                         tomlTable.contains(GARAGE_SLOT_ADDITION_ENABLED_PROPERTY) &&
-                        tomlTable.contains(GARAGE_SLOT_DELETION_ENABLED_PROPERTY)
+                        tomlTable.contains(GARAGE_SLOT_DELETION_ENABLED_PROPERTY) &&
+                        tomlTable.contains(JDBC_URL_PROPERTY)
         );
     }
 
     @Override
     public Path stateFilePath() {
         return Paths.get(Objects.requireNonNull(table.getString(STATE_FILE_PATH_PROPERTY)));
+    }
+
+    @Override
+    public String jdbcUrl() {
+        return table.getString(JDBC_URL_PROPERTY);
     }
 
     @Override

@@ -6,6 +6,8 @@ public interface Settings {
 
     Path stateFilePath();
 
+    String jdbcUrl();
+
     boolean isGarageSlotAdditionEnabled();
 
     boolean isGarageSlotDeletionEnabled();

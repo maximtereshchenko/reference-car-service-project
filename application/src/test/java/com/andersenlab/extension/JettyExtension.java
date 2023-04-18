@@ -1,10 +1,10 @@
 package com.andersenlab.extension;
 
-import com.andersenlab.Main;
+import com.andersenlab.Application;
 import com.andersenlab.StaticSettings;
-import com.andersenlab.carservice.application.HttpInterface;
 import org.junit.jupiter.api.extension.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
@@ -15,21 +15,21 @@ public final class JettyExtension implements BeforeAllCallback, AfterAllCallback
 
     private final Instant timestamp = Instant.parse("2000-01-01T00:00:00.00Z");
     private Path temporaryDirectory;
-    private HttpInterface httpInterface;
+    private Application application;
 
     @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
+    public void beforeAll(ExtensionContext context) throws IOException {
         temporaryDirectory = Files.createTempDirectory(null);
-        httpInterface = Main.httpInterface(
+        application = Application.from(
                 new StaticSettings(temporaryDirectory.resolve("state.json")),
                 Clock.fixed(timestamp, ZoneOffset.UTC)
         );
-        httpInterface.run();
+        application.run();
     }
 
     @Override
     public void afterAll(ExtensionContext context) {
-        httpInterface.stop();
+        application.stop();
         temporaryDirectory.toFile().deleteOnExit();
     }
 
