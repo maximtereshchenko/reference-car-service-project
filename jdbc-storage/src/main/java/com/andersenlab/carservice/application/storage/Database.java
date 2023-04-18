@@ -15,7 +15,7 @@ public final class Database {
         this.dataSource = dataSource;
     }
 
-    <T> T transactionally(Supplier<T> action) {
+    <T> T transactional(Supplier<T> action) {
         try (var connection = dataSource.getConnection()) {
             connections.set(connection);
             return action.get();
@@ -26,8 +26,8 @@ public final class Database {
         }
     }
 
-    void transactionally(Runnable action) {
-        transactionally(() -> {
+    void transactional(Runnable action) {
+        transactional(() -> {
             action.run();
             return null;
         });

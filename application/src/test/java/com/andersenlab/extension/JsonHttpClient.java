@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -19,50 +20,69 @@ public final class JsonHttpClient {
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
-    public HttpResponse<Void> delete(String uri) throws Exception {
-        return httpClient.send(
-                request(uri)
-                        .DELETE()
-                        .build(),
-                HttpResponse.BodyHandlers.discarding()
-        );
+    public HttpResponse<Void> delete(String uri) {
+        try {
+            return httpClient.send(
+                    request(uri)
+                            .DELETE()
+                            .build(),
+                    HttpResponse.BodyHandlers.discarding()
+            );
+        } catch (IOException | InterruptedException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
-    public <T> HttpResponse<T> post(String uri, Map<String, String> body, TypeReference<T> typeReference)
-            throws Exception {
-        return httpClient.send(
-                request(uri)
-                        .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body)))
-                        .build(),
-                new JsonBodyHandler<>(objectMapper, typeReference)
-        );
+    public <T> HttpResponse<T> post(String uri, Map<String, String> body, TypeReference<T> typeReference) {
+        try {
+            return httpClient.send(
+                    request(uri)
+                            .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body)))
+                            .build(),
+                    new JsonBodyHandler<>(objectMapper, typeReference)
+            );
+        } catch (IOException | InterruptedException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
-    public HttpResponse<Void> post(String uri, Map<String, String> body) throws Exception {
-        return httpClient.send(
-                request(uri)
-                        .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body)))
-                        .build(),
-                HttpResponse.BodyHandlers.discarding()
-        );
+    public HttpResponse<Void> post(String uri, Map<String, String> body) {
+        try {
+            return httpClient.send(
+                    request(uri)
+                            .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body)))
+                            .build(),
+                    HttpResponse.BodyHandlers.discarding()
+            );
+        } catch (IOException | InterruptedException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
-    public <T> HttpResponse<T> get(String uri, TypeReference<T> typeReference) throws Exception {
-        return httpClient.send(
-                request(uri)
-                        .GET()
-                        .build(),
-                new JsonBodyHandler<>(objectMapper, typeReference)
-        );
+    public <T> HttpResponse<T> get(String uri, TypeReference<T> typeReference) {
+        try {
+            return httpClient.send(
+                    request(uri)
+                            .GET()
+                            .build(),
+                    new JsonBodyHandler<>(objectMapper, typeReference)
+            );
+        } catch (IOException | InterruptedException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
-    public HttpResponse<Void> get(String uri) throws Exception {
-        return httpClient.send(
-                request(uri)
-                        .GET()
-                        .build(),
-                HttpResponse.BodyHandlers.discarding()
-        );
+    public HttpResponse<Void> get(String uri) {
+        try {
+            return httpClient.send(
+                    request(uri)
+                            .GET()
+                            .build(),
+                    HttpResponse.BodyHandlers.discarding()
+            );
+        } catch (IOException | InterruptedException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     private HttpRequest.Builder request(String uri) {

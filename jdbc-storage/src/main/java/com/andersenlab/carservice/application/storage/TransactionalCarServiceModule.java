@@ -15,48 +15,48 @@ public final class TransactionalCarServiceModule implements CarServiceModule {
 
     @Override
     public AddRepairerUseCase addRepairerUseCase() {
-        return (id, name) -> database.transactionally(() -> original.addRepairerUseCase().add(id, name));
+        return (id, name) -> database.transactional(() -> original.addRepairerUseCase().add(id, name));
     }
 
     @Override
     public ListRepairersUseCase listRepairersUserCase() {
-        return sort -> database.transactionally(() -> original.listRepairersUserCase().list(sort));
+        return sort -> database.transactional(() -> original.listRepairersUserCase().list(sort));
     }
 
     @Override
     public DeleteRepairerUseCase deleteRepairerUseCase() {
-        return id -> database.transactionally(() -> original.deleteRepairerUseCase().delete(id));
+        return id -> database.transactional(() -> original.deleteRepairerUseCase().delete(id));
     }
 
     @Override
     public AddGarageSlotUseCase addGarageSlotUseCase() {
-        return id -> database.transactionally(() -> original.addGarageSlotUseCase().add(id));
+        return id -> database.transactional(() -> original.addGarageSlotUseCase().add(id));
     }
 
     @Override
     public ListGarageSlotsUseCase listGarageSlotsUseCase() {
-        return sort -> database.transactionally(() -> original.listGarageSlotsUseCase().list(sort));
+        return sort -> database.transactional(() -> original.listGarageSlotsUseCase().list(sort));
     }
 
     @Override
     public DeleteGarageSlotUseCase deleteGarageSlotUseCase() {
-        return id -> database.transactionally(() -> original.deleteGarageSlotUseCase().delete(id));
+        return id -> database.transactional(() -> original.deleteGarageSlotUseCase().delete(id));
     }
 
     @Override
     public CreateOrderUseCase createOrderUseCase() {
-        return (id, price) -> database.transactionally(() -> original.createOrderUseCase().create(id, price));
+        return (id, price) -> database.transactional(() -> original.createOrderUseCase().create(id, price));
     }
 
     @Override
     public ListOrdersUseCase listOrdersUseCase() {
-        return sort -> database.transactionally(() -> original.listOrdersUseCase().list(sort));
+        return sort -> database.transactional(() -> original.listOrdersUseCase().list(sort));
     }
 
     @Override
     public AssignGarageSlotToOrderUseCase assignGarageSlotToOrderUseCase() {
         return (orderId, garageSlotId) ->
-                database.transactionally(() ->
+                database.transactional(() ->
                         original.assignGarageSlotToOrderUseCase()
                                 .assignGarageSlot(orderId, garageSlotId)
                 );
@@ -64,13 +64,13 @@ public final class TransactionalCarServiceModule implements CarServiceModule {
 
     @Override
     public ViewOrderUseCase viewOrderUseCase() {
-        return id -> database.transactionally(() -> original.viewOrderUseCase().view(id));
+        return id -> database.transactional(() -> original.viewOrderUseCase().view(id));
     }
 
     @Override
     public AssignRepairerToOrderUseCase assignRepairerToOrderUseCase() {
         return (orderId, repairerId) ->
-                database.transactionally(() ->
+                database.transactional(() ->
                         original.assignRepairerToOrderUseCase()
                                 .assignRepairer(orderId, repairerId)
                 );
@@ -78,11 +78,11 @@ public final class TransactionalCarServiceModule implements CarServiceModule {
 
     @Override
     public CompleteOrderUseCase completeOrderUseCase() {
-        return id -> database.transactionally(() -> original.completeOrderUseCase().complete(id));
+        return id -> database.transactional(() -> original.completeOrderUseCase().complete(id));
     }
 
     @Override
     public CancelOrderUseCase cancelOrderUseCase() {
-        return id -> database.transactionally(() -> original.cancelOrderUseCase().cancel(id));
+        return id -> database.transactional(() -> original.cancelOrderUseCase().cancel(id));
     }
 }

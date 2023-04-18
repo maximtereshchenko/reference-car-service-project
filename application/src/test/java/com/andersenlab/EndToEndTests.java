@@ -22,15 +22,14 @@ final class EndToEndTests {
 
     @Test
     @Order(0)
-    void createRepairer(UUID repairerId, JsonHttpClient client) throws Exception {
+    void createRepairer(UUID repairerId, JsonHttpClient client) {
         var response = client.post(
                 "/repairers",
                 Map.of(
                         "id", repairerId.toString(),
                         "name", "John"
                 ),
-                new TypeReference<UUID>() {
-                }
+                new TypeReference<UUID>() {}
         );
 
         assertThat(response.statusCode()).isEqualTo(200);
@@ -39,7 +38,7 @@ final class EndToEndTests {
 
     @Test
     @Order(1)
-    void createRepairerWithSameId(UUID repairerId, JsonHttpClient client) throws Exception {
+    void createRepairerWithSameId(UUID repairerId, JsonHttpClient client) {
         var response = client.post(
                 "/repairers",
                 Map.of(
@@ -53,7 +52,7 @@ final class EndToEndTests {
 
     @Test
     @Order(2)
-    void listRepairers(UUID repairerId, JsonHttpClient client) throws Exception {
+    void listRepairers(UUID repairerId, JsonHttpClient client) {
         var response = client.get(
                 "/repairers?sort=id",
                 new TypeReference<Collection<ListRepairersUseCase.RepairerView>>() {}
@@ -73,7 +72,7 @@ final class EndToEndTests {
 
     @Test
     @Order(3)
-    void createGarageSlot(UUID garageSlot, JsonHttpClient client) throws Exception {
+    void createGarageSlot(UUID garageSlot, JsonHttpClient client) {
         var response = client.post(
                 "/garage-slots",
                 Map.of("id", garageSlot.toString()),
@@ -86,7 +85,7 @@ final class EndToEndTests {
 
     @Test
     @Order(4)
-    void listGarageSlots(UUID garageSlot, JsonHttpClient client) throws Exception {
+    void listGarageSlots(UUID garageSlot, JsonHttpClient client) {
         var response = client.get(
                 "/garage-slots?sort=id",
                 new TypeReference<Collection<ListGarageSlotsUseCase.GarageSlotView>>() {}
@@ -105,7 +104,7 @@ final class EndToEndTests {
 
     @Test
     @Order(5)
-    void createOrder(UUID orderId1, JsonHttpClient client) throws Exception {
+    void createOrder(UUID orderId1, JsonHttpClient client) {
         var response = client.post(
                 "/orders",
                 Map.of(
@@ -121,7 +120,7 @@ final class EndToEndTests {
 
     @Test
     @Order(6)
-    void cancelOrder(UUID orderId1, JsonHttpClient client) throws Exception {
+    void cancelOrder(UUID orderId1, JsonHttpClient client) {
         var response = client.post("/orders/cancel", Map.of("id", orderId1.toString()));
 
         assertThat(response.statusCode()).isEqualTo(200);
@@ -129,7 +128,7 @@ final class EndToEndTests {
 
     @Test
     @Order(7)
-    void assignGarageSlot(UUID orderId2, UUID garageSlot, JsonHttpClient client) throws Exception {
+    void assignGarageSlot(UUID orderId2, UUID garageSlot, JsonHttpClient client) {
         client.post(
                 "/orders",
                 Map.of(
@@ -150,7 +149,7 @@ final class EndToEndTests {
 
     @Test
     @Order(8)
-    void assignRepairer(UUID orderId2, UUID repairerId, JsonHttpClient client) throws Exception {
+    void assignRepairer(UUID orderId2, UUID repairerId, JsonHttpClient client) {
         var response = client.post(
                 "/orders/assign/repairer",
                 Map.of(
@@ -164,7 +163,7 @@ final class EndToEndTests {
 
     @Test
     @Order(9)
-    void completeOrder(UUID orderId2, JsonHttpClient client) throws Exception {
+    void completeOrder(UUID orderId2, JsonHttpClient client) {
         var response = client.post(
                 "/orders/complete",
                 Map.of("id", orderId2.toString())
@@ -175,8 +174,7 @@ final class EndToEndTests {
 
     @Test
     @Order(10)
-    void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId, Instant timestamp, JsonHttpClient client)
-            throws Exception {
+    void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId, Instant timestamp, JsonHttpClient client) {
         var response = client.get(
                 "/orders/" + orderId2,
                 new TypeReference<ViewOrderUseCase.OrderView>() {}
@@ -199,7 +197,7 @@ final class EndToEndTests {
 
     @Test
     @Order(11)
-    void listOrders(UUID orderId1, UUID orderId2, Instant timestamp, JsonHttpClient client) throws Exception {
+    void listOrders(UUID orderId1, UUID orderId2, Instant timestamp, JsonHttpClient client) {
         var response = client.get(
                 "/orders?sort=id",
                 new TypeReference<Collection<ListOrdersUseCase.OrderView>>() {}
@@ -227,7 +225,7 @@ final class EndToEndTests {
 
     @Test
     @Order(12)
-    void deleteRepairer(UUID repairerId, JsonHttpClient client) throws Exception {
+    void deleteRepairer(UUID repairerId, JsonHttpClient client) {
         var response = client.delete("/repairers/" + repairerId);
 
         assertThat(response.statusCode()).isEqualTo(204);
@@ -235,7 +233,7 @@ final class EndToEndTests {
 
     @Test
     @Order(13)
-    void deleteGarageSlot(UUID garageSlotId, JsonHttpClient client) throws Exception {
+    void deleteGarageSlot(UUID garageSlotId, JsonHttpClient client) {
         var response = client.delete("/garage-slots/" + garageSlotId);
 
         assertThat(response.statusCode()).isEqualTo(204);
@@ -243,7 +241,7 @@ final class EndToEndTests {
 
     @Test
     @Order(14)
-    void listOrdersWithoutSortParameter(JsonHttpClient client) throws Exception {
+    void listOrdersWithoutSortParameter(JsonHttpClient client) {
         var response = client.get("/orders");
 
         assertThat(response.statusCode()).isEqualTo(400);
