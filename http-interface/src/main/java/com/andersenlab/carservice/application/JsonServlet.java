@@ -14,6 +14,22 @@ abstract class JsonServlet extends HttpServlet {
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
+    @Override
+    protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        respond(resp, get(req.getRequestURI(), req.getParameterMap()));
+    }
+
+    @Override
+    protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        respond(
+                resp,
+                post(
+                        req.getRequestURI(),
+                        objectMapper.readValue(req.getReader(), new TypeReference<>() {})
+                )
+        );
+    }
+
     Response get(String uri, Map<String, String[]> parameters) {
         return new Response(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
     }
@@ -30,22 +46,6 @@ abstract class JsonServlet extends HttpServlet {
             return;
         }
         objectMapper.writeValue(resp.getWriter(), body.get());
-    }
-
-    @Override
-    protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        respond(resp, get(req.getRequestURI(), req.getParameterMap()));
-    }
-
-    @Override
-    protected final void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        respond(
-                resp,
-                post(
-                        req.getRequestURI(),
-                        objectMapper.readValue(req.getReader(), new TypeReference<>() {})
-                )
-        );
     }
 
     record Response(int status, Optional<Object> body) {

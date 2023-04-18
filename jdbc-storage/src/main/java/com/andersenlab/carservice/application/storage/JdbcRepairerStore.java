@@ -20,13 +20,14 @@ public final class JdbcRepairerStore implements RepairerStore {
     public void save(RepairerEntity repairerEntity) {
         if (has(repairerEntity.id())) {
             database.update(
-                    "update repairers set status = ? where id = ?;",
+                    "update repairers set name= ?, status = ? where id = ?;",
+                    repairerEntity.name(),
                     repairerEntity.status(),
                     repairerEntity.id()
             );
         } else {
             database.update(
-                    "insert into repairers(id, name, status) values (?, ?, ?);",
+                    "insert into repairers(id, name, status, is_deleted) values (?, ?, ?, false);",
                     repairerEntity.id(),
                     repairerEntity.name(),
                     repairerEntity.status()
@@ -42,18 +43,19 @@ public final class JdbcRepairerStore implements RepairerStore {
 
     @Override
     public void delete(UUID id) {
-        database.update("delete from repairers where id = ?;", id);
+        database.update("update repairers set is_deleted = true where id = ?;", id);
     }
 
     @Override
     public boolean has(UUID id) {
-        return database.execute("select 1 from repairers where id = ?;", id).isPresent();
+        return database.execute("select 1 from repairers where id = ? and is_deleted = false;", id)
+                .isPresent();
     }
 
     @Override
     public boolean hasRepairerWithStatusAssigned(UUID id) {
         return database.execute(
-                        "select 1 from repairers where id = ? and status = ?;",
+                        "select 1 from repairers where id = ? and status = ? and is_deleted = false;",
                         id,
                         RepairerStatus.ASSIGNED
                 )
@@ -62,7 +64,7 @@ public final class JdbcRepairerStore implements RepairerStore {
 
     @Override
     public RepairerEntity getById(UUID id) {
-        return database.execute("select * from repairers where id = ?;", id)
+        return database.execute("select * from repairers where id = ? and is_deleted = false;", id)
                 .map(this::repairerEntity)
                 .iterator()
                 .next();
@@ -77,6 +79,6 @@ public final class JdbcRepairerStore implements RepairerStore {
     }
 
     private String findAllSortedSql(Sort sort) {
-        return "select * from repairers order by " + sort.name().toLowerCase(Locale.ROOT);
+        return "select * from repairers where is_deleted = false order by " + sort.name().toLowerCase(Locale.ROOT);
     }
 }

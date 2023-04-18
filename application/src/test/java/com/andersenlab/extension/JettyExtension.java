@@ -4,9 +4,6 @@ import com.andersenlab.Application;
 import com.andersenlab.StaticSettings;
 import org.junit.jupiter.api.extension.*;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -14,23 +11,17 @@ import java.time.ZoneOffset;
 public final class JettyExtension implements BeforeAllCallback, AfterAllCallback, ParameterResolver {
 
     private final Instant timestamp = Instant.parse("2000-01-01T00:00:00.00Z");
-    private Path temporaryDirectory;
     private Application application;
 
     @Override
-    public void beforeAll(ExtensionContext context) throws IOException {
-        temporaryDirectory = Files.createTempDirectory(null);
-        application = Application.from(
-                new StaticSettings(temporaryDirectory.resolve("state.json")),
-                Clock.fixed(timestamp, ZoneOffset.UTC)
-        );
+    public void beforeAll(ExtensionContext context) {
+        application = Application.from(new StaticSettings(), Clock.fixed(timestamp, ZoneOffset.UTC));
         application.run();
     }
 
     @Override
     public void afterAll(ExtensionContext context) {
         application.stop();
-        temporaryDirectory.toFile().deleteOnExit();
     }
 
     @Override

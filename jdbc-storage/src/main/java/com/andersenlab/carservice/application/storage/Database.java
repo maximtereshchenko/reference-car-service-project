@@ -1,10 +1,7 @@
 package com.andersenlab.carservice.application.storage;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -42,7 +39,12 @@ public final class Database {
         }
         try (var statement = connections.get().prepareStatement(sql)) {
             for (int i = 0; i < parameters.length; i++) {
-                statement.setString(i + 1, parameters[i].toString());
+                var parameter = parameters[i];
+                if (parameter == null) {
+                    statement.setNull(i + 1, Types.VARCHAR);
+                } else {
+                    statement.setString(i + 1, parameter.toString());
+                }
             }
             statement.execute();
         } catch (SQLException e) {

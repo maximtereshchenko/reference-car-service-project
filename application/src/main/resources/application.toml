@@ -1,5 +1,4 @@
 [application]
-stateFile.path = "state.json"
 jdbc.url = "jdbc:h2:file:./car_service;DATABASE_TO_UPPER=false"
 [application.garageSlots]
 addition.enabled = true

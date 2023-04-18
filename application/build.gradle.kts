@@ -9,7 +9,6 @@ application {
 dependencies {
     implementation(project(":api"))
     implementation(project(":domain"))
-    implementation(project(":on-disk-storage"))
     implementation(project(":jdbc-storage"))
     implementation(project(":common"))
     implementation(project(":http-interface"))

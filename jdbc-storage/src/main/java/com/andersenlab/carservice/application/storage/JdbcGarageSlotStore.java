@@ -26,7 +26,7 @@ public final class JdbcGarageSlotStore implements GarageSlotStore {
             );
         } else {
             database.update(
-                    "insert into garage_slots(id, status) values (?, ?);",
+                    "insert into garage_slots(id, status, is_deleted) values (?, ?, false);",
                     garageSlotEntity.id(),
                     garageSlotEntity.status()
             );
@@ -42,17 +42,18 @@ public final class JdbcGarageSlotStore implements GarageSlotStore {
 
     @Override
     public void delete(UUID id) {
-        database.update("delete from garage_slots where id = ?;", id);
+        database.update("update garage_slots set is_deleted = true where id = ?;", id);
     }
 
     @Override
     public boolean has(UUID id) {
-        return database.execute("select 1 from garage_slots where id = ?;", id).isPresent();
+        return database.execute("select 1 from garage_slots where id = ? and is_deleted = false;", id)
+                .isPresent();
     }
 
     @Override
     public GarageSlotEntity getById(UUID id) {
-        return database.execute("select * from garage_slots where id = ?;", id)
+        return database.execute("select * from garage_slots where id = ? and is_deleted = false;", id)
                 .map(this::garageSlotEntity)
                 .iterator()
                 .next();
@@ -61,7 +62,7 @@ public final class JdbcGarageSlotStore implements GarageSlotStore {
     @Override
     public boolean hasGarageSlotWithStatusAssigned(UUID id) {
         return database.execute(
-                        "select 1 from garage_slots where id = ? and status = ?;",
+                        "select 1 from garage_slots where id = ? and status = ? and is_deleted = false;",
                         id,
                         GarageSlotStatus.ASSIGNED
                 )
@@ -76,6 +77,6 @@ public final class JdbcGarageSlotStore implements GarageSlotStore {
     }
 
     private String findAllSortedSql(Sort sort) {
-        return "select * from garage_slots order by " + sort.name().toLowerCase(Locale.ROOT);
+        return "select * from garage_slots where is_deleted = false order by " + sort.name().toLowerCase(Locale.ROOT);
     }
 }

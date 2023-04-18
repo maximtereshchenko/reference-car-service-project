@@ -1,6 +1,5 @@
 package com.andersenlab;
 
-import com.andersenlab.application.storage.ThreadSafeOrderStore;
 import com.andersenlab.carservice.application.HttpInterface;
 import com.andersenlab.carservice.application.storage.*;
 import com.andersenlab.carservice.domain.CarServiceModule;
@@ -24,12 +23,11 @@ public final class Application {
     }
 
     private static CarServiceModule module(Settings settings, Clock clock) {
-        var stateFile = new StateFile(settings.stateFilePath());
         var database = database(settings.jdbcUrl());
         var module = new Module.Builder()
                 .withRepairerStore(new JdbcRepairerStore(database))
                 .withGarageSlotStore(new JdbcGarageSlotStore(database))
-                .withOrderStore(new ThreadSafeOrderStore(new OnDiskOrderStore(stateFile)))
+                .withOrderStore(new JdbcOrderStore(database))
                 .withClock(Clock.systemDefaultZone())
                 .garageSlotAdditionEnabled(settings.isGarageSlotAdditionEnabled())
                 .garageSlotDeletionEnabled(settings.isGarageSlotDeletionEnabled())
@@ -50,7 +48,7 @@ public final class Application {
     private static void migrate(DataSource dataSource) {
         Flyway.configure()
                 .dataSource(dataSource)
-                .locations("classpath:db")
+                .locations("classpath:migrations")
                 .loggers("slf4j")
                 .load()
                 .migrate();
