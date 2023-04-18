@@ -15,17 +15,17 @@ public final class TransactionalCarServiceModule implements CarServiceModule {
 
     @Override
     public AddRepairerUseCase addRepairerUseCase() {
-        return original.addRepairerUseCase();
+        return (id, name) -> database.transactionally(() -> original.addRepairerUseCase().add(id, name));
     }
 
     @Override
     public ListRepairersUseCase listRepairersUserCase() {
-        return original.listRepairersUserCase();
+        return sort -> database.transactionally(() -> original.listRepairersUserCase().list(sort));
     }
 
     @Override
     public DeleteRepairerUseCase deleteRepairerUseCase() {
-        return original.deleteRepairerUseCase();
+        return id -> database.transactionally(() -> original.deleteRepairerUseCase().delete(id));
     }
 
     @Override
@@ -45,12 +45,12 @@ public final class TransactionalCarServiceModule implements CarServiceModule {
 
     @Override
     public CreateOrderUseCase createOrderUseCase() {
-        return original.createOrderUseCase();
+        return (id, price) -> database.transactionally(() -> original.createOrderUseCase().create(id, price));
     }
 
     @Override
     public ListOrdersUseCase listOrdersUseCase() {
-        return original.listOrdersUseCase();
+        return sort -> database.transactionally(() -> original.listOrdersUseCase().list(sort));
     }
 
     @Override
@@ -64,12 +64,16 @@ public final class TransactionalCarServiceModule implements CarServiceModule {
 
     @Override
     public ViewOrderUseCase viewOrderUseCase() {
-        return original.viewOrderUseCase();
+        return id -> database.transactionally(() -> original.viewOrderUseCase().view(id));
     }
 
     @Override
     public AssignRepairerToOrderUseCase assignRepairerToOrderUseCase() {
-        return original.assignRepairerToOrderUseCase();
+        return (orderId, repairerId) ->
+                database.transactionally(() ->
+                        original.assignRepairerToOrderUseCase()
+                                .assignRepairer(orderId, repairerId)
+                );
     }
 
     @Override

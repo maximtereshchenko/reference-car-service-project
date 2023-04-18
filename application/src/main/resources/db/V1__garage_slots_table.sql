@@ -1,1 +1,1 @@
-CREATE TABLE garage_slots (id VARCHAR PRIMARY KEY, status VARCHAR);
+CREATE TABLE garage_slots (id VARCHAR PRIMARY KEY, status VARCHAR NOT NULL);

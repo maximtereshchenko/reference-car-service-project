@@ -15,8 +15,8 @@ public final class ThreadSafeGarageSlotStore implements GarageSlotStore {
     }
 
     @Override
-    public void save(GarageSlotEntity repairerEntity) {
-        lock.withWriteLock(() -> original.save(repairerEntity));
+    public void save(GarageSlotEntity garageSlotEntity) {
+        lock.withWriteLock(() -> original.save(garageSlotEntity));
     }
 
     @Override

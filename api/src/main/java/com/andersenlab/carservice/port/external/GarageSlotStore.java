@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public interface GarageSlotStore {
 
-    void save(GarageSlotEntity repairerEntity);
+    void save(GarageSlotEntity garageSlotEntity);
 
     Collection<GarageSlotEntity> findAllSorted(Sort sort);
 

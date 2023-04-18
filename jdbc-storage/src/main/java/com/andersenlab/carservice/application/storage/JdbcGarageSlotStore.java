@@ -17,18 +17,18 @@ public final class JdbcGarageSlotStore implements GarageSlotStore {
     }
 
     @Override
-    public void save(GarageSlotEntity repairerEntity) {
-        if (has(repairerEntity.id())) {
+    public void save(GarageSlotEntity garageSlotEntity) {
+        if (has(garageSlotEntity.id())) {
             database.update(
                     "update garage_slots set status = ? where id = ?;",
-                    repairerEntity.status(),
-                    repairerEntity.id()
+                    garageSlotEntity.status(),
+                    garageSlotEntity.id()
             );
         } else {
             database.update(
                     "insert into garage_slots(id, status) values (?, ?);",
-                    repairerEntity.id(),
-                    repairerEntity.status()
+                    garageSlotEntity.id(),
+                    garageSlotEntity.status()
             );
         }
 
