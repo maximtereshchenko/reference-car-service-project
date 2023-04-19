@@ -17,8 +17,9 @@ public final class Database {
 
     <T> T transactional(Supplier<T> action) {
         try (var connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
             connections.set(connection);
-            return action.get();
+            return execute(action, connection);
         } catch (SQLException e) {
             throw new CouldNotExecuteSql(e);
         } finally {
@@ -64,6 +65,17 @@ public final class Database {
             return new SqlResult(statement, statement.executeQuery());
         } catch (SQLException e) {
             throw new CouldNotExecuteSql(e);
+        }
+    }
+
+    private <T> T execute(Supplier<T> action, Connection connection) throws SQLException {
+        try {
+            var result = action.get();
+            connection.commit();
+            return result;
+        } catch (Exception e) {
+            connection.rollback();
+            throw e;
         }
     }
 
