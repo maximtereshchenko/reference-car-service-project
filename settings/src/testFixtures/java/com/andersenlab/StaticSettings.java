@@ -6,7 +6,7 @@ public final class StaticSettings implements Settings {
 
     @Override
     public String jdbcUrl() {
-        return "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false".formatted(UUID.randomUUID());
+        return "jdbc:h2:mem:" + UUID.randomUUID();
     }
 
     @Override
