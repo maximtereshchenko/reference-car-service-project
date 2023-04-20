@@ -1,6 +1,7 @@
 package com.andersenlab;
 
 import com.andersenlab.carservice.port.usecase.ListOrdersUseCase;
+import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.extension.JettyExtension;
 import com.andersenlab.extension.JsonHttpClient;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -30,7 +31,7 @@ final class LoadTests {
             throws Exception {
         var executorService = Executors.newWorkStealingPool();
         var futures = IntStream.range(0, 1000)
-                .mapToObj(i -> executorService.submit(() -> completeOrder(client)))
+                .mapToObj(i -> executorService.submit(() -> completeOrderSafe(client)))
                 .toList();
 
         latch.countDown();
@@ -47,75 +48,81 @@ final class LoadTests {
         );
 
         assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.body()).hasSize(1000);
+        assertThat(response.body())
+                .hasSize(1000)
+                .allMatch(orderView -> orderView.status() == OrderStatus.COMPLETED);
     }
 
-    private Result completeOrder(JsonHttpClient client) {
+    private Result completeOrderSafe(JsonHttpClient client) {
         try {
-            latch.await();
-
-            var garageSlotId = UUID.randomUUID();
-            var repairerId = UUID.randomUUID();
-            var orderId = UUID.randomUUID();
-            return post(
-                    client,
-                    "/garage-slots",
-                    Map.of("id", garageSlotId.toString())
-            )
-                    .or(() ->
-                            post(
-                                    client,
-                                    "/repairers",
-                                    Map.of(
-                                            "id", repairerId.toString(),
-                                            "name", "John"
-                                    )
-                            )
-                    )
-                    .or(() ->
-                            post(
-                                    client,
-                                    "/orders",
-                                    Map.of(
-                                            "id", orderId.toString(),
-                                            "price", "100"
-                                    )
-                            )
-                    )
-                    .or(() ->
-                            post(
-                                    client,
-                                    "/orders/assign/garage-slot",
-                                    Map.of(
-                                            "id", orderId.toString(),
-                                            "garageSlotId", garageSlotId.toString()
-                                    )
-                            )
-                    )
-                    .or(() ->
-                            post(
-                                    client,
-                                    "/orders/assign/repairer",
-                                    Map.of(
-                                            "id", orderId.toString(),
-                                            "repairerId", repairerId.toString()
-                                    )
-                            )
-                    )
-                    .or(() ->
-                            post(
-                                    client,
-                                    "/orders/complete",
-                                    Map.of("id", orderId.toString())
-                            )
-                    )
-                    .orElse(new Success());
+            return completeOrder(client).orElse(new Success());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return new Failure(e);
         } catch (Exception e) {
             return new Failure(e);
         }
+    }
+
+    private Optional<Result> completeOrder(JsonHttpClient client) throws InterruptedException {
+        latch.await();
+
+        var garageSlotId = UUID.randomUUID();
+        var repairerId = UUID.randomUUID();
+        var orderId = UUID.randomUUID();
+
+        return post(
+                client,
+                "/garage-slots",
+                Map.of("id", garageSlotId.toString())
+        )
+                .or(() ->
+                        post(
+                                client,
+                                "/repairers",
+                                Map.of(
+                                        "id", repairerId.toString(),
+                                        "name", "John"
+                                )
+                        )
+                )
+                .or(() ->
+                        post(
+                                client,
+                                "/orders",
+                                Map.of(
+                                        "id", orderId.toString(),
+                                        "price", "100"
+                                )
+                        )
+                )
+                .or(() ->
+                        post(
+                                client,
+                                "/orders/assign/garage-slot",
+                                Map.of(
+                                        "id", orderId.toString(),
+                                        "garageSlotId", garageSlotId.toString()
+                                )
+                        )
+                )
+                .or(() ->
+                        post(
+                                client,
+                                "/orders/assign/repairer",
+                                Map.of(
+                                        "id", orderId.toString(),
+                                        "repairerId", repairerId.toString()
+                                )
+                        )
+                )
+                .or(() ->
+                        post(
+                                client,
+                                "/orders/complete",
+                                Map.of("id", orderId.toString())
+                        )
+                );
     }
 
     private Optional<Result> post(JsonHttpClient client, String uri, Map<String, String> body) {
