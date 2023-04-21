@@ -1,0 +1,1 @@
+ALTER TABLE repairers_in_orders ALTER COLUMN order_id UUID;

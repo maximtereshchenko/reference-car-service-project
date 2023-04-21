@@ -1,17 +1,12 @@
 package com.andersenlab;
 
 import com.andersenlab.carservice.application.HttpInterface;
-import com.andersenlab.carservice.application.storage.jdbc.JdbcOrderStore;
-import com.andersenlab.carservice.application.storage.jdbc.TransactionalCarServiceModule;
-import com.andersenlab.carservice.application.storage.jpa.Database;
-import com.andersenlab.carservice.application.storage.jpa.JpaGarageSlotStore;
-import com.andersenlab.carservice.application.storage.jpa.JpaRepairerStore;
+import com.andersenlab.carservice.application.storage.jpa.*;
 import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.domain.Module;
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
 
-import javax.sql.DataSource;
 import java.time.Clock;
 
 public final class Application {
@@ -23,35 +18,27 @@ public final class Application {
     }
 
     public static Application from(Settings settings, Clock clock) {
+        migrate(settings.jdbcUrl());
         return new Application(HttpInterface.forModule(module(settings, clock)));
     }
 
     private static CarServiceModule module(Settings settings, Clock clock) {
-        var jdbcUrl = settings.jdbcUrl();
-        var database = database(jdbcUrl);
-        var database1 = new Database(jdbcUrl);
+        var database = new Database(settings.jdbcUrl());
         var module = new Module.Builder()
-                .withRepairerStore(new JpaRepairerStore(database1))
-                .withGarageSlotStore(new JpaGarageSlotStore(database1))
-                .withOrderStore(new JdbcOrderStore(database))
+                .withRepairerStore(new JpaRepairerStore(database))
+                .withGarageSlotStore(new JpaGarageSlotStore(database))
+                .withOrderStore(new JpaOrderStore(database))
                 .withClock(Clock.systemDefaultZone())
                 .garageSlotAdditionEnabled(settings.isGarageSlotAdditionEnabled())
                 .garageSlotDeletionEnabled(settings.isGarageSlotDeletionEnabled())
                 .withClock(clock)
                 .build();
-        return new com.andersenlab.carservice.application.storage.jpa.TransactionalCarServiceModule(new TransactionalCarServiceModule(module, database), database1);
+        return new TransactionalCarServiceModule(module, database);
     }
 
-    private static com.andersenlab.carservice.application.storage.jdbc.Database database(String jdbcUrl) {
+    private static void migrate(String jdbcUrl) {
         var dataSource = new HikariDataSource();
         dataSource.setJdbcUrl(jdbcUrl);
-
-        migrate(dataSource);
-
-        return new com.andersenlab.carservice.application.storage.jdbc.Database(dataSource);
-    }
-
-    private static void migrate(DataSource dataSource) {
         Flyway.configure()
                 .dataSource(dataSource)
                 .locations("classpath:migrations")

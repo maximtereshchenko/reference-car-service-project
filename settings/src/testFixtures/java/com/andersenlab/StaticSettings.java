@@ -4,9 +4,11 @@ import java.util.UUID;
 
 public final class StaticSettings implements Settings {
 
+    private final String databaseName = UUID.randomUUID().toString();
+
     @Override
     public String jdbcUrl() {
-        return "jdbc:h2:mem:" + UUID.randomUUID();
+        return "jdbc:h2:mem:" + databaseName;
     }
 
     @Override

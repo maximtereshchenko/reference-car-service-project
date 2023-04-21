@@ -4,7 +4,7 @@ import com.andersenlab.carservice.port.external.OrderStore;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
@@ -90,9 +90,9 @@ public final class JdbcOrderStore implements OrderStore {
                         .stream()
                         .map(UUID::fromString)
                         .collect(Collectors.toSet()),
-                Instant.parse(resultSet.getString("created")),
-                Optional.ofNullable(resultSet.getString("closed"))
-                        .map(Instant::parse)
+                resultSet.getTimestamp("created").toInstant(),
+                Optional.ofNullable(resultSet.getTimestamp("closed"))
+                        .map(Timestamp::toInstant)
         );
     }
 
@@ -101,9 +101,9 @@ public final class JdbcOrderStore implements OrderStore {
                 UUID.fromString(resultSet.getString("id")),
                 resultSet.getLong("price"),
                 OrderStatus.valueOf(resultSet.getString("status")),
-                Instant.parse(resultSet.getString("created")),
-                Optional.ofNullable(resultSet.getString("closed"))
-                        .map(Instant::parse)
+                resultSet.getTimestamp("created").toInstant(),
+                Optional.ofNullable(resultSet.getTimestamp("closed"))
+                        .map(Timestamp::toInstant)
         );
     }
 
