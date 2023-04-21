@@ -1,6 +1,6 @@
 package com.andersenlab.carservice.application.storage.jpa;
 
-import com.andersenlab.carservice.port.external.RepairerStore;
+import com.andersenlab.carservice.port.external.GarageSlotStore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,26 +10,23 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Entity
-@Table(name = "repairers")
-class RepairerJpaEntity {
+@Table(name = "garage_slots")
+class GarageSlotJpaEntity {
 
     @Id
     @Column(name = "id", nullable = false)
     private UUID id;
-    @Column(name = "name", nullable = false)
-    private String name;
     @Column(name = "status", nullable = false)
     private String status;
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-    protected RepairerJpaEntity() {
+    protected GarageSlotJpaEntity() {
     }
 
-    RepairerJpaEntity(RepairerStore.RepairerEntity repairerEntity) {
-        id = repairerEntity.id();
-        name = repairerEntity.name();
-        status = repairerEntity.status().name();
+    GarageSlotJpaEntity(GarageSlotStore.GarageSlotEntity garageSlotEntity) {
+        id = garageSlotEntity.id();
+        status = garageSlotEntity.status().name();
         isDeleted = false;
     }
 
@@ -37,15 +34,14 @@ class RepairerJpaEntity {
         isDeleted = deleted;
     }
 
-    Optional<RepairerStore.RepairerEntity> repairerEntity() {
+    Optional<GarageSlotStore.GarageSlotEntity> garageSlotEntity() {
         if (isDeleted) {
             return Optional.empty();
         }
         return Optional.of(
-                new RepairerStore.RepairerEntity(
+                new GarageSlotStore.GarageSlotEntity(
                         id,
-                        name,
-                        RepairerStore.RepairerStatus.valueOf(status)
+                        GarageSlotStore.GarageSlotStatus.valueOf(status)
                 )
         );
     }

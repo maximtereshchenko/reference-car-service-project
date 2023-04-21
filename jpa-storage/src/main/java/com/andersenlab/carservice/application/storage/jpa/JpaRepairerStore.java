@@ -3,6 +3,7 @@ package com.andersenlab.carservice.application.storage.jpa;
 import com.andersenlab.carservice.port.external.RepairerStore;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public final class JpaRepairerStore implements RepairerStore {
 
     @Override
     public Collection<RepairerEntity> findAllSorted(Sort sort) {
-        return database.query(RepairerJpaEntity.FIND_ALL_QUERY, RepairerJpaEntity.class)
+        return database.query(findAllQuery(sort), RepairerJpaEntity.class)
                 .stream()
                 .map(RepairerJpaEntity::repairerEntity)
                 .flatMap(Optional::stream)
@@ -58,5 +59,10 @@ public final class JpaRepairerStore implements RepairerStore {
         return database.findById(id, RepairerJpaEntity.class)
                 .flatMap(RepairerJpaEntity::repairerEntity)
                 .orElseThrow(() -> new CouldNotFindEntity(id));
+    }
+
+    private String findAllQuery(Sort sort) {
+        return "select r from RepairerJpaEntity r where r.isDeleted = false order by r." +
+                sort.name().toLowerCase(Locale.ROOT);
     }
 }

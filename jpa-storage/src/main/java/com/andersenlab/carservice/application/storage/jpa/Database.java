@@ -18,15 +18,18 @@ public final class Database {
     public Database(String jdbcUrl) {
         entityManagerFactory = Persistence.createEntityManagerFactory(
                 "default",
-                Map.of("hibernate.connection.url", jdbcUrl)
+                Map.of(
+                        "hibernate.connection.url", jdbcUrl,
+                        "hibernate.hbm2ddl.auto", "validate"
+                )
         );
     }
 
-    <T> Collection<T> query(String queryName, Class<T> entityType) {
+    <T> Collection<T> query(String query, Class<T> entityType) {
         if (entityManagers.get() == null) {
             throw new NoOpenEntityManager();
         }
-        return entityManagers.get().createNamedQuery(queryName, entityType).getResultList();
+        return entityManagers.get().createQuery(query, entityType).getResultList();
     }
 
     <T> void persist(T jpaEntity) {

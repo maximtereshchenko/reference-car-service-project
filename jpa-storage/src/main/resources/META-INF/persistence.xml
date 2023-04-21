@@ -3,11 +3,5 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
-    <persistence-unit name="default">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>com.andersenlab.carservice.application.storage.jpa.RepairerJpaEntity</class>
-        <properties>
-            <property name="hibernate.hbm2ddl.auto" value="validate"/>
-        </properties>
-    </persistence-unit>
+    <persistence-unit name="default"/>
 </persistence>

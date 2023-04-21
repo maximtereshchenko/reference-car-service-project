@@ -1,10 +1,10 @@
 package com.andersenlab;
 
 import com.andersenlab.carservice.application.HttpInterface;
-import com.andersenlab.carservice.application.storage.jdbc.JdbcGarageSlotStore;
 import com.andersenlab.carservice.application.storage.jdbc.JdbcOrderStore;
 import com.andersenlab.carservice.application.storage.jdbc.TransactionalCarServiceModule;
 import com.andersenlab.carservice.application.storage.jpa.Database;
+import com.andersenlab.carservice.application.storage.jpa.JpaGarageSlotStore;
 import com.andersenlab.carservice.application.storage.jpa.JpaRepairerStore;
 import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.domain.Module;
@@ -32,7 +32,7 @@ public final class Application {
         var database1 = new Database(jdbcUrl);
         var module = new Module.Builder()
                 .withRepairerStore(new JpaRepairerStore(database1))
-                .withGarageSlotStore(new JdbcGarageSlotStore(database))
+                .withGarageSlotStore(new JpaGarageSlotStore(database1))
                 .withOrderStore(new JdbcOrderStore(database))
                 .withClock(Clock.systemDefaultZone())
                 .garageSlotAdditionEnabled(settings.isGarageSlotAdditionEnabled())
