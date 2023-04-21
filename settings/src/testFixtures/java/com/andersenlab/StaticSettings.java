@@ -8,7 +8,7 @@ public final class StaticSettings implements Settings {
 
     @Override
     public String jdbcUrl() {
-        return "jdbc:h2:mem:" + databaseName;
+        return "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1".formatted(databaseName);
     }
 
     @Override
