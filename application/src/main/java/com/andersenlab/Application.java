@@ -37,14 +37,15 @@ public final class Application {
     }
 
     private static void migrate(String jdbcUrl) {
-        var dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl(jdbcUrl);
-        Flyway.configure()
-                .dataSource(dataSource)
-                .locations("classpath:migrations")
-                .loggers("slf4j")
-                .load()
-                .migrate();
+        try (var dataSource = new HikariDataSource()) {
+            dataSource.setJdbcUrl(jdbcUrl);
+            Flyway.configure()
+                    .dataSource(dataSource)
+                    .locations("classpath:migrations")
+                    .loggers("slf4j")
+                    .load()
+                    .migrate();
+        }
     }
 
     public void run() {
