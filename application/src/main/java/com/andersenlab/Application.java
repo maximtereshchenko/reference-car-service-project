@@ -1,7 +1,11 @@
 package com.andersenlab;
 
 import com.andersenlab.carservice.application.HttpInterface;
-import com.andersenlab.carservice.application.storage.*;
+import com.andersenlab.carservice.application.storage.jdbc.JdbcGarageSlotStore;
+import com.andersenlab.carservice.application.storage.jdbc.JdbcOrderStore;
+import com.andersenlab.carservice.application.storage.jdbc.TransactionalCarServiceModule;
+import com.andersenlab.carservice.application.storage.jpa.Database;
+import com.andersenlab.carservice.application.storage.jpa.JpaRepairerStore;
 import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.domain.Module;
 import com.zaxxer.hikari.HikariDataSource;
@@ -23,9 +27,11 @@ public final class Application {
     }
 
     private static CarServiceModule module(Settings settings, Clock clock) {
-        var database = database(settings.jdbcUrl());
+        var jdbcUrl = settings.jdbcUrl();
+        var database = database(jdbcUrl);
+        var database1 = new Database(jdbcUrl);
         var module = new Module.Builder()
-                .withRepairerStore(new JdbcRepairerStore(database))
+                .withRepairerStore(new JpaRepairerStore(database1))
                 .withGarageSlotStore(new JdbcGarageSlotStore(database))
                 .withOrderStore(new JdbcOrderStore(database))
                 .withClock(Clock.systemDefaultZone())
@@ -33,16 +39,16 @@ public final class Application {
                 .garageSlotDeletionEnabled(settings.isGarageSlotDeletionEnabled())
                 .withClock(clock)
                 .build();
-        return new TransactionalCarServiceModule(module, database);
+        return new com.andersenlab.carservice.application.storage.jpa.TransactionalCarServiceModule(new TransactionalCarServiceModule(module, database), database1);
     }
 
-    private static Database database(String jdbcUrl) {
+    private static com.andersenlab.carservice.application.storage.jdbc.Database database(String jdbcUrl) {
         var dataSource = new HikariDataSource();
         dataSource.setJdbcUrl(jdbcUrl);
 
         migrate(dataSource);
 
-        return new Database(dataSource);
+        return new com.andersenlab.carservice.application.storage.jdbc.Database(dataSource);
     }
 
     private static void migrate(DataSource dataSource) {

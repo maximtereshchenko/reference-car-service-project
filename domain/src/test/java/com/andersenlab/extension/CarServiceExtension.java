@@ -1,8 +1,8 @@
 package com.andersenlab.extension;
 
-import com.andersenlab.carservice.application.storage.InMemoryGarageSlotStore;
-import com.andersenlab.carservice.application.storage.InMemoryOrderStore;
-import com.andersenlab.carservice.application.storage.InMemoryRepairerStore;
+import com.andersenlab.carservice.application.storage.inmemory.InMemoryGarageSlotStore;
+import com.andersenlab.carservice.application.storage.inmemory.InMemoryOrderStore;
+import com.andersenlab.carservice.application.storage.inmemory.InMemoryRepairerStore;
 import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.domain.Module;
 import org.junit.jupiter.api.extension.ExtensionContext;

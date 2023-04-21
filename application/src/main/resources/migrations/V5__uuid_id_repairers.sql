@@ -1,0 +1,1 @@
+ALTER TABLE repairers ALTER COLUMN id UUID;

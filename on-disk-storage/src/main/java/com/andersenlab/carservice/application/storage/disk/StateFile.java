@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.storage;
+package com.andersenlab.carservice.application.storage.disk;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
 import com.andersenlab.carservice.port.external.OrderStore;

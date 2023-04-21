@@ -1,44 +1,28 @@
-package com.andersenlab.carservice.application.storage;
+package com.andersenlab.carservice.application.storage.inmemory;
 
 import com.andersenlab.Comparators;
 import com.andersenlab.carservice.port.external.OrderStore;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
-public final class OnDiskOrderStore implements OrderStore {
+public final class InMemoryOrderStore implements OrderStore {
 
-    private final StateFile stateFile;
+    private final Map<UUID, OrderEntity> map = new HashMap<>();
     private final Comparators comparators = Comparators.create();
-
-    public OnDiskOrderStore(StateFile stateFile) {
-        this.stateFile = stateFile;
-    }
 
     @Override
     public void save(OrderEntity orderEntity) {
-        var state = stateFile.read();
-        var copy = new ArrayList<>(state.orders());
-        copy.removeIf(stored -> stored.id().equals(orderEntity.id()));
-        copy.add(orderEntity);
-        stateFile.write(state.withOrders(copy));
+        map.put(orderEntity.id(), orderEntity);
     }
 
     @Override
     public Optional<OrderEntity> findById(UUID id) {
-        return stateFile.read()
-                .orders()
-                .stream()
-                .filter(orderEntity -> orderEntity.id().equals(id))
-                .findAny();
+        return Optional.ofNullable(map.get(id));
     }
 
     @Override
     public Collection<OrderProjection> findAllSorted(Sort sort) {
-        return stateFile.read()
-                .orders()
+        return map.values()
                 .stream()
                 .sorted(comparators.comparator(sort))
                 .map(orderEntity ->

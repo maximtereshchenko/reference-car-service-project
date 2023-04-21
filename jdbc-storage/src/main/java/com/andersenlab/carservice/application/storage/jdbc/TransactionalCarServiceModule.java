@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.storage;
+package com.andersenlab.carservice.application.storage.jdbc;
 
 import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.port.usecase.*;

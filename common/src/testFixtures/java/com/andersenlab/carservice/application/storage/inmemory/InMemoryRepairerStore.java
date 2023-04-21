@@ -1,4 +1,4 @@
-package com.andersenlab.carservice.application.storage;
+package com.andersenlab.carservice.application.storage.inmemory;
 
 import com.andersenlab.Comparators;
 import com.andersenlab.carservice.port.external.RepairerStore;

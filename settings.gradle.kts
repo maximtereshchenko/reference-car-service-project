@@ -4,6 +4,7 @@ include("domain")
 include("api")
 include("on-disk-storage")
 include("jdbc-storage")
+include("jpa-storage")
 include("command-line-interface")
 include("application")
 include("settings")
@@ -13,26 +14,29 @@ include("http-interface")
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            version("junit", "5.8.2")
-            version("jackson", "2.14.2")
+            val junit = version("junit", "5.8.2")
+            val jackson = version("jackson", "2.14.2")
+            val hibernate = version("hibernate", "6.2.1.Final")
 
             library("junit-api", "org.junit.jupiter", "junit-jupiter-api")
-                .versionRef("junit")
+                .versionRef(junit)
             library("junit-engine", "org.junit.jupiter", "junit-jupiter-engine")
-                .versionRef("junit")
-            library("jackson", "com.fasterxml.jackson.core", "jackson-databind").versionRef("jackson")
+                .versionRef(junit)
+            library("jackson", "com.fasterxml.jackson.core", "jackson-databind").versionRef(jackson)
             library(
                 "jackson-datatype-jsr310",
                 "com.fasterxml.jackson.datatype",
                 "jackson-datatype-jsr310"
             )
-                .versionRef("jackson")
+                .versionRef(jackson)
             library(
                 "jackson-datatype-jdk8",
                 "com.fasterxml.jackson.datatype",
                 "jackson-datatype-jdk8"
             )
-                .versionRef("jackson")
+                .versionRef(jackson)
+            library("hibernate", "org.hibernate.orm", "hibernate-core").versionRef(hibernate)
+            library("hibernate-hikari", "org.hibernate.orm", "hibernate-hikaricp").versionRef(hibernate)
 
             library("assertj", "org.assertj:assertj-core:3.23.1")
             library("logback", "ch.qos.logback:logback-classic:1.4.6")
