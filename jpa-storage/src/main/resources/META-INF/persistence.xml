@@ -3,7 +3,7 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
-    <persistence-unit name="default">
+    <persistence-unit name="car-service">
         <class>com.andersenlab.carservice.application.storage.jpa.RepairerJpaEntity</class>
         <class>com.andersenlab.carservice.application.storage.jpa.GarageSlotJpaEntity</class>
         <class>com.andersenlab.carservice.application.storage.jpa.OrderJpaEntity</class>

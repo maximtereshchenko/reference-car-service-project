@@ -36,7 +36,7 @@ public final class JpaGarageSlotStore implements GarageSlotStore {
     @Override
     public void delete(UUID id) {
         database.findById(id, GarageSlotJpaEntity.class)
-                .ifPresent(garageSlotJpaEntity -> garageSlotJpaEntity.setDeleted(true));
+                .ifPresent(GarageSlotJpaEntity::setDeleted);
     }
 
     @Override

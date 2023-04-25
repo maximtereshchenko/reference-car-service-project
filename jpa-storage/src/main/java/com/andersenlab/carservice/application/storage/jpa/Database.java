@@ -17,7 +17,7 @@ public final class Database {
 
     public Database(String jdbcUrl) {
         entityManagerFactory = Persistence.createEntityManagerFactory(
-                "default",
+                "car-service",
                 Map.of(
                         "hibernate.connection.url", jdbcUrl,
                         "hibernate.hbm2ddl.auto", "validate"

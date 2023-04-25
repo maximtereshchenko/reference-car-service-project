@@ -25,13 +25,12 @@ public class GarageSlotJpaEntity {
     }
 
     public GarageSlotJpaEntity(GarageSlotStore.GarageSlotEntity garageSlotEntity) {
-        id = garageSlotEntity.id();
-        status = garageSlotEntity.status().name();
         isDeleted = false;
+        update(garageSlotEntity);
     }
 
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+    public void setDeleted() {
+        isDeleted = true;
     }
 
     public Optional<GarageSlotStore.GarageSlotEntity> garageSlotEntity() {
@@ -44,5 +43,10 @@ public class GarageSlotJpaEntity {
                         GarageSlotStore.GarageSlotStatus.valueOf(status)
                 )
         );
+    }
+
+    public void update(GarageSlotStore.GarageSlotEntity garageSlotEntity) {
+        id = garageSlotEntity.id();
+        status = garageSlotEntity.status().name();
     }
 }

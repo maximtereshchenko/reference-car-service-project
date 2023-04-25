@@ -4,6 +4,7 @@ include("domain")
 include("api")
 include("on-disk-storage")
 include("jdbc-storage")
+include("jpa-entities")
 include("jpa-storage")
 include("command-line-interface")
 include("application")
@@ -11,6 +12,7 @@ include("settings")
 include("common")
 include("http-interface")
 include("car-service-http-spring-boot-starter")
+include("car-service-jpa-spring-boot-starter")
 
 dependencyResolutionManagement {
     versionCatalogs {
@@ -46,6 +48,8 @@ dependencyResolutionManagement {
                 .versionRef(spring)
             library("spring-test", "org.springframework.boot", "spring-boot-starter-test")
                 .versionRef(spring)
+            library("spring-jpa", "org.springframework.boot", "spring-boot-starter-data-jpa")
+                .versionRef(spring)
 
             library("assertj", "org.assertj:assertj-core:3.23.1")
             library("logback", "ch.qos.logback:logback-classic:1.4.6")
@@ -54,6 +58,7 @@ dependencyResolutionManagement {
             library("h2", "com.h2database:h2:2.1.214")
             library("hikari", "com.zaxxer:HikariCP:5.0.1")
             library("flyway", "org.flywaydb:flyway-core:9.16.3")
+            library("jpa-api", "jakarta.persistence:jakarta.persistence-api:3.1.0")
         }
     }
 }

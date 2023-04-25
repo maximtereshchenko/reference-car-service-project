@@ -4,6 +4,7 @@ import com.andersenlab.carservice.port.external.OrderStore;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -42,7 +43,7 @@ public class OrderJpaEntity {
         price = orderEntity.price();
         status = orderEntity.status().name();
         garageSlotId = orderEntity.garageSlotId().orElse(null);
-        repairers = Set.copyOf(orderEntity.repairers());
+        repairers = new HashSet<>(orderEntity.repairers());
         created = orderEntity.created();
         closed = orderEntity.closed().orElse(null);
     }

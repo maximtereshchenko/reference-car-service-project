@@ -36,7 +36,7 @@ public final class JpaRepairerStore implements RepairerStore {
     @Override
     public void delete(UUID id) {
         database.findById(id, RepairerJpaEntity.class)
-                .ifPresent(repairerJpaEntity -> repairerJpaEntity.setDeleted(true));
+                .ifPresent(RepairerJpaEntity::setDeleted);
     }
 
     @Override

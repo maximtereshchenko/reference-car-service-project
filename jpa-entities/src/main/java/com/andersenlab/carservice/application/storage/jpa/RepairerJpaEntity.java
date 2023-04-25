@@ -27,10 +27,8 @@ public class RepairerJpaEntity {
     }
 
     public RepairerJpaEntity(RepairerStore.RepairerEntity repairerEntity) {
-        id = repairerEntity.id();
-        name = repairerEntity.name();
-        status = repairerEntity.status().name();
         isDeleted = false;
+        update(repairerEntity);
     }
 
     public Optional<RepairerStore.RepairerEntity> repairerEntity() {
@@ -46,7 +44,13 @@ public class RepairerJpaEntity {
         );
     }
 
-    void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+    public void setDeleted() {
+        isDeleted = true;
+    }
+
+    public void update(RepairerStore.RepairerEntity repairerEntity) {
+        id = repairerEntity.id();
+        name = repairerEntity.name();
+        status = repairerEntity.status().name();
     }
 }

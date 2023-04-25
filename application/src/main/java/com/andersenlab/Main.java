@@ -1,10 +1,10 @@
 package com.andersenlab;
 
-import com.andersenlab.carservice.application.storage.jpa.*;
 import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.domain.Module;
-import com.zaxxer.hikari.HikariDataSource;
-import org.flywaydb.core.Flyway;
+import com.andersenlab.carservice.port.external.GarageSlotStore;
+import com.andersenlab.carservice.port.external.OrderStore;
+import com.andersenlab.carservice.port.external.RepairerStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
@@ -23,38 +23,25 @@ class Main {
 
     @Bean
     CarServiceModule module(
-            @Value("${application.jdbc.url}") String jdbcUrl,
+            RepairerStore repairerStore,
+            GarageSlotStore garageSlotStore,
+            OrderStore orderStore,
             @Value("${application.garageSlots.addition.enabled}") boolean isGarageSlotAdditionEnabled,
             @Value("${application.garageSlots.deletion.enabled}") boolean isGarageSlotDeletionEnabled,
             Clock clock
     ) {
-        migrate(jdbcUrl);
-        var database = new Database(jdbcUrl);
-        var module = new Module.Builder()
-                .withRepairerStore(new JpaRepairerStore(database))
-                .withGarageSlotStore(new JpaGarageSlotStore(database))
-                .withOrderStore(new JpaOrderStore(database))
+        return new Module.Builder()
+                .withRepairerStore(repairerStore)
+                .withGarageSlotStore(garageSlotStore)
+                .withOrderStore(orderStore)
                 .garageSlotAdditionEnabled(isGarageSlotAdditionEnabled)
                 .garageSlotDeletionEnabled(isGarageSlotDeletionEnabled)
                 .withClock(clock)
                 .build();
-        return new TransactionalCarServiceModule(module, database);
     }
 
     @Bean
     Clock clock() {
         return Clock.systemDefaultZone();
-    }
-
-    private void migrate(String jdbcUrl) {
-        try (var dataSource = new HikariDataSource()) {
-            dataSource.setJdbcUrl(jdbcUrl);
-            Flyway.configure()
-                    .dataSource(dataSource)
-                    .locations("classpath:migrations")
-                    .loggers("slf4j")
-                    .load()
-                    .migrate();
-        }
     }
 }

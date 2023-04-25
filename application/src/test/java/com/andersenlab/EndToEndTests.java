@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = EndToEndTests.TestConfig.class,
-        properties = "application.jdbc.url=jdbc:h2:mem:car_service_e2e;DB_CLOSE_DELAY=1"
+        properties = "spring.datasource.url=jdbc:h2:mem:car_service_e2e;DB_CLOSE_DELAY=1"
 )
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(PredictableUUIDExtension.class)
