@@ -13,6 +13,7 @@ include("common")
 include("http-interface")
 include("car-service-http-spring-boot-starter")
 include("car-service-jpa-spring-boot-starter")
+include("car-service-on-disk-spring-boot-starter")
 
 dependencyResolutionManagement {
     versionCatalogs {

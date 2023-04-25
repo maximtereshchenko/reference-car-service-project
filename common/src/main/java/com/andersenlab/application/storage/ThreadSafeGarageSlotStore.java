@@ -8,10 +8,11 @@ import java.util.UUID;
 public final class ThreadSafeGarageSlotStore implements GarageSlotStore {
 
     private final GarageSlotStore original;
-    private final ReadWriteLockWrapper lock = new ReadWriteLockWrapper();
+    private final ReadWriteLockWrapper lock;
 
-    public ThreadSafeGarageSlotStore(GarageSlotStore original) {
+    public ThreadSafeGarageSlotStore(GarageSlotStore original, ReadWriteLockWrapper lock) {
         this.original = original;
+        this.lock = lock;
     }
 
     @Override

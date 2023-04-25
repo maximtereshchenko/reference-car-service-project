@@ -4,7 +4,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
 
-final class ReadWriteLockWrapper {
+public final class ReadWriteLockWrapper {
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 

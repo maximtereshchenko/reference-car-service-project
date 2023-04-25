@@ -9,10 +9,11 @@ import java.util.UUID;
 public final class ThreadSafeOrderStore implements OrderStore {
 
     private final OrderStore original;
-    private final ReadWriteLockWrapper lock = new ReadWriteLockWrapper();
+    private final ReadWriteLockWrapper lock;
 
-    public ThreadSafeOrderStore(OrderStore original) {
+    public ThreadSafeOrderStore(OrderStore original, ReadWriteLockWrapper lock) {
         this.original = original;
+        this.lock = lock;
     }
 
     @Override

@@ -8,10 +8,11 @@ import java.util.UUID;
 public final class ThreadSafeRepairerStore implements RepairerStore {
 
     private final RepairerStore original;
-    private final ReadWriteLockWrapper lock = new ReadWriteLockWrapper();
+    private final ReadWriteLockWrapper lock;
 
-    public ThreadSafeRepairerStore(RepairerStore original) {
+    public ThreadSafeRepairerStore(RepairerStore original, ReadWriteLockWrapper lock) {
         this.original = original;
+        this.lock = lock;
     }
 
     @Override

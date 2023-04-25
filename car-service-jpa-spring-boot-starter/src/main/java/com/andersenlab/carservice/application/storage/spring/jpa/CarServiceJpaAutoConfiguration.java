@@ -7,11 +7,10 @@ import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.external.RepairerStore;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
-@AutoConfiguration(after = JpaBaseConfiguration.class)
+@AutoConfiguration
 @EntityScan(basePackageClasses = RepairerJpaEntity.class)
 class CarServiceJpaAutoConfiguration {
 
