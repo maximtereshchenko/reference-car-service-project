@@ -1,65 +1,82 @@
 package com.andersenlab;
 
 import com.andersenlab.carservice.port.usecase.*;
-import com.andersenlab.extension.JettyExtension;
-import com.andersenlab.extension.JsonHttpClient;
 import com.andersenlab.extension.PredictableUUIDExtension;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = EndToEndTests.TestConfig.class,
+        properties = "application.jdbc.url=jdbc:h2:mem:car_service_e2e;DB_CLOSE_DELAY=1"
+)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ExtendWith({PredictableUUIDExtension.class, JettyExtension.class})
+@ExtendWith(PredictableUUIDExtension.class)
 final class EndToEndTests {
+
+    @Autowired
+    private TestRestTemplate restTemplate;
 
     @Test
     @Order(0)
-    void createRepairer(UUID repairerId, JsonHttpClient client) {
-        var response = client.post(
+    void createRepairer(UUID repairerId) {
+        var response = restTemplate.postForEntity(
                 "/repairers",
                 Map.of(
                         "id", repairerId.toString(),
                         "name", "John"
                 ),
-                new TypeReference<UUID>() {}
+                UUID.class
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.body()).isEqualTo(repairerId);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(repairerId);
     }
 
     @Test
     @Order(1)
-    void createRepairerWithSameId(UUID repairerId, JsonHttpClient client) {
-        var response = client.post(
+    void createRepairerWithSameId(UUID repairerId) {
+        var response = restTemplate.postForEntity(
                 "/repairers",
                 Map.of(
                         "id", repairerId.toString(),
                         "name", "John"
-                )
+                ),
+                Void.class
         );
 
-        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     @Order(2)
-    void listRepairers(UUID repairerId, JsonHttpClient client) {
-        var response = client.get(
-                "/repairers?sort=id",
-                new TypeReference<Collection<ListRepairersUseCase.RepairerView>>() {}
+    void listRepairers(UUID repairerId) {
+        var response = restTemplate.exchange(
+                RequestEntity.get("/repairers?sort=id").build(),
+                new ParameterizedTypeReference<Collection<ListRepairersUseCase.RepairerView>>() {}
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.body())
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody())
                 .singleElement()
                 .isEqualTo(
                         new ListRepairersUseCase.RepairerView(
@@ -72,27 +89,27 @@ final class EndToEndTests {
 
     @Test
     @Order(3)
-    void createGarageSlot(UUID garageSlot, JsonHttpClient client) {
-        var response = client.post(
+    void createGarageSlot(UUID garageSlot) {
+        var response = restTemplate.postForEntity(
                 "/garage-slots",
                 Map.of("id", garageSlot.toString()),
-                new TypeReference<UUID>() {}
+                UUID.class
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.body()).isEqualTo(garageSlot);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(garageSlot);
     }
 
     @Test
     @Order(4)
-    void listGarageSlots(UUID garageSlot, JsonHttpClient client) {
-        var response = client.get(
-                "/garage-slots?sort=id",
-                new TypeReference<Collection<ListGarageSlotsUseCase.GarageSlotView>>() {}
+    void listGarageSlots(UUID garageSlot) {
+        var response = restTemplate.exchange(
+                RequestEntity.get("/garage-slots?sort=id").build(),
+                new ParameterizedTypeReference<Collection<ListGarageSlotsUseCase.GarageSlotView>>() {}
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.body())
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody())
                 .singleElement()
                 .isEqualTo(
                         new ListGarageSlotsUseCase.GarageSlotView(
@@ -104,84 +121,88 @@ final class EndToEndTests {
 
     @Test
     @Order(5)
-    void createOrder(UUID orderId1, JsonHttpClient client) {
-        var response = client.post(
+    void createOrder(UUID orderId1) {
+        var response = restTemplate.postForEntity(
                 "/orders",
                 Map.of(
                         "id", orderId1.toString(),
                         "price", "100"
                 ),
-                new TypeReference<UUID>() {}
+                UUID.class
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.body()).isEqualTo(orderId1);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(orderId1);
     }
 
     @Test
     @Order(6)
-    void cancelOrder(UUID orderId1, JsonHttpClient client) {
-        var response = client.post("/orders/cancel", Map.of("id", orderId1.toString()));
+    void cancelOrder(UUID orderId1) {
+        var response = restTemplate.postForEntity("/orders/{id}/cancel", null, Void.class, orderId1);
 
-        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     @Order(7)
-    void assignGarageSlot(UUID orderId2, UUID garageSlot, JsonHttpClient client) {
-        client.post(
+    void assignGarageSlot(UUID orderId2, UUID garageSlotId) {
+        restTemplate.postForEntity(
                 "/orders",
                 Map.of(
                         "id", orderId2.toString(),
                         "price", "100"
-                )
+                ),
+                Void.class
         );
-        var response = client.post(
-                "/orders/assign/garage-slot",
-                Map.of(
-                        "id", orderId2.toString(),
-                        "garageSlotId", garageSlot.toString()
-                )
+        var response = restTemplate.postForEntity(
+                "/orders/{id}/assign/garage-slot/{garageSlotId}",
+                null,
+                Void.class,
+                orderId2,
+                garageSlotId
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     @Order(8)
-    void assignRepairer(UUID orderId2, UUID repairerId, JsonHttpClient client) {
-        var response = client.post(
-                "/orders/assign/repairer",
-                Map.of(
-                        "id", orderId2.toString(),
-                        "repairerId", repairerId.toString()
-                )
+    void assignRepairer(UUID orderId2, UUID repairerId) {
+        var response = restTemplate.postForEntity(
+                "/orders/{id}/assign/repairer/{repairerId}",
+                null,
+                Void.class,
+                orderId2,
+                repairerId
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     @Order(9)
-    void completeOrder(UUID orderId2, JsonHttpClient client) {
-        var response = client.post(
-                "/orders/complete",
-                Map.of("id", orderId2.toString())
+    void completeOrder(UUID orderId2) {
+        var response = restTemplate.postForEntity(
+                "/orders/{id}/complete",
+                null,
+                Void.class,
+                orderId2
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     @Order(10)
-    void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId, Instant timestamp, JsonHttpClient client) {
-        var response = client.get(
-                "/orders/" + orderId2,
-                new TypeReference<ViewOrderUseCase.OrderView>() {}
+    void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId) {
+        var response = restTemplate.getForEntity(
+                "/orders/{id}",
+                ViewOrderUseCase.OrderView.class,
+                orderId2
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.body())
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody())
                 .isEqualTo(
                         new ViewOrderUseCase.OrderView(
                                 orderId2,
@@ -189,61 +210,79 @@ final class EndToEndTests {
                                 OrderStatus.COMPLETED,
                                 Optional.of(garageSlotId),
                                 Set.of(repairerId),
-                                timestamp,
-                                Optional.of(timestamp)
+                                TestConfig.TIMESTAMP,
+                                Optional.of(TestConfig.TIMESTAMP)
                         )
                 );
     }
 
     @Test
     @Order(11)
-    void listOrders(UUID orderId1, UUID orderId2, Instant timestamp, JsonHttpClient client) {
-        var response = client.get(
-                "/orders?sort=id",
-                new TypeReference<Collection<ListOrdersUseCase.OrderView>>() {}
+    void listOrders(UUID orderId1, UUID orderId2) {
+        var response = restTemplate.exchange(
+                RequestEntity.get("/orders?sort=id").build(),
+                new ParameterizedTypeReference<Collection<ListOrdersUseCase.OrderView>>() {}
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.body())
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody())
                 .containsExactly(
                         new ListOrdersUseCase.OrderView(
                                 orderId1,
                                 100,
                                 OrderStatus.CANCELED,
-                                timestamp,
-                                Optional.of(timestamp)
+                                TestConfig.TIMESTAMP,
+                                Optional.of(TestConfig.TIMESTAMP)
                         ),
                         new ListOrdersUseCase.OrderView(
                                 orderId2,
                                 100,
                                 OrderStatus.COMPLETED,
-                                timestamp,
-                                Optional.of(timestamp)
+                                TestConfig.TIMESTAMP,
+                                Optional.of(TestConfig.TIMESTAMP)
                         )
                 );
     }
 
     @Test
     @Order(12)
-    void deleteRepairer(UUID repairerId, JsonHttpClient client) {
-        var response = client.delete("/repairers/" + repairerId);
+    void deleteRepairer(UUID repairerId) {
+        var response = restTemplate.exchange(
+                RequestEntity.delete("/repairers/{id}", repairerId).build(),
+                Void.class
+        );
 
-        assertThat(response.statusCode()).isEqualTo(204);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     @Test
     @Order(13)
-    void deleteGarageSlot(UUID garageSlotId, JsonHttpClient client) {
-        var response = client.delete("/garage-slots/" + garageSlotId);
+    void deleteGarageSlot(UUID garageSlotId) {
+        var response = restTemplate.exchange(
+                RequestEntity.delete("/garage-slots/{id}", garageSlotId).build(),
+                Void.class
+        );
 
-        assertThat(response.statusCode()).isEqualTo(204);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     @Test
     @Order(14)
-    void listOrdersWithoutSortParameter(JsonHttpClient client) {
-        var response = client.get("/orders");
+    void listOrdersWithoutSortParameter() {
+        var response = restTemplate.getForEntity("/orders", Void.class);
 
-        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+
+        private static final Instant TIMESTAMP = Instant.parse("2000-01-01T00:00:00.00Z");
+
+        @Bean
+        @Primary
+        Clock fixed() {
+            return Clock.fixed(TIMESTAMP, ZoneOffset.UTC);
+        }
     }
 }

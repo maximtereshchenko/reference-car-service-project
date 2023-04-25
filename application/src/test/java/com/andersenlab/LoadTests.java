@@ -2,17 +2,16 @@ package com.andersenlab;
 
 import com.andersenlab.carservice.port.usecase.ListOrdersUseCase;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
-import com.andersenlab.extension.JettyExtension;
-import com.andersenlab.extension.JsonHttpClient;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 
-import java.net.http.HttpResponse;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,17 +20,21 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-@ExtendWith(JettyExtension.class)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = "application.jdbc.url=jdbc:h2:mem:car_service_load;DB_CLOSE_DELAY=1"
+)
 final class LoadTests {
 
     private final CountDownLatch latch = new CountDownLatch(1);
+    @Autowired
+    private TestRestTemplate restTemplate;
 
     @Test
-    void givenManyConcurrentUpdates_whenRead_thenExpectedTotalNumberOfRecordsReturned(JsonHttpClient client)
-            throws Exception {
+    void givenManyConcurrentUpdates_whenRead_thenExpectedTotalNumberOfRecordsReturned() throws Exception {
         var executorService = Executors.newWorkStealingPool();
         var futures = IntStream.range(0, 1000)
-                .mapToObj(i -> executorService.submit(() -> completeOrderSafe(client)))
+                .mapToObj(i -> executorService.submit(() -> completeOrderSafe(restTemplate)))
                 .toList();
 
         latch.countDown();
@@ -42,20 +45,20 @@ final class LoadTests {
         }
         executorService.awaitTermination(1, TimeUnit.SECONDS);
 
-        var response = client.get(
-                "/orders?sort=id",
-                new TypeReference<Collection<ListOrdersUseCase.OrderView>>() {}
+        var response = restTemplate.exchange(
+                RequestEntity.get("/orders?sort=id").build(),
+                new ParameterizedTypeReference<Collection<ListOrdersUseCase.OrderView>>() {}
         );
 
-        assertThat(response.statusCode()).isEqualTo(200);
-        assertThat(response.body())
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody())
                 .hasSize(1000)
                 .allMatch(orderView -> orderView.status() == OrderStatus.COMPLETED);
     }
 
-    private Result completeOrderSafe(JsonHttpClient client) {
+    private Result completeOrderSafe(TestRestTemplate restTemplate) {
         try {
-            return completeOrder(client).orElse(new Success());
+            return completeOrder(restTemplate).orElse(new Success());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return new Failure(e);
@@ -64,7 +67,7 @@ final class LoadTests {
         }
     }
 
-    private Optional<Result> completeOrder(JsonHttpClient client) throws InterruptedException {
+    private Optional<Result> completeOrder(TestRestTemplate restTemplate) throws InterruptedException {
         latch.await();
 
         var garageSlotId = UUID.randomUUID();
@@ -72,13 +75,13 @@ final class LoadTests {
         var orderId = UUID.randomUUID();
 
         return post(
-                client,
+                restTemplate,
                 "/garage-slots",
                 Map.of("id", garageSlotId.toString())
         )
                 .or(() ->
                         post(
-                                client,
+                                restTemplate,
                                 "/repairers",
                                 Map.of(
                                         "id", repairerId.toString(),
@@ -88,7 +91,7 @@ final class LoadTests {
                 )
                 .or(() ->
                         post(
-                                client,
+                                restTemplate,
                                 "/orders",
                                 Map.of(
                                         "id", orderId.toString(),
@@ -98,36 +101,45 @@ final class LoadTests {
                 )
                 .or(() ->
                         post(
-                                client,
-                                "/orders/assign/garage-slot",
-                                Map.of(
-                                        "id", orderId.toString(),
-                                        "garageSlotId", garageSlotId.toString()
-                                )
+                                restTemplate,
+                                "/orders/{id}/assign/garage-slot/{garageSlotId}",
+                                null,
+                                orderId,
+                                garageSlotId
                         )
                 )
                 .or(() ->
                         post(
-                                client,
-                                "/orders/assign/repairer",
-                                Map.of(
-                                        "id", orderId.toString(),
-                                        "repairerId", repairerId.toString()
-                                )
+                                restTemplate,
+                                "/orders/{id}/assign/repairer/{repairerId}",
+                                null,
+                                orderId,
+                                repairerId
                         )
                 )
                 .or(() ->
                         post(
-                                client,
-                                "/orders/complete",
-                                Map.of("id", orderId.toString())
+                                restTemplate,
+                                "/orders/{id}/complete",
+                                null,
+                                orderId
                         )
                 );
     }
 
-    private Optional<Result> post(JsonHttpClient client, String uri, Map<String, String> body) {
-        var response = client.post(uri, body);
-        if (response.statusCode() != 200) {
+    private Optional<Result> post(
+            TestRestTemplate restTemplate,
+            String uri,
+            Map<String, String> body,
+            UUID... uriVars
+    ) {
+        var response = restTemplate.postForEntity(
+                uri,
+                body,
+                Void.class,
+                (Object[]) Arrays.copyOf(uriVars, uriVars.length)
+        );
+        if (response.getStatusCode() != HttpStatus.OK) {
             return Optional.of(new IncorrectResponse(response));
         }
         return Optional.empty();
@@ -146,7 +158,7 @@ final class LoadTests {
         }
     }
 
-    private record IncorrectResponse(HttpResponse<Void> response) implements Result {
+    private record IncorrectResponse(ResponseEntity<Void> response) implements Result {
 
         @Override
         public void onComplete() {

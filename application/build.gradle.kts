@@ -10,21 +10,17 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":domain"))
     implementation(project(":jpa-storage"))
-    implementation(project(":common"))
-    implementation(project(":http-interface"))
-    implementation(project(":settings"))
     implementation(libs.h2)
     implementation(libs.hikari)
     implementation(libs.flyway)
+    implementation(libs.spring.autoconfiguration)
+    implementation(project(":car-service-http-spring-boot-starter"))
 
     testCompileOnly(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
     testImplementation(libs.assertj)
-    testImplementation(libs.jackson)
-    testImplementation(libs.jackson.datatype.jdk8)
-    testImplementation(libs.jackson.datatype.jsr310)
+    testImplementation(libs.spring.test)
     testImplementation(testFixtures(project(":common")))
-    testImplementation(testFixtures(project(":settings")))
 }
 
 tasks {

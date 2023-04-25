@@ -1,5 +1,0 @@
-[application]
-jdbc.url = "jdbc:h2:file:./car_service"
-[application.garageSlots]
-addition.enabled = true
-deletion.enabled = true

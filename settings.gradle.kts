@@ -10,6 +10,7 @@ include("application")
 include("settings")
 include("common")
 include("http-interface")
+include("car-service-http-spring-boot-starter")
 
 dependencyResolutionManagement {
     versionCatalogs {
@@ -17,6 +18,7 @@ dependencyResolutionManagement {
             val junit = version("junit", "5.8.2")
             val jackson = version("jackson", "2.14.2")
             val hibernate = version("hibernate", "6.2.1.Final")
+            val spring = version("spring", "3.0.6")
 
             library("junit-api", "org.junit.jupiter", "junit-jupiter-api")
                 .versionRef(junit)
@@ -36,7 +38,14 @@ dependencyResolutionManagement {
             )
                 .versionRef(jackson)
             library("hibernate", "org.hibernate.orm", "hibernate-core").versionRef(hibernate)
-            library("hibernate-hikari", "org.hibernate.orm", "hibernate-hikaricp").versionRef(hibernate)
+            library("hibernate-hikari", "org.hibernate.orm", "hibernate-hikaricp")
+                .versionRef(hibernate)
+            library("spring-web", "org.springframework.boot", "spring-boot-starter-web")
+                .versionRef(spring)
+            library("spring-autoconfiguration", "org.springframework.boot", "spring-boot-autoconfigure")
+                .versionRef(spring)
+            library("spring-test", "org.springframework.boot", "spring-boot-starter-test")
+                .versionRef(spring)
 
             library("assertj", "org.assertj:assertj-core:3.23.1")
             library("logback", "ch.qos.logback:logback-classic:1.4.6")
