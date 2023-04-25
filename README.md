@@ -35,3 +35,4 @@ state.
 * **stage-3** - Application can be interacted with through HTTP requests instead of console interface
 * **stage-4** - Application state saved in database using JDBC instead of disk.
 * **stage-5** - Application state saved in database using JPA instead of JDBC.
+* **stage-6** - Application utilizes Spring Boot with starters for HTTP and storage configuration.
