@@ -1,6 +1,7 @@
 package com.andersenlab.carservice.application.storage.jpa;
 
 import com.andersenlab.carservice.port.external.RepairerStore;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -58,7 +59,7 @@ public final class JpaRepairerStore implements RepairerStore {
     public RepairerEntity getById(UUID id) {
         return database.findById(id, RepairerJpaEntity.class)
                 .flatMap(RepairerJpaEntity::repairerEntity)
-                .orElseThrow(() -> new CouldNotFindEntity(id));
+                .orElseThrow(() -> new EntityNotFoundException(id.toString()));
     }
 
     private String findAllQuery(Sort sort) {

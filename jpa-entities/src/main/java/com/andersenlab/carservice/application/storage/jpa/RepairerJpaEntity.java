@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "repairers")
-class RepairerJpaEntity {
+public class RepairerJpaEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -26,18 +26,14 @@ class RepairerJpaEntity {
     protected RepairerJpaEntity() {
     }
 
-    RepairerJpaEntity(RepairerStore.RepairerEntity repairerEntity) {
+    public RepairerJpaEntity(RepairerStore.RepairerEntity repairerEntity) {
         id = repairerEntity.id();
         name = repairerEntity.name();
         status = repairerEntity.status().name();
         isDeleted = false;
     }
 
-    void setDeleted(boolean deleted) {
-        isDeleted = deleted;
-    }
-
-    Optional<RepairerStore.RepairerEntity> repairerEntity() {
+    public Optional<RepairerStore.RepairerEntity> repairerEntity() {
         if (isDeleted) {
             return Optional.empty();
         }
@@ -48,5 +44,9 @@ class RepairerJpaEntity {
                         RepairerStore.RepairerStatus.valueOf(status)
                 )
         );
+    }
+
+    void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 }

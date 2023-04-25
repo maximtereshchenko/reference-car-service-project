@@ -1,6 +1,7 @@
 package com.andersenlab.carservice.application.storage.jpa;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -49,7 +50,7 @@ public final class JpaGarageSlotStore implements GarageSlotStore {
     public GarageSlotEntity getById(UUID id) {
         return database.findById(id, GarageSlotJpaEntity.class)
                 .flatMap(GarageSlotJpaEntity::garageSlotEntity)
-                .orElseThrow(() -> new CouldNotFindEntity(id));
+                .orElseThrow(() -> new EntityNotFoundException(id.toString()));
     }
 
     @Override

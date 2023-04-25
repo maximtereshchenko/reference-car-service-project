@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "garage_slots")
-class GarageSlotJpaEntity {
+public class GarageSlotJpaEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -24,17 +24,17 @@ class GarageSlotJpaEntity {
     protected GarageSlotJpaEntity() {
     }
 
-    GarageSlotJpaEntity(GarageSlotStore.GarageSlotEntity garageSlotEntity) {
+    public GarageSlotJpaEntity(GarageSlotStore.GarageSlotEntity garageSlotEntity) {
         id = garageSlotEntity.id();
         status = garageSlotEntity.status().name();
         isDeleted = false;
     }
 
-    void setDeleted(boolean deleted) {
+    public void setDeleted(boolean deleted) {
         isDeleted = deleted;
     }
 
-    Optional<GarageSlotStore.GarageSlotEntity> garageSlotEntity() {
+    public Optional<GarageSlotStore.GarageSlotEntity> garageSlotEntity() {
         if (isDeleted) {
             return Optional.empty();
         }

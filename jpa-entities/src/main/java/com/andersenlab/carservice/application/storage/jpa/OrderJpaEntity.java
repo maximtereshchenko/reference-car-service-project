@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
-class OrderJpaEntity {
+public class OrderJpaEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -33,12 +33,12 @@ class OrderJpaEntity {
     protected OrderJpaEntity() {
     }
 
-    OrderJpaEntity(OrderStore.OrderEntity orderEntity) {
+    public OrderJpaEntity(OrderStore.OrderEntity orderEntity) {
         id = orderEntity.id();
         update(orderEntity);
     }
 
-    void update(OrderStore.OrderEntity orderEntity) {
+    public void update(OrderStore.OrderEntity orderEntity) {
         price = orderEntity.price();
         status = orderEntity.status().name();
         garageSlotId = orderEntity.garageSlotId().orElse(null);
@@ -47,7 +47,7 @@ class OrderJpaEntity {
         closed = orderEntity.closed().orElse(null);
     }
 
-    OrderStore.OrderEntity orderEntity() {
+    public OrderStore.OrderEntity orderEntity() {
         return new OrderStore.OrderEntity(
                 id,
                 price,
@@ -59,7 +59,7 @@ class OrderJpaEntity {
         );
     }
 
-    OrderStore.OrderProjection orderProjection() {
+    public OrderStore.OrderProjection orderProjection() {
         return new OrderStore.OrderProjection(
                 id,
                 price,
