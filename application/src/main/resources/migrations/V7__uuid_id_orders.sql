@@ -1,1 +1,0 @@
-ALTER TABLE orders ALTER COLUMN id UUID;

@@ -1,1 +1,0 @@
-ALTER TABLE orders ALTER COLUMN garage_slot_id UUID;

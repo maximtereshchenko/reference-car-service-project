@@ -9,17 +9,19 @@ application {
 dependencies {
     implementation(project(":api"))
     implementation(project(":domain"))
-    implementation(libs.h2)
     implementation(libs.flyway)
     implementation(libs.spring.autoconfiguration)
     implementation(project(":car-service-http-spring-boot-starter"))
     implementation(project(":car-service-jpa-spring-boot-starter"))
+    implementation(libs.jdbc.postgresql)
 
     testCompileOnly(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
     testImplementation(libs.assertj)
     testImplementation(libs.spring.test)
     testImplementation(testFixtures(project(":common")))
+    testImplementation(libs.testcontainers)
+    testImplementation(libs.testcontainers.postgresql)
 }
 
 tasks {

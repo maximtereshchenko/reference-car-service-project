@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = "spring.datasource.url=jdbc:h2:mem:car_service_load;DB_CLOSE_DELAY=1"
+        properties = "spring.datasource.url=jdbc:tc:postgresql:15.2:///car_service_load"
 )
 final class LoadTests {
 

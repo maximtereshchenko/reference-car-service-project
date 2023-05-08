@@ -1,1 +1,0 @@
-ALTER TABLE garage_slots ALTER COLUMN id UUID;

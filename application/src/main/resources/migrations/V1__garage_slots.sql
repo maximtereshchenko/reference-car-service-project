@@ -1,1 +1,1 @@
-CREATE TABLE garage_slots (id VARCHAR PRIMARY KEY, status VARCHAR NOT NULL, is_deleted BOOLEAN NOT NULL);
+CREATE TABLE garage_slots (id UUID PRIMARY KEY, status VARCHAR NOT NULL, is_deleted BOOLEAN NOT NULL);

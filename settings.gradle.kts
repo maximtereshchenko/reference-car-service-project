@@ -22,6 +22,7 @@ dependencyResolutionManagement {
             val jackson = version("jackson", "2.14.2")
             val hibernate = version("hibernate", "6.2.1.Final")
             val spring = version("spring", "3.0.6")
+            val testcontainers = version("testcontainers", "1.18.0")
 
             library("junit-api", "org.junit.jupiter", "junit-jupiter-api")
                 .versionRef(junit)
@@ -51,6 +52,10 @@ dependencyResolutionManagement {
                 .versionRef(spring)
             library("spring-jpa", "org.springframework.boot", "spring-boot-starter-data-jpa")
                 .versionRef(spring)
+            library("testcontainers", "org.testcontainers", "testcontainers")
+                .versionRef(testcontainers)
+            library("testcontainers-postgresql", "org.testcontainers", "postgresql")
+                .versionRef(testcontainers)
 
             library("assertj", "org.assertj:assertj-core:3.23.1")
             library("logback", "ch.qos.logback:logback-classic:1.4.6")
@@ -60,6 +65,7 @@ dependencyResolutionManagement {
             library("hikari", "com.zaxxer:HikariCP:5.0.1")
             library("flyway", "org.flywaydb:flyway-core:9.16.3")
             library("jpa-api", "jakarta.persistence:jakarta.persistence-api:3.1.0")
+            library("jdbc.postgresql", "org.postgresql:postgresql:42.6.0")
         }
     }
 }
