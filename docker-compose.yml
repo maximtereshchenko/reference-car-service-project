@@ -1,0 +1,18 @@
+version: "3"
+services:
+  app:
+    image: "car-service:latest"
+    build:
+      context: ./
+    container_name: car-service
+    depends_on:
+      - postgresql
+    ports:
+      - "8080:8080"
+  postgresql:
+    image: "postgres:15.2-alpine"
+    container_name: postgresql
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=car_service

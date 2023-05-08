@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = EndToEndTests.TestConfig.class,
-        properties = "spring.datasource.url=jdbc:tc:postgresql:15.2:///car_service_e2e"
+        properties = "spring.datasource.url=jdbc:tc:postgresql:15.2-alpine:///car_service_e2e"
 )
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith(PredictableUUIDExtension.class)
