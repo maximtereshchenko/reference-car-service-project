@@ -36,3 +36,4 @@ state.
 * **stage-4** - Application state saved in database using JDBC instead of disk.
 * **stage-5** - Application state saved in database using JPA instead of JDBC.
 * **stage-6** - Application utilizes Spring Boot with starters for HTTP and storage configuration.
+* **stage-7** - Application uses PostgreSQL. The GitHub Actions pipeline includes step to build and push car-service container image.
