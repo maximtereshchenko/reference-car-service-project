@@ -5,6 +5,7 @@ import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.carservice.port.usecase.ViewOrderUseCase;
 import com.andersenlab.carservice.port.usecase.exception.*;
 import com.andersenlab.extension.CarServiceExtension;
+import com.andersenlab.extension.FakeMessageBroker;
 import com.andersenlab.extension.ManualClock;
 import com.andersenlab.extension.PredictableUUIDExtension;
 import org.junit.jupiter.api.Test;
@@ -497,6 +498,25 @@ class OrderTests {
         var useCase = module.cancelOrderUseCase();
 
         assertThatThrownBy(() -> useCase.cancel(orderId)).isInstanceOf(OrderHasBeenAlreadyCompleted.class);
+    }
+
+    @Test
+    void givenOrderExists_whenCompleteOrder_thenNewOrderIdPublished(
+            CarServiceModule module,
+            UUID repairer,
+            UUID garageSlot,
+            UUID orderId,
+            FakeMessageBroker messageBroker
+    ) {
+        module.addGarageSlotUseCase().add(garageSlot);
+        module.addRepairerUseCase().add(repairer, "John");
+        module.createOrderUseCase().create(orderId, 100);
+        module.assignGarageSlotToOrderUseCase().assignGarageSlot(orderId, garageSlot);
+        module.assignRepairerToOrderUseCase().assignRepairer(orderId, repairer);
+
+        module.completeOrderUseCase().complete(orderId);
+
+        assertThat(messageBroker.published()).isEqualTo(orderId);
     }
 
     private ListOrdersUseCase.OrderView orderView(UUID id, int price, Instant timestamp) {

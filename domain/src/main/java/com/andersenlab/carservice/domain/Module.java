@@ -13,6 +13,7 @@ public final class Module implements CarServiceModule {
     private final RepairerService repairerService;
     private final GarageSlotService garageSlotService;
     private final OrderService orderService;
+    private final MessageBroker messageBroker;
     private final boolean isGarageSlotAdditionEnabled;
     private final boolean isGarageSlotDeletionEnabled;
 
@@ -20,12 +21,13 @@ public final class Module implements CarServiceModule {
             RepairerService repairerService,
             GarageSlotService garageSlotService,
             OrderService orderService,
-            boolean isGarageSlotAdditionEnabled,
+            MessageBroker messageBroker, boolean isGarageSlotAdditionEnabled,
             boolean isGarageSlotDeletionEnabled
     ) {
         this.repairerService = repairerService;
         this.garageSlotService = garageSlotService;
         this.orderService = orderService;
+        this.messageBroker = messageBroker;
         this.isGarageSlotAdditionEnabled = isGarageSlotAdditionEnabled;
         this.isGarageSlotDeletionEnabled = isGarageSlotDeletionEnabled;
     }
@@ -68,7 +70,7 @@ public final class Module implements CarServiceModule {
 
     @Override
     public CreateOrderUseCase createOrderUseCase() {
-        return orderService;
+        return new PublishingCreateOrderUseCase(orderService, messageBroker);
     }
 
     @Override
@@ -107,6 +109,7 @@ public final class Module implements CarServiceModule {
         private GarageSlotStore garageSlotStore;
         private OrderStore orderStore;
         private Clock clock;
+        private MessageBroker messageBroker;
         private boolean isGarageSlotAdditionEnabled = true;
         private boolean isGarageSlotDeletionEnabled = true;
 
@@ -141,6 +144,7 @@ public final class Module implements CarServiceModule {
         }
 
         public Builder withMessageBroker(MessageBroker messageBroker) {
+            this.messageBroker = messageBroker;
             return this;
         }
 
@@ -151,6 +155,7 @@ public final class Module implements CarServiceModule {
                     repairerService,
                     garageSlotService,
                     new OrderService(orderStore, garageSlotService, repairerService, clock, new OrderFactory()),
+                    messageBroker,
                     isGarageSlotAdditionEnabled,
                     isGarageSlotDeletionEnabled
             );
