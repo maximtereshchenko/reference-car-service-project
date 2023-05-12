@@ -37,7 +37,7 @@ final class EndToEndTests {
     private TestRestTemplate restTemplate;
 
     @Test
-    @Order(0)
+    @Order(100)
     void createRepairer(UUID repairerId) {
         var response = restTemplate.postForEntity(
                 "/repairers",
@@ -53,7 +53,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(1)
+    @Order(200)
     void createRepairerWithSameId(UUID repairerId) {
         var response = restTemplate.postForEntity(
                 "/repairers",
@@ -68,7 +68,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(2)
+    @Order(300)
     void listRepairers(UUID repairerId) {
         var response = restTemplate.exchange(
                 RequestEntity.get("/repairers?sort=id").build(),
@@ -88,7 +88,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(3)
+    @Order(400)
     void createGarageSlot(UUID garageSlot) {
         var response = restTemplate.postForEntity(
                 "/garage-slots",
@@ -101,7 +101,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(4)
+    @Order(500)
     void listGarageSlots(UUID garageSlot) {
         var response = restTemplate.exchange(
                 RequestEntity.get("/garage-slots?sort=id").build(),
@@ -120,7 +120,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(5)
+    @Order(600)
     void createOrder(UUID orderId1) {
         var response = restTemplate.postForEntity(
                 "/orders",
@@ -136,7 +136,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(6)
+    @Order(700)
     void cancelOrder(UUID orderId1) {
         var response = restTemplate.postForEntity("/orders/{id}/cancel", null, Void.class, orderId1);
 
@@ -144,7 +144,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(7)
+    @Order(800)
     void assignGarageSlot(UUID orderId2, UUID garageSlotId) {
         restTemplate.postForEntity(
                 "/orders",
@@ -166,7 +166,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(8)
+    @Order(900)
     void assignRepairer(UUID orderId2, UUID repairerId) {
         var response = restTemplate.postForEntity(
                 "/orders/{id}/assign/repairer/{repairerId}",
@@ -180,7 +180,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(9)
+    @Order(1000)
     void completeOrder(UUID orderId2) {
         var response = restTemplate.postForEntity(
                 "/orders/{id}/complete",
@@ -193,7 +193,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(10)
+    @Order(1100)
     void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId) {
         var response = restTemplate.getForEntity(
                 "/orders/{id}",
@@ -217,7 +217,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(11)
+    @Order(1200)
     void listOrders(UUID orderId1, UUID orderId2) {
         var response = restTemplate.exchange(
                 RequestEntity.get("/orders?sort=id").build(),
@@ -245,7 +245,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(12)
+    @Order(1300)
     void deleteRepairer(UUID repairerId) {
         var response = restTemplate.exchange(
                 RequestEntity.delete("/repairers/{id}", repairerId).build(),
@@ -256,7 +256,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(13)
+    @Order(1400)
     void deleteGarageSlot(UUID garageSlotId) {
         var response = restTemplate.exchange(
                 RequestEntity.delete("/garage-slots/{id}", garageSlotId).build(),
@@ -267,7 +267,7 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(14)
+    @Order(1500)
     void listOrdersWithoutSortParameter() {
         var response = restTemplate.getForEntity("/orders", Void.class);
 
