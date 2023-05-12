@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -24,13 +26,9 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        classes = EndToEndTests.TestConfig.class,
-        properties = "spring.datasource.url=jdbc:tc:postgresql:15.2-alpine:///car_service_e2e"
-)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EndToEndTests.TestConfig.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ExtendWith(PredictableUUIDExtension.class)
+@ExtendWith({PredictableUUIDExtension.class, ContainersExtension.class})
 final class EndToEndTests {
 
     @Autowired
