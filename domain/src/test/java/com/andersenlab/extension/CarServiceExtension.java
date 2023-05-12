@@ -9,36 +9,55 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public final class CarServiceExtension implements ParameterResolver {
 
-    private final Map<String, ManualClock> clocks = new ConcurrentHashMap<>();
+    private final Map<String, Context> contextHolder = new HashMap<>();
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        var type = parameterContext.getParameter().getType();
-        return type == CarServiceModule.class ||
-                type == ManualClock.class ||
-                type == Module.Builder.class;
+        return contextHolder.computeIfAbsent(extensionContext.getUniqueId(), id -> Context.create())
+                .supports(parameterContext.getParameter().getType());
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        var type = parameterContext.getParameter().getType();
-        var clock = clocks.computeIfAbsent(extensionContext.getUniqueId(), id -> new ManualClock());
-        if (type == ManualClock.class) {
-            return clock;
+        return contextHolder.get(extensionContext.getUniqueId()).parameter(parameterContext.getParameter().getType());
+    }
+
+    private record Context(Map<Class<?>, Object> parameters) {
+
+        private Context(ManualClock clock, FakeMessageBroker messageBroker, Module.Builder builder) {
+            this(
+                    Map.of(
+                            ManualClock.class, clock,
+                            FakeMessageBroker.class, messageBroker,
+                            Module.Builder.class, builder,
+                            CarServiceModule.class, builder.build()
+                    )
+            );
         }
-        var builder = new Module.Builder()
-                .withRepairerStore(new InMemoryRepairerStore())
-                .withGarageSlotStore(new InMemoryGarageSlotStore())
-                .withOrderStore(new InMemoryOrderStore())
-                .withClock(clock);
-        if (type == Module.Builder.class) {
-            return builder;
+
+        static Context create() {
+            var clock = new ManualClock();
+            var messageBroker = new FakeMessageBroker();
+            var builder = new Module.Builder()
+                    .withRepairerStore(new InMemoryRepairerStore())
+                    .withGarageSlotStore(new InMemoryGarageSlotStore())
+                    .withOrderStore(new InMemoryOrderStore())
+                    .withClock(clock)
+                    .withMessageBroker(messageBroker);
+            return new Context(clock, messageBroker, builder);
         }
-        return builder.build();
+
+        boolean supports(Class<?> type) {
+            return parameters.containsKey(type);
+        }
+
+        Object parameter(Class<?> type) {
+            return parameters.get(type);
+        }
     }
 }

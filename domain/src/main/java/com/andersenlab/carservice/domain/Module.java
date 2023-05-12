@@ -1,6 +1,7 @@
 package com.andersenlab.carservice.domain;
 
 import com.andersenlab.carservice.port.external.GarageSlotStore;
+import com.andersenlab.carservice.port.external.MessageBroker;
 import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.external.RepairerStore;
 import com.andersenlab.carservice.port.usecase.*;
@@ -136,6 +137,10 @@ public final class Module implements CarServiceModule {
 
         public Builder garageSlotDeletionEnabled(boolean isGarageSlotDeletionEnabled) {
             this.isGarageSlotDeletionEnabled = isGarageSlotDeletionEnabled;
+            return this;
+        }
+
+        public Builder withMessageBroker(MessageBroker messageBroker) {
             return this;
         }
 
