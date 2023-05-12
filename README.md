@@ -20,8 +20,31 @@ This is a reference project for Java intensive course.
 
 ## How to run?
 
+NOTE: requires Docker installed
+
 ```bash
 docker-compose up
+```
+
+And then you can interact with the Car Service, e.g.:
+
+```bash
+curl http://localhost:8080/repairers?sort=id
+```
+
+## How to create a Kubernetes cluster locally?
+
+NOTE: requires Minikube, kubectl, Docker installed
+
+```bash
+minikube start --addons ingress
+kubectl apply -f kubernetes/
+```
+
+And then you can interact with the Car Service, e.g.:
+
+```bash
+curl --resolve "car-service.com:80:$(minikube ip)" http://car-service.com/repairers?sort=id
 ```
 
 ## Tags
@@ -36,4 +59,6 @@ state.
 * **stage-4** - Application state saved in database using JDBC instead of disk.
 * **stage-5** - Application state saved in database using JPA instead of JDBC.
 * **stage-6** - Application utilizes Spring Boot with starters for HTTP and storage configuration.
-* **stage-7** - Application uses PostgreSQL. The GitHub Actions pipeline includes step to build and push car-service container image.
+* **stage-7** - Application uses PostgreSQL. The GitHub Actions pipeline includes step to build and push car-service
+  container image.
+* **stage-8** - There are Kubernetes manifests to run the Application in the Kubernetes cluster.
