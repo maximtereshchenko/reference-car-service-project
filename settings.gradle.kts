@@ -52,6 +52,8 @@ dependencyResolutionManagement {
                 .versionRef(spring)
             library("spring-jpa", "org.springframework.boot", "spring-boot-starter-data-jpa")
                 .versionRef(spring)
+            library("spring-actuator", "org.springframework.boot", "spring-boot-starter-actuator")
+                .versionRef(spring)
             library("testcontainers", "org.testcontainers", "testcontainers")
                 .versionRef(testcontainers)
             library("testcontainers-postgresql", "org.testcontainers", "postgresql")

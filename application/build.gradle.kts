@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":car-service-http-spring-boot-starter"))
     implementation(project(":car-service-jpa-spring-boot-starter"))
     implementation(libs.jdbc.postgresql)
+    implementation(libs.spring.actuator)
 
     testCompileOnly(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)

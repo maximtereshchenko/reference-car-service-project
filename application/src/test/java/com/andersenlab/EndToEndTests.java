@@ -37,6 +37,24 @@ final class EndToEndTests {
     private TestRestTemplate restTemplate;
 
     @Test
+    @Order(50)
+    void livenessProbeEnabled() {
+        var response = restTemplate.getForEntity("/actuator/health/liveness", Health.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(new Health());
+    }
+
+    @Test
+    @Order(75)
+    void readinessProbeEnabled() {
+        var response = restTemplate.getForEntity("/actuator/health/readiness", Health.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(new Health());
+    }
+
+    @Test
     @Order(100)
     void createRepairer(UUID repairerId) {
         var response = restTemplate.postForEntity(
@@ -283,6 +301,13 @@ final class EndToEndTests {
         @Primary
         Clock fixed() {
             return Clock.fixed(TIMESTAMP, ZoneOffset.UTC);
+        }
+    }
+
+    private record Health(String status) {
+
+        private Health() {
+            this("UP");
         }
     }
 }
