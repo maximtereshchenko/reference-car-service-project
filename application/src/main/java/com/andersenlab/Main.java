@@ -3,6 +3,7 @@ package com.andersenlab;
 import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.domain.Module;
 import com.andersenlab.carservice.port.external.GarageSlotStore;
+import com.andersenlab.carservice.port.external.MessageBroker;
 import com.andersenlab.carservice.port.external.OrderStore;
 import com.andersenlab.carservice.port.external.RepairerStore;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,9 +27,10 @@ class Main {
             RepairerStore repairerStore,
             GarageSlotStore garageSlotStore,
             OrderStore orderStore,
-            @Value("${application.garageSlots.addition.enabled}") boolean isGarageSlotAdditionEnabled,
-            @Value("${application.garageSlots.deletion.enabled}") boolean isGarageSlotDeletionEnabled,
-            Clock clock
+            @Value("${car-service.garageSlots.addition.enabled}") boolean isGarageSlotAdditionEnabled,
+            @Value("${car-service.garageSlots.deletion.enabled}") boolean isGarageSlotDeletionEnabled,
+            Clock clock,
+            MessageBroker messageBroker
     ) {
         return new Module.Builder()
                 .withRepairerStore(repairerStore)
@@ -37,6 +39,7 @@ class Main {
                 .garageSlotAdditionEnabled(isGarageSlotAdditionEnabled)
                 .garageSlotDeletionEnabled(isGarageSlotDeletionEnabled)
                 .withClock(clock)
+                .withMessageBroker(messageBroker)
                 .build();
     }
 

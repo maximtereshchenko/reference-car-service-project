@@ -14,6 +14,7 @@ include("http-interface")
 include("car-service-http-spring-boot-starter")
 include("car-service-jpa-spring-boot-starter")
 include("car-service-on-disk-spring-boot-starter")
+include("car-service-apache-kafka-spring-boot-starter")
 
 dependencyResolutionManagement {
     versionCatalogs {
@@ -54,9 +55,13 @@ dependencyResolutionManagement {
                 .versionRef(spring)
             library("spring-actuator", "org.springframework.boot", "spring-boot-starter-actuator")
                 .versionRef(spring)
+            library("spring-kafka", "org.springframework.kafka", "spring-kafka")
+                .versionRef(spring)
             library("testcontainers", "org.testcontainers", "testcontainers")
                 .versionRef(testcontainers)
             library("testcontainers-postgresql", "org.testcontainers", "postgresql")
+                .versionRef(testcontainers)
+            library("testcontainers-kafka", "org.testcontainers", "kafka")
                 .versionRef(testcontainers)
 
             library("assertj", "org.assertj:assertj-core:3.23.1")

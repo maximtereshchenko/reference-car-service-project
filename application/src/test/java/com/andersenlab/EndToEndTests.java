@@ -2,12 +2,16 @@ package com.andersenlab;
 
 import com.andersenlab.carservice.port.usecase.*;
 import com.andersenlab.extension.PredictableUUIDExtension;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.VoidDeserializer;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -16,10 +20,12 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -33,6 +39,10 @@ final class EndToEndTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private KafkaTemplate<Void, String> kafkaTemplate;
+    @Value("${car-service.kafka.topic}")
+    private String topic;
 
     @Test
     @Order(50)
@@ -149,6 +159,8 @@ final class EndToEndTests {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(orderId1);
+        assertThat(kafkaTemplate.receive(topic, 0, 0, Duration.ofMinutes(1)).value())
+                .isEqualTo(orderId1.toString());
     }
 
     @Test
@@ -178,6 +190,8 @@ final class EndToEndTests {
                 garageSlotId
         );
 
+        assertThat(kafkaTemplate.receive(topic, 0, 1, Duration.ofMinutes(1)).value())
+                .isEqualTo(orderId2.toString());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -299,6 +313,25 @@ final class EndToEndTests {
         @Primary
         Clock fixed() {
             return Clock.fixed(TIMESTAMP, ZoneOffset.UTC);
+        }
+
+        @Bean
+        KafkaTemplate<Void, String> kafkaTemplate(
+                ProducerFactory<Void, String> producerFactory,
+                @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers
+        ) {
+            var kafkaTemplate = new KafkaTemplate<>(producerFactory);
+            kafkaTemplate.setConsumerFactory(
+                    new DefaultKafkaConsumerFactory<>(
+                            Map.of(
+                                    ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
+                                    ConsumerConfig.GROUP_ID_CONFIG, "test",
+                                    ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidDeserializer.class.getName(),
+                                    ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName()
+                            )
+                    )
+            );
+            return kafkaTemplate;
         }
     }
 
