@@ -9,9 +9,18 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/car_service
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      CARSERVICE_KAFKA_TOPIC: orders
+      SPRING_KAFKA_BOOTSTRAPSERVERS: apache-kafka:9092
     depends_on:
       postgresql:
         condition: service_healthy
+      apache-kafka:
+        condition: service_healthy
+    healthcheck:
+      test: "nc -z localhost 8080 || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 10
     ports:
       - "8080:8080"
   postgresql:
@@ -22,7 +31,38 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: car_service
     healthcheck:
-      test: "pg_isready"
+      test: "pg_isready || exit 1"
       interval: 5s
       timeout: 5s
       retries: 10
+    ports:
+      - "5432"
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    healthcheck:
+      test: "nc -z localhost 2181 || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "2181"
+  apache-kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: apache-kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://apache-kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+    healthcheck:
+      test: "kafka-topics --bootstrap-server apache-kafka:9092 --list || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "9092"
