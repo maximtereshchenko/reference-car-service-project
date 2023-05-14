@@ -37,7 +37,7 @@ curl http://localhost:8080/repairers?sort=id
 NOTE: requires Minikube, kubectl, Docker installed
 
 ```bash
-minikube start --addons ingress
+minikube start --cpus=max --memory=20000Mb --addons=ingress
 kubectl apply -f kubernetes/
 ```
 
