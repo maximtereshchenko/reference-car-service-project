@@ -58,6 +58,12 @@ dependencyResolutionManagement {
                 .versionRef(spring)
             library("spring-kafka", "org.springframework.kafka", "spring-kafka")
                 .versionRef(spring)
+            library(
+                "spring-configuration-processor",
+                "org.springframework.boot",
+                "spring-boot-configuration-processor"
+            )
+                .versionRef(spring)
             library("testcontainers", "org.testcontainers", "testcontainers")
                 .versionRef(testcontainers)
             library("testcontainers-postgresql", "org.testcontainers", "postgresql")

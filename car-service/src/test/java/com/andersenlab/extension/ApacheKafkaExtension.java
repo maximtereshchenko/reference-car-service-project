@@ -12,6 +12,7 @@ public final class ApacheKafkaExtension extends ContainerExtension<KafkaContaine
                 new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0")),
                 Map.of(
                         "car-service.kafka.topic", container -> "test",
+                        "car-service.kafka.enabled", container -> "true",
                         "spring.kafka.bootstrap-servers", KafkaContainer::getBootstrapServers
                 )
         );
