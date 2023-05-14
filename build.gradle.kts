@@ -1,6 +1,6 @@
 allprojects {
     group = "com.andersenlab.carservice"
-    version = "1.1"
+    version = "2.0"
 }
 
 subprojects {
