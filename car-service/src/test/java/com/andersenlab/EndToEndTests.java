@@ -1,6 +1,8 @@
 package com.andersenlab;
 
 import com.andersenlab.carservice.port.usecase.*;
+import com.andersenlab.extension.ApacheKafkaExtension;
+import com.andersenlab.extension.PostgreSqlExtension;
 import com.andersenlab.extension.PredictableUUIDExtension;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -34,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EndToEndTests.TestConfig.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ExtendWith({PredictableUUIDExtension.class, ContainersExtension.class})
+@ExtendWith({PredictableUUIDExtension.class, PostgreSqlExtension.class, ApacheKafkaExtension.class})
 final class EndToEndTests {
 
     @Autowired
