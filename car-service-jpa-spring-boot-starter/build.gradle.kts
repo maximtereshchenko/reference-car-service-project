@@ -9,3 +9,9 @@ dependencies {
     implementation(libs.spring.jpa)
     implementation(libs.jpa.api)
 }
+
+tasks {
+    compileJava {
+        options.compilerArgs.add("-parameters")
+    }
+}
