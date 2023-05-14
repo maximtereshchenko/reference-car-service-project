@@ -8,15 +8,22 @@ services:
         module: car-service
     container_name: car-service
     environment:
+      SPRING_PROFILES_ACTIVE: artemis
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/car_service
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       CARSERVICE_KAFKA_TOPIC: orders
       SPRING_KAFKA_BOOTSTRAPSERVERS: apache-kafka:9092
+      CARSERVICE_ARTEMIS_QUEUE: orders
+      SPRING_ARTEMIS_BROKERURL: tcp://artemis:61616
+      SPRING_ARTEMIS_USER: artemis
+      SPRING_ARTEMIS_PASSWORD: artemis
     depends_on:
       postgresql:
         condition: service_healthy
       apache-kafka:
+        condition: service_healthy
+      artemis:
         condition: service_healthy
     healthcheck:
       test: "nc -z localhost 8080 || exit 1"
@@ -88,3 +95,16 @@ services:
       retries: 10
     ports:
       - "9092"
+  artemis:
+    image: quay.io/artemiscloud/activemq-artemis-broker:1.0.17
+    container_name: artemis
+    environment:
+      AMQ_USER: artemis
+      AMQ_PASSWORD: artemis
+    healthcheck:
+      test: "/home/jboss/broker/bin/artemis check node || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "61616"
