@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: apache-kafka
+spec:
+  selector:
+    app: apache-kafka
+  clusterIP: "None"
+  ports:
+    - port: 9092
+      name: http
+      targetPort: http

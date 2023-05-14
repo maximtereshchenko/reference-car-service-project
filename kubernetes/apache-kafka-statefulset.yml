@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: apache-kafka
+spec:
+  selector:
+    matchLabels:
+      app: apache-kafka
+  serviceName: apache-kafka
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: apache-kafka
+    spec:
+      containers:
+        - name: apache-kafka
+          image: confluentinc/cp-kafka:7.4.0
+          envFrom:
+            - configMapRef:
+                name: apache-kafka
+          ports:
+            - containerPort: 9092
+              name: http
+          readinessProbe:
+            exec:
+              command: [ "kafka-topics", "--bootstrap-server", "localhost:9092", "--list" ]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/kafka/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100Mi

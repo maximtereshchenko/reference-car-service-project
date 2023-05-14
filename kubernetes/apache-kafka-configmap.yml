@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apache-kafka
+data:
+  KAFKA_ZOOKEEPER_CONNECT: zookeeper-0.zookeeper.default.svc.cluster.local:2181
+  KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://apache-kafka-0.apache-kafka.default.svc.cluster.local:9092
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
