@@ -32,6 +32,7 @@ jobs:
         module:
           - car-service
           - apache-kafka-consumer
+          - artemis-consumer
     steps:
       - uses: actions/checkout@v3
       - name: Log in to Docker Hub
