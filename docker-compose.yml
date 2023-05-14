@@ -23,6 +23,23 @@ services:
       retries: 10
     ports:
       - "8080:8080"
+  apache-kafka-consumer:
+    image: apache-kafka-consumer:latest
+    build:
+      context: ./
+      dockerfile: apache-kafka-consumer.Dockerfile
+    container_name: apache-kafka-consumer
+    environment:
+      APACHEKAFKACONSUMER_KAFKA_TOPIC: orders
+      SPRING_KAFKA_BOOTSTRAPSERVERS: apache-kafka:9092
+    depends_on:
+      apache-kafka:
+        condition: service_healthy
+    healthcheck:
+      test: "nc -z localhost 8080 || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 10
   postgresql:
     image: postgres:15.2-alpine
     container_name: postgresql
@@ -57,10 +74,12 @@ services:
         condition: service_healthy
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://apache-kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://apache-kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     healthcheck:
-      test: "kafka-topics --bootstrap-server apache-kafka:9092 --list || exit 1"
+      test: "kafka-topics --bootstrap-server localhost:9092 --list || exit 1"
       interval: 5s
       timeout: 5s
       retries: 10

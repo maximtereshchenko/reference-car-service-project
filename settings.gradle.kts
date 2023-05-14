@@ -15,6 +15,7 @@ include("car-service-http-spring-boot-starter")
 include("car-service-jpa-spring-boot-starter")
 include("car-service-on-disk-spring-boot-starter")
 include("car-service-apache-kafka-spring-boot-starter")
+include("apache-kafka-consumer")
 
 dependencyResolutionManagement {
     versionCatalogs {
