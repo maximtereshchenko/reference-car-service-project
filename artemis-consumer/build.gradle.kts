@@ -8,5 +8,6 @@ application {
 
 dependencies {
     implementation(libs.spring.artemis)
+    implementation(libs.spring.web)
     implementation(libs.spring.actuator)
 }
