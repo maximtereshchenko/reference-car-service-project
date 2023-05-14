@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apache-kafka-consumer
+data:
+  APACHEKAFKACONSUMER_KAFKA_TOPIC: orders
+  SPRING_KAFKA_BOOTSTRAPSERVERS: apache-kafka-0.apache-kafka.default.svc.cluster.local:9092

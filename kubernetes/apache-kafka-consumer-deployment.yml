@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache-kafka-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apache-kafka-consumer
+  template:
+    metadata:
+      labels:
+        app: apache-kafka-consumer
+    spec:
+      containers:
+        - name: apache-kafka-consumer
+          image: xini/apache-kafka-consumer:2.0
+          envFrom:
+            - configMapRef:
+                name: apache-kafka-consumer
+          ports:
+            - containerPort: 8080
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 10
