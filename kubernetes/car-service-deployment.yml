@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: car-service
-          image: xini/car-service:2.1
+          image: xini/car-service:2.2
           env:
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
@@ -26,9 +26,15 @@ spec:
                 secretKeyRef:
                   name: postgresql
                   key: password
+            - name: SPRING_PROFILES_ACTIVE
+              value: apache-kafka
           envFrom:
             - configMapRef:
-                name: car-service
+                name: car-service-common
+            - configMapRef:
+                name: car-service-apache-kafka
+            - configMapRef:
+                name: car-service-artemis
           ports:
             - containerPort: 8080
               name: http

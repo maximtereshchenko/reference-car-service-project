@@ -1,8 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: car-service
+  name: car-service-apache-kafka
 data:
-  SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql-0.postgresql.default.svc.cluster.local:5432/car_service
   CARSERVICE_KAFKA_TOPIC: orders
   SPRING_KAFKA_BOOTSTRAPSERVERS: apache-kafka-0.apache-kafka.default.svc.cluster.local:9092
