@@ -4,6 +4,8 @@ services:
     image: car-service:latest
     build:
       context: ./
+      args:
+        module: car-service
     container_name: car-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql:5432/car_service
@@ -27,7 +29,8 @@ services:
     image: apache-kafka-consumer:latest
     build:
       context: ./
-      dockerfile: apache-kafka-consumer.Dockerfile
+      args:
+        module: apache-kafka-consumer
     container_name: apache-kafka-consumer
     environment:
       APACHEKAFKACONSUMER_KAFKA_TOPIC: orders
