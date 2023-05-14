@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: car-service
-          image: xini/car-service:2.0
+          image: xini/car-service:2.1
           env:
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
