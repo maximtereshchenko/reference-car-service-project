@@ -16,6 +16,7 @@ include("car-service-jpa-spring-boot-starter")
 include("car-service-on-disk-spring-boot-starter")
 include("car-service-apache-kafka-spring-boot-starter")
 include("apache-kafka-consumer")
+include("car-service-artemis-spring-boot-starter")
 
 dependencyResolutionManagement {
     versionCatalogs {
@@ -58,11 +59,7 @@ dependencyResolutionManagement {
                 .versionRef(spring)
             library("spring-kafka", "org.springframework.kafka", "spring-kafka")
                 .versionRef(spring)
-            library(
-                "spring-configuration-processor",
-                "org.springframework.boot",
-                "spring-boot-configuration-processor"
-            )
+            library("spring-artemis", "org.springframework.boot", "spring-boot-starter-artemis")
                 .versionRef(spring)
             library("testcontainers", "org.testcontainers", "testcontainers")
                 .versionRef(testcontainers)
@@ -79,7 +76,9 @@ dependencyResolutionManagement {
             library("hikari", "com.zaxxer:HikariCP:5.0.1")
             library("flyway", "org.flywaydb:flyway-core:9.16.3")
             library("jpa-api", "jakarta.persistence:jakarta.persistence-api:3.1.0")
-            library("jdbc.postgresql", "org.postgresql:postgresql:42.6.0")
+            library("jdbc-postgresql", "org.postgresql:postgresql:42.6.0")
+            library("spring-jms", "org.springframework:spring-jms:6.0.8")
+            library("jms-api", "jakarta.jms:jakarta.jms-api:3.1.0")
         }
     }
 }

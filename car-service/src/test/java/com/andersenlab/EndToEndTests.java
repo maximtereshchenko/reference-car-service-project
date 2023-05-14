@@ -25,6 +25,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -35,6 +36,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EndToEndTests.TestConfig.class)
+@ActiveProfiles("apache-kafka")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith({PredictableUUIDExtension.class, PostgreSqlExtension.class, ApacheKafkaExtension.class})
 final class EndToEndTests {

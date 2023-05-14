@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.jdbc.postgresql)
     implementation(libs.spring.actuator)
     implementation(project(":car-service-apache-kafka-spring-boot-starter"))
+    implementation(project(":car-service-artemis-spring-boot-starter"))
 
     testCompileOnly(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
