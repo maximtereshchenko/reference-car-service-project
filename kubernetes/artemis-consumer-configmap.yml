@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: artemis-consumer
+data:
+  ARTEMISCONSUMER_ARTEMIS_QUEUE: orders
+  SPRING_ARTEMIS_BROKERURL: tcp://artemis-0.artemis.default.svc.cluster.local:61616
