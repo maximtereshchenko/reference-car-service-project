@@ -33,12 +33,19 @@ spec:
           ports:
             - containerPort: 5432
               name: http
+          readinessProbe:
+            exec:
+              command:
+                - "pg_isready"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 10
           volumeMounts:
-            - name: database
+            - name: data
               mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
     - metadata:
-        name: database
+        name: data
       spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
