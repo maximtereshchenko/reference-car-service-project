@@ -62,3 +62,5 @@ state.
 * **stage-7** - Application uses PostgreSQL. The GitHub Actions pipeline includes step to build and push car-service
   container image.
 * **stage-8** - There are Kubernetes manifests to run the Application in the Kubernetes cluster.
+* **stage-9** - Application publishes a message on order creation either to Apache Kafka or
+  ActiveMQ Artemis using Spring profiles ("apache-kafka" or "artemis" respectively).
