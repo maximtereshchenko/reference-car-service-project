@@ -50,6 +50,26 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+  artemis-consumer:
+    image: artemis-consumer:latest
+    build:
+      context: ./
+      args:
+        module: artemis-consumer
+    container_name: artemis-consumer
+    environment:
+      ARTEMISCONSUMER_ARTEMIS_QUEUE: orders
+      SPRING_ARTEMIS_BROKERURL: tcp://artemis:61616
+      SPRING_ARTEMIS_USER: artemis
+      SPRING_ARTEMIS_PASSWORD: artemis
+    depends_on:
+      artemis:
+        condition: service_healthy
+    healthcheck:
+      test: "nc -z localhost 8080 || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 10
   postgresql:
     image: postgres:15.2-alpine
     container_name: postgresql
