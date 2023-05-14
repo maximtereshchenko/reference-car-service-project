@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: artemis
+spec:
+  selector:
+    matchLabels:
+      app: artemis
+  serviceName: artemis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: artemis
+    spec:
+      containers:
+        - name: artemis
+          image: quay.io/artemiscloud/activemq-artemis-broker:1.0.17
+          env:
+            - name: AMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: artemis
+                  key: user
+            - name: AMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: artemis
+                  key: password
+            - name: ARTEMIS_DATA_DIR
+              value: /var/lib/artemis/data
+          ports:
+            - containerPort: 61616
+              name: tcp
+          readinessProbe:
+            exec:
+              command: [ "/home/jboss/broker/bin/artemis", "check", "node" ]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/artemis/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100Mi

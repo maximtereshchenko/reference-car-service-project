@@ -4,6 +4,4 @@ metadata:
   name: car-service-artemis
 data:
   CARSERVICE_ARTEMIS_QUEUE: orders
-  SPRING_ARTEMIS_BROKERURL: tcp://artemis:61616
-  SPRING_ARTEMIS_USER: artemis
-  SPRING_ARTEMIS_PASSWORD: artemis
+  SPRING_ARTEMIS_BROKERURL: tcp://artemis-0.artemis.default.svc.cluster.local:61616

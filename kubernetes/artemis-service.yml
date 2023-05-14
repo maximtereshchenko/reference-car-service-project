@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: artemis
+spec:
+  selector:
+    app: artemis
+  clusterIP: "None"
+  ports:
+    - port: 61616
+      name: tcp
+      targetPort: tcp

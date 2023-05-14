@@ -26,8 +26,18 @@ spec:
                 secretKeyRef:
                   name: postgresql
                   key: password
+            - name: SPRING_ARTEMIS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: artemis
+                  key: user
+            - name: SPRING_ARTEMIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: artemis
+                  key: password
             - name: SPRING_PROFILES_ACTIVE
-              value: apache-kafka
+              value: artemis
           envFrom:
             - configMapRef:
                 name: car-service-common
