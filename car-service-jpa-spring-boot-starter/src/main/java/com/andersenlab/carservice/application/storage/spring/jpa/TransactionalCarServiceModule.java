@@ -4,11 +4,11 @@ import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.port.usecase.*;
 import org.springframework.transaction.annotation.Transactional;
 
-class TransactionalCarServiceModule implements CarServiceModule {
+public class TransactionalCarServiceModule implements CarServiceModule {
 
     private final CarServiceModule original;
 
-    TransactionalCarServiceModule(CarServiceModule original) {
+    public TransactionalCarServiceModule(CarServiceModule original) {
         this.original = original;
     }
 

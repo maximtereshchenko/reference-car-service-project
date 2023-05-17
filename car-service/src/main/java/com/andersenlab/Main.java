@@ -1,5 +1,6 @@
 package com.andersenlab;
 
+import com.andersenlab.carservice.application.storage.spring.jpa.TransactionalCarServiceModule;
 import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.domain.Module;
 import com.andersenlab.carservice.port.external.GarageSlotStore;
@@ -32,15 +33,17 @@ class Main {
             Clock clock,
             MessageBroker messageBroker
     ) {
-        return new Module.Builder()
-                .withRepairerStore(repairerStore)
-                .withGarageSlotStore(garageSlotStore)
-                .withOrderStore(orderStore)
-                .garageSlotAdditionEnabled(isGarageSlotAdditionEnabled)
-                .garageSlotDeletionEnabled(isGarageSlotDeletionEnabled)
-                .withClock(clock)
-                .withMessageBroker(messageBroker)
-                .build();
+        return new TransactionalCarServiceModule(
+                new Module.Builder()
+                        .withRepairerStore(repairerStore)
+                        .withGarageSlotStore(garageSlotStore)
+                        .withOrderStore(orderStore)
+                        .garageSlotAdditionEnabled(isGarageSlotAdditionEnabled)
+                        .garageSlotDeletionEnabled(isGarageSlotDeletionEnabled)
+                        .withClock(clock)
+                        .withMessageBroker(messageBroker)
+                        .build()
+        );
     }
 
     @Bean
