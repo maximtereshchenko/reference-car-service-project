@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm
+data:
+  realm.json: |
+    {
+      "id": "car-service",
+      "realm": "car-service",
+      "enabled": true,
+      "roles": {
+        "realm": [
+          {
+            "name": "HUMAN_RESOURCES_SPECIALIST",
+            "composite": false,
+            "clientRole": false,
+            "containerId": "car-service",
+            "attributes": {}
+          },
+          {
+            "name": "SALES_SPECIALIST",
+            "composite": false,
+            "clientRole": false,
+            "containerId": "car-service",
+            "attributes": {}
+          },
+          {
+            "name": "OPERATIONAL_MANAGER",
+            "composite": false,
+            "clientRole": false,
+            "containerId": "car-service",
+            "attributes": {}
+          },
+          {
+            "name": "REGULAR_EMPLOYEE",
+            "composite": false,
+            "clientRole": false,
+            "containerId": "car-service",
+            "attributes": {}
+          }
+        ]
+      },
+      "clients": [
+        {
+          "clientId": "public",
+          "enabled": true,
+          "standardFlowEnabled": true,
+          "implicitFlowEnabled": true,
+          "directAccessGrantsEnabled": true,
+          "publicClient": true,
+          "protocol": "openid-connect",
+          "redirectUris": [
+            "https://oidcdebugger.com/debug"
+          ]
+        }
+      ],
+      "users": [
+        {
+          "username": "anna",
+          "enabled": true,
+          "firstName": "Anna",
+          "lastName": "Wolf",
+          "email": "anna.wolf@gmail.com",
+          "emailVerified": true,
+          "credentials": [
+            {
+              "type": "password",
+              "value": "anna",
+              "temporary": "false"
+            }
+          ],
+          "realmRoles": [
+            "REGULAR_EMPLOYEE",
+            "HUMAN_RESOURCES_SPECIALIST"
+          ]
+        },
+        {
+          "username": "alina",
+          "enabled": true,
+          "firstName": "Alina",
+          "lastName": "Dyer",
+          "email": "alina.dyer@gmail.com",
+          "emailVerified": true,
+          "credentials": [
+            {
+              "type": "password",
+              "value": "alina",
+              "temporary": "false"
+            }
+          ],
+          "realmRoles": [
+            "REGULAR_EMPLOYEE",
+            "SALES_SPECIALIST"
+          ]
+        },
+        {
+          "username": "noel",
+          "enabled": true,
+          "firstName": "Noel",
+          "lastName": "Hebert",
+          "email": "noel.hebert@gmail.com",
+          "emailVerified": true,
+          "credentials": [
+            {
+              "type": "password",
+              "value": "noel",
+              "temporary": "false"
+            }
+          ],
+          "realmRoles": [
+            "REGULAR_EMPLOYEE",
+            "OPERATIONAL_MANAGER"
+          ]
+        },
+        {
+          "username": "terry",
+          "enabled": true,
+          "firstName": "Terry",
+          "lastName": "Landry",
+          "email": "terry.landry@gmail.com",
+          "emailVerified": true,
+          "credentials": [
+            {
+              "type": "password",
+              "value": "terry",
+              "temporary": "false"
+            }
+          ],
+          "realmRoles": [
+            "REGULAR_EMPLOYEE",
+            "HUMAN_RESOURCES_SPECIALIST",
+            "SALES_SPECIALIST",
+            "OPERATIONAL_MANAGER"
+          ]
+        }
+      ]
+    }
