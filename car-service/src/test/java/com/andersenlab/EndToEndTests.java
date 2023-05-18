@@ -2,9 +2,11 @@ package com.andersenlab;
 
 import com.andersenlab.carservice.port.usecase.*;
 import com.andersenlab.extension.ApacheKafkaExtension;
+import com.andersenlab.extension.KeycloakExtension;
 import com.andersenlab.extension.PostgreSqlExtension;
 import com.andersenlab.extension.PredictableUUIDExtension;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.VoidDeserializer;
 import org.junit.jupiter.api.MethodOrderer;
@@ -20,6 +22,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -35,10 +38,21 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = EndToEndTests.TestConfig.class)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = {
+                EndToEndTests.TestConfig.class,
+                TestSecurityConfiguration.class
+        }
+)
 @ActiveProfiles("apache-kafka")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ExtendWith({PredictableUUIDExtension.class, PostgreSqlExtension.class, ApacheKafkaExtension.class})
+@ExtendWith({
+        PredictableUUIDExtension.class,
+        PostgreSqlExtension.class,
+        ApacheKafkaExtension.class,
+        KeycloakExtension.class
+})
 final class EndToEndTests {
 
     @Autowired
@@ -69,12 +83,15 @@ final class EndToEndTests {
     @Test
     @Order(100)
     void createRepairer(UUID repairerId) {
-        var response = restTemplate.postForEntity(
-                "/repairers",
-                Map.of(
-                        "id", repairerId.toString(),
-                        "name", "John"
-                ),
+        var response = restTemplate.exchange(
+                RequestEntity.post("/repairers")
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.HUMAN_RESOURCES_SPECIALIST)
+                        .body(
+                                Map.of(
+                                        "id", repairerId.toString(),
+                                        "name", "John"
+                                )
+                        ),
                 UUID.class
         );
 
@@ -85,12 +102,15 @@ final class EndToEndTests {
     @Test
     @Order(200)
     void createRepairerWithSameId(UUID repairerId) {
-        var response = restTemplate.postForEntity(
-                "/repairers",
-                Map.of(
-                        "id", repairerId.toString(),
-                        "name", "John"
-                ),
+        var response = restTemplate.exchange(
+                RequestEntity.post("/repairers")
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.HUMAN_RESOURCES_SPECIALIST)
+                        .body(
+                                Map.of(
+                                        "id", repairerId.toString(),
+                                        "name", "John"
+                                )
+                        ),
                 Void.class
         );
 
@@ -101,7 +121,9 @@ final class EndToEndTests {
     @Order(300)
     void listRepairers(UUID repairerId) {
         var response = restTemplate.exchange(
-                RequestEntity.get("/repairers?sort=id").build(),
+                RequestEntity.get("/repairers?sort=id")
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.HUMAN_RESOURCES_SPECIALIST)
+                        .build(),
                 new ParameterizedTypeReference<Collection<ListRepairersUseCase.RepairerView>>() {}
         );
 
@@ -120,9 +142,10 @@ final class EndToEndTests {
     @Test
     @Order(400)
     void createGarageSlot(UUID garageSlot) {
-        var response = restTemplate.postForEntity(
-                "/garage-slots",
-                Map.of("id", garageSlot.toString()),
+        var response = restTemplate.exchange(
+                RequestEntity.post("/garage-slots")
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.OPERATIONAL_MANAGER)
+                        .body(Map.of("id", garageSlot.toString())),
                 UUID.class
         );
 
@@ -134,7 +157,9 @@ final class EndToEndTests {
     @Order(500)
     void listGarageSlots(UUID garageSlot) {
         var response = restTemplate.exchange(
-                RequestEntity.get("/garage-slots?sort=id").build(),
+                RequestEntity.get("/garage-slots?sort=id")
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.OPERATIONAL_MANAGER)
+                        .build(),
                 new ParameterizedTypeReference<Collection<ListGarageSlotsUseCase.GarageSlotView>>() {}
         );
 
@@ -152,25 +177,35 @@ final class EndToEndTests {
     @Test
     @Order(600)
     void createOrder(UUID orderId1) {
-        var response = restTemplate.postForEntity(
-                "/orders",
-                Map.of(
-                        "id", orderId1.toString(),
-                        "price", "100"
-                ),
+        var response = restTemplate.exchange(
+                RequestEntity.post("/orders")
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.SALES_SPECIALIST)
+                        .body(
+                                Map.of(
+                                        "id", orderId1.toString(),
+                                        "price", "100"
+                                )
+                        ),
                 UUID.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(orderId1);
-        assertThat(kafkaTemplate.receive(topic, 0, 0, Duration.ofMinutes(1)).value())
+        assertThat(kafkaTemplate.receive(topic, 0, 0, Duration.ofSeconds(10)))
+                .isNotNull()
+                .extracting(ConsumerRecord::value)
                 .isEqualTo(orderId1.toString());
     }
 
     @Test
     @Order(700)
     void cancelOrder(UUID orderId1) {
-        var response = restTemplate.postForEntity("/orders/{id}/cancel", null, Void.class, orderId1);
+        var response = restTemplate.exchange(
+                RequestEntity.post("/orders/{id}/cancel", orderId1)
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.SALES_SPECIALIST)
+                        .build(),
+                Void.class
+        );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -178,23 +213,27 @@ final class EndToEndTests {
     @Test
     @Order(800)
     void assignGarageSlot(UUID orderId2, UUID garageSlotId) {
-        restTemplate.postForEntity(
-                "/orders",
-                Map.of(
-                        "id", orderId2.toString(),
-                        "price", "100"
-                ),
+        restTemplate.exchange(
+                RequestEntity.post("/orders")
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.SALES_SPECIALIST)
+                        .body(
+                                Map.of(
+                                        "id", orderId2.toString(),
+                                        "price", "100"
+                                )
+                        ),
                 Void.class
         );
-        var response = restTemplate.postForEntity(
-                "/orders/{id}/assign/garage-slot/{garageSlotId}",
-                null,
-                Void.class,
-                orderId2,
-                garageSlotId
+        var response = restTemplate.exchange(
+                RequestEntity.post("/orders/{id}/assign/garage-slot/{garageSlotId}", orderId2, garageSlotId)
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.OPERATIONAL_MANAGER)
+                        .build(),
+                Void.class
         );
 
-        assertThat(kafkaTemplate.receive(topic, 0, 1, Duration.ofMinutes(1)).value())
+        assertThat(kafkaTemplate.receive(topic, 0, 1, Duration.ofSeconds(10)))
+                .isNotNull()
+                .extracting(ConsumerRecord::value)
                 .isEqualTo(orderId2.toString());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -202,12 +241,11 @@ final class EndToEndTests {
     @Test
     @Order(900)
     void assignRepairer(UUID orderId2, UUID repairerId) {
-        var response = restTemplate.postForEntity(
-                "/orders/{id}/assign/repairer/{repairerId}",
-                null,
-                Void.class,
-                orderId2,
-                repairerId
+        var response = restTemplate.exchange(
+                RequestEntity.post("/orders/{id}/assign/repairer/{repairerId}", orderId2, repairerId)
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.OPERATIONAL_MANAGER)
+                        .build(),
+                Void.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -216,11 +254,11 @@ final class EndToEndTests {
     @Test
     @Order(1000)
     void completeOrder(UUID orderId2) {
-        var response = restTemplate.postForEntity(
-                "/orders/{id}/complete",
-                null,
-                Void.class,
-                orderId2
+        var response = restTemplate.exchange(
+                RequestEntity.post("/orders/{id}/complete", orderId2)
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.OPERATIONAL_MANAGER)
+                        .build(),
+                Void.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -229,10 +267,11 @@ final class EndToEndTests {
     @Test
     @Order(1100)
     void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId) {
-        var response = restTemplate.getForEntity(
-                "/orders/{id}",
-                ViewOrderUseCase.OrderView.class,
-                orderId2
+        var response = restTemplate.exchange(
+                RequestEntity.get("/orders/{id}", orderId2)
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.SALES_SPECIALIST)
+                        .build(),
+                ViewOrderUseCase.OrderView.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -254,7 +293,9 @@ final class EndToEndTests {
     @Order(1200)
     void listOrders(UUID orderId1, UUID orderId2) {
         var response = restTemplate.exchange(
-                RequestEntity.get("/orders?sort=id").build(),
+                RequestEntity.get("/orders?sort=id")
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.SALES_SPECIALIST)
+                        .build(),
                 new ParameterizedTypeReference<Collection<ListOrdersUseCase.OrderView>>() {}
         );
 
@@ -282,7 +323,9 @@ final class EndToEndTests {
     @Order(1300)
     void deleteRepairer(UUID repairerId) {
         var response = restTemplate.exchange(
-                RequestEntity.delete("/repairers/{id}", repairerId).build(),
+                RequestEntity.delete("/repairers/{id}", repairerId)
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.HUMAN_RESOURCES_SPECIALIST)
+                        .build(),
                 Void.class
         );
 
@@ -293,7 +336,9 @@ final class EndToEndTests {
     @Order(1400)
     void deleteGarageSlot(UUID garageSlotId) {
         var response = restTemplate.exchange(
-                RequestEntity.delete("/garage-slots/{id}", garageSlotId).build(),
+                RequestEntity.delete("/garage-slots/{id}", garageSlotId)
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.OPERATIONAL_MANAGER)
+                        .build(),
                 Void.class
         );
 
@@ -303,7 +348,12 @@ final class EndToEndTests {
     @Test
     @Order(1500)
     void listOrdersWithoutSortParameter() {
-        var response = restTemplate.getForEntity("/orders", Void.class);
+        var response = restTemplate.exchange(
+                RequestEntity.get("/orders")
+                        .header(HttpHeaders.AUTHORIZATION, TestSecurityConfiguration.SALES_SPECIALIST)
+                        .build(),
+                Void.class
+        );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }

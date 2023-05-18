@@ -1,5 +1,7 @@
 package com.andersenlab;
 
+import com.andersenlab.carservice.application.SecuredCarServiceModule;
+import com.andersenlab.carservice.application.SecuredProxy;
 import com.andersenlab.carservice.application.storage.spring.jpa.TransactionalCarServiceModule;
 import com.andersenlab.carservice.domain.CarServiceModule;
 import com.andersenlab.carservice.domain.Module;
@@ -12,6 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 import java.time.Clock;
 
@@ -24,7 +27,7 @@ class Main {
     }
 
     @Bean
-    CarServiceModule module(
+    CarServiceModule transactionalCarServiceModule(
             RepairerStore repairerStore,
             GarageSlotStore garageSlotStore,
             OrderStore orderStore,
@@ -44,6 +47,15 @@ class Main {
                         .withMessageBroker(messageBroker)
                         .build()
         );
+    }
+
+    @Bean
+    @Primary
+    CarServiceModule securedCarServiceModule(
+            CarServiceModule transactionalCarServiceModule,
+            SecuredProxy securedProxy
+    ) {
+        return new SecuredCarServiceModule(transactionalCarServiceModule, securedProxy);
     }
 
     @Bean
