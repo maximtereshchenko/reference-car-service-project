@@ -4,3 +4,4 @@ metadata:
   name: car-service-common
 data:
   SPRING_DATASOURCE_URL: jdbc:postgresql://postgresql-0.postgresql.default.svc.cluster.local:5432/car_service
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI: http://keycloak/realms/car-service

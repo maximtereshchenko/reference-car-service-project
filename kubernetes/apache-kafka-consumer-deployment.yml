@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: apache-kafka-consumer
-          image: xini/apache-kafka-consumer:2.3
+          image: xini/apache-kafka-consumer:2.4
           envFrom:
             - configMapRef:
                 name: apache-kafka-consumer
