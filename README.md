@@ -96,3 +96,4 @@ state.
 * **stage-8** - There are Kubernetes manifests to run the Application in the Kubernetes cluster.
 * **stage-9** - Application publishes a message on order creation either to Apache Kafka or
   ActiveMQ Artemis using Spring profiles ("apache-kafka" or "artemis" respectively).
+* **stage-10** - Authentication and authorization are done via Keycloak.
