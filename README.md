@@ -20,17 +20,27 @@ This is a reference project for Java intensive course.
 
 ## How to run?
 
-NOTE: requires Docker installed
+NOTE: requires Docker and docker-compose plugin installed
 
-```bash
-docker-compose up
-```
-
-And then you can interact with the Car Service, e.g.:
-
-```bash
-curl http://localhost:8080/repairers?sort=id
-```
+1. Run docker-compose
+    ```bash
+    cd docker-compose
+    docker-compose up
+    ```
+2. Add `127.0.0.1 keycloak` to `/etc/hosts`
+3. Open https://oidcdebugger.com/ in the browser and fill in the form:
+    * Authorize URI - http://keycloak:8080/realms/car-service/protocol/openid-connect/auth
+    * Client ID - `public`
+    * Response type - leave only `token` checked
+    * Response mode - `form_post`
+4. Login using credentials for any predefined users in [realm.json](./docker-compose/realm.json)
+   (e.g. login `anna`, password `anna`)
+5. Copy the Access token from the response
+6. Use copied Access token to interact with Car Service (mind user roles!)
+    ```bash
+    curl http://localhost:8081/repairers?sort=id \
+        -H "Authorization: Bearer <TOKEN>"
+    ```
 
 ## How to create a Kubernetes cluster locally?
 
