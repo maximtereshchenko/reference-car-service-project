@@ -1,6 +1,7 @@
 package com.andersenlab;
 
 import com.andersenlab.extension.ArtemisExtension;
+import com.andersenlab.extension.KeycloakExtension;
 import com.andersenlab.extension.PostgreSqlExtension;
 import com.andersenlab.extension.PredictableUUIDExtension;
 import jakarta.jms.JMSException;
@@ -19,9 +20,14 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestSecurityConfiguration.class)
 @ActiveProfiles("artemis")
-@ExtendWith({PredictableUUIDExtension.class, PostgreSqlExtension.class, ArtemisExtension.class})
+@ExtendWith({
+        PredictableUUIDExtension.class,
+        PostgreSqlExtension.class,
+        ArtemisExtension.class,
+        KeycloakExtension.class
+})
 final class ArtemisIntegrationTests {
 
     @Autowired
