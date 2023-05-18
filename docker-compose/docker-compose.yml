@@ -3,7 +3,7 @@ services:
   car-service:
     image: car-service:latest
     build:
-      context: ./
+      context: ../
       args:
         module: car-service
     container_name: car-service
@@ -38,7 +38,7 @@ services:
   apache-kafka-consumer:
     image: apache-kafka-consumer:latest
     build:
-      context: ./
+      context: ../
       args:
         module: apache-kafka-consumer
     container_name: apache-kafka-consumer
@@ -56,7 +56,7 @@ services:
   artemis-consumer:
     image: artemis-consumer:latest
     build:
-      context: ./
+      context: ../
       args:
         module: artemis-consumer
     container_name: artemis-consumer
