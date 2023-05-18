@@ -18,6 +18,7 @@ include("car-service-apache-kafka-spring-boot-starter")
 include("apache-kafka-consumer")
 include("car-service-artemis-spring-boot-starter")
 include("artemis-consumer")
+include("car-service-security-spring-boot-starter")
 
 dependencyResolutionManagement {
     versionCatalogs {
@@ -61,6 +62,10 @@ dependencyResolutionManagement {
             library("spring-kafka", "org.springframework.kafka", "spring-kafka")
                 .versionRef(spring)
             library("spring-artemis", "org.springframework.boot", "spring-boot-starter-artemis")
+                .versionRef(spring)
+            library("spring-security", "org.springframework.boot", "spring-boot-starter-security")
+                .versionRef(spring)
+            library("spring-oauth2-resource-server", "org.springframework.boot", "spring-boot-starter-oauth2-resource-server")
                 .versionRef(spring)
             library("testcontainers", "org.testcontainers", "testcontainers")
                 .versionRef(testcontainers)
