@@ -5,3 +5,5 @@ metadata:
 data:
   KC_DB: postgres
   KC_DB_URL: jdbc:postgresql://postgresql-0.postgresql.default.svc.cluster.local/keycloak
+  KC_HEALTH_ENABLED: "true"
+  KC_METRICS_ENABLED: "true"
