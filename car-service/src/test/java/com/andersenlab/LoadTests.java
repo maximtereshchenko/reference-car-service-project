@@ -3,6 +3,7 @@ package com.andersenlab;
 import com.andersenlab.carservice.port.usecase.ListOrdersUseCase;
 import com.andersenlab.carservice.port.usecase.OrderStatus;
 import com.andersenlab.extension.ApacheKafkaExtension;
+import com.andersenlab.extension.KeycloakExtension;
 import com.andersenlab.extension.PostgreSqlExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,9 +25,9 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = TestSecurityConfiguration.class)
 @ActiveProfiles("apache-kafka")
-@ExtendWith({PostgreSqlExtension.class, ApacheKafkaExtension.class})
+@ExtendWith({PostgreSqlExtension.class, ApacheKafkaExtension.class, KeycloakExtension.class})
 final class LoadTests {
 
     private final CountDownLatch latch = new CountDownLatch(1);
