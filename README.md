@@ -27,7 +27,7 @@ NOTE: requires Docker and docker-compose plugin installed
     cd docker-compose
     docker-compose up
     ```
-2. Add `127.0.0.1 keycloak` to `/etc/hosts`
+2. Add `127.0.0.1 keycloak` entry to `/etc/hosts`
 3. Open https://oidcdebugger.com/ in the browser and fill in the form:
     * Authorize URI - http://keycloak:8080/realms/car-service/protocol/openid-connect/auth
     * Client ID - `public`
@@ -41,21 +41,43 @@ NOTE: requires Docker and docker-compose plugin installed
     curl http://localhost:8081/repairers?sort=id \
         -H "Authorization: Bearer <TOKEN>"
     ```
+7. In the end, clean up everything
+    ```bash
+    docker-compose down
+    ```
 
 ## How to create a Kubernetes cluster locally?
 
 NOTE: requires Minikube, kubectl, Docker installed
 
-```bash
-minikube start --cpus=max --memory=20000Mb --addons=ingress
-kubectl apply -f kubernetes/
-```
-
-And then you can interact with the Car Service, e.g.:
-
-```bash
-curl --resolve "car-service.com:80:$(minikube ip)" http://car-service.com/repairers?sort=id
-```
+1. Start minikube and apply all manifests
+    ```bash
+    minikube start --cpus=max --memory=20000Mb --addons=ingress
+    kubectl apply -f kubernetes/
+    ```
+2. Figure out minikube's IP and copy it
+    ```bash
+    minikube ip
+    ```
+3. Add `<MINIKUBE IP> keycloak` entry with copied IP to `/etc/hosts`
+4. Open https://oidcdebugger.com/ in the browser and fill in the form:
+    * Authorize URI - http://keycloak/realms/car-service/protocol/openid-connect/auth
+    * Client ID - `public`
+    * Response type - leave only `token` checked
+    * Response mode - `form_post`
+5. Login using credentials for any predefined users in [realm.json](./docker-compose/realm.json)
+   (e.g. login `anna`, password `anna`)
+6. Copy the Access token from the response
+7. Use copied Access token to interact with Car Service (mind user roles!)
+    ```bash
+    curl --resolve "car-service.com:80:$(minikube ip)" \
+        http://car-service.com/repairers?sort=id  \
+        -H "Authorization: Bearer <TOKEN>"
+    ```
+8. In the end, clean up everything
+    ```bash
+    minikube delete
+    ```
 
 ## Tags
 
