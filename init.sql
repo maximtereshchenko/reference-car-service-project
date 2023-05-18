@@ -1,0 +1,2 @@
+CREATE DATABASE car_service;
+CREATE DATABASE keycloak;

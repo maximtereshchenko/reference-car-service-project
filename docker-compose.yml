@@ -18,6 +18,7 @@ services:
       SPRING_ARTEMIS_BROKERURL: tcp://artemis:61616
       SPRING_ARTEMIS_USER: artemis
       SPRING_ARTEMIS_PASSWORD: artemis
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI: http://keycloak:8080/realms/car-service
     depends_on:
       postgresql:
         condition: service_healthy
@@ -25,13 +26,15 @@ services:
         condition: service_healthy
       artemis:
         condition: service_healthy
+      keycloak:
+        condition: service_started
     healthcheck:
       test: "nc -z localhost 8080 || exit 1"
       interval: 5s
       timeout: 5s
       retries: 10
     ports:
-      - "8080:8080"
+      - "8081:8080"
   apache-kafka-consumer:
     image: apache-kafka-consumer:latest
     build:
@@ -76,7 +79,6 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: car_service
     healthcheck:
       test: "pg_isready || exit 1"
       interval: 5s
@@ -84,6 +86,8 @@ services:
       retries: 10
     ports:
       - "5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     container_name: zookeeper
@@ -128,3 +132,21 @@ services:
       retries: 10
     ports:
       - "61616"
+  keycloak:
+    image: keycloak/keycloak:21.1
+    container_name: keycloak
+    depends_on:
+      - postgresql
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgresql:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+      KC_HEALTH_ENABLED: "true"
+    command: start-dev --import-realm
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./realm.json:/opt/keycloak/data/import/realm.json
