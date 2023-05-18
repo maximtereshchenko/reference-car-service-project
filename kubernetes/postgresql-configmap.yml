@@ -3,4 +3,6 @@ kind: ConfigMap
 metadata:
   name: postgresql
 data:
-  POSTGRES_DB: car_service
+  init.sql: |
+    CREATE DATABASE car_service;
+    CREATE DATABASE keycloak;
