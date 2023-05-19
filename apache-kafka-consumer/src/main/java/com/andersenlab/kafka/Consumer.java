@@ -4,14 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 
-import java.util.UUID;
-
 class Consumer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Consumer.class);
 
     @KafkaListener(topics = "${apache-kafka-consumer.kafka.topic}")
-    void listenNewOrderId(UUID orderId) {
+    void listenNewOrderId(String orderId) {
         LOG.info("Received order id {}", orderId);
     }
 }

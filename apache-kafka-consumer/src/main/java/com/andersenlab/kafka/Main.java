@@ -9,7 +9,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 @SpringBootConfiguration
 @EnableAutoConfiguration
 @EnableKafka
-class Main {
+public class Main {
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class);

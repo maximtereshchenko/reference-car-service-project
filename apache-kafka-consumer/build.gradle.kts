@@ -1,5 +1,7 @@
 plugins {
     application
+    alias(libs.plugins.graalvm)
+    alias(libs.plugins.spring.boot)
 }
 
 application {
