@@ -8,3 +8,9 @@ dependencies {
     implementation(libs.spring.oauth2.resource.server)
     implementation(libs.spring.security)
 }
+
+tasks {
+    compileJava {
+        options.compilerArgs.add("-parameters")
+    }
+}

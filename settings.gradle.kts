@@ -85,6 +85,9 @@ dependencyResolutionManagement {
             library("jdbc-postgresql", "org.postgresql:postgresql:42.6.0")
             library("spring-jms", "org.springframework:spring-jms:6.0.8")
             library("jms-api", "jakarta.jms:jakarta.jms-api:3.1.0")
+
+            plugin("graalvm", "org.graalvm.buildtools.native").version("0.9.22")
+            plugin("spring.boot", "org.springframework.boot").versionRef(spring)
         }
     }
 }

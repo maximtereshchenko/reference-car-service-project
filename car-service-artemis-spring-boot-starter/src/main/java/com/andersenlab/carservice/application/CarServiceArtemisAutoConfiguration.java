@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.core.JmsTemplate;
 
 @AutoConfiguration
 @ConditionalOnProperty(value = "car-service.artemis.enabled", havingValue = "true")
 @EnableJms
+@ImportRuntimeHints(ArtemisHintsRegistrar.class)
 class CarServiceArtemisAutoConfiguration {
 
     @Bean

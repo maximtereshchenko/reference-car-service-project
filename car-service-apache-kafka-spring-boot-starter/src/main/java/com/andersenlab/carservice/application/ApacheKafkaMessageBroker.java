@@ -8,10 +8,10 @@ import java.util.concurrent.ExecutionException;
 
 final class ApacheKafkaMessageBroker implements MessageBroker {
 
-    private final KafkaTemplate<Void, UUID> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final String topic;
 
-    ApacheKafkaMessageBroker(KafkaTemplate<Void, UUID> kafkaTemplate, String topic) {
+    ApacheKafkaMessageBroker(KafkaTemplate<String, String> kafkaTemplate, String topic) {
         this.kafkaTemplate = kafkaTemplate;
         this.topic = topic;
     }
@@ -19,7 +19,7 @@ final class ApacheKafkaMessageBroker implements MessageBroker {
     @Override
     public void publishNewOrderId(UUID orderId) {
         try {
-            kafkaTemplate.send(topic, orderId).get();
+            kafkaTemplate.send(topic, orderId.toString()).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new CouldNotPublish(e);

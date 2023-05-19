@@ -1,0 +1,17 @@
+FROM ghcr.io/graalvm/native-image:ol9-java17-22.3.2 AS build
+ARG module
+ARG springActiveProfile
+WORKDIR /usr/src/app/
+COPY ./ ./
+RUN chmod +x gradlew
+RUN microdnf install -y findutils
+ENV SPRING_PROFILES_ACTIVE=${springActiveProfile}
+RUN ./gradlew ${module}:nativeCompile
+
+FROM oraclelinux:9-slim
+ARG module
+COPY --from=build /usr/src/app/${module}/build/native/nativeCompile /usr/app/
+WORKDIR usr/app/
+ENV EXECUTABLE=${module}
+EXPOSE 8080
+ENTRYPOINT ./${EXECUTABLE} -XX:MaximumHeapSizePercent=40

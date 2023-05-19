@@ -6,6 +6,7 @@ allprojects {
 subprojects {
     repositories {
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 

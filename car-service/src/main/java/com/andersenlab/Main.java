@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
@@ -20,7 +21,7 @@ import java.time.Clock;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
-class Main {
+public class Main {
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class);
@@ -61,5 +62,10 @@ class Main {
     @Bean
     Clock clock() {
         return Clock.systemDefaultZone();
+    }
+
+    @Bean
+    FlywayConfigurationCustomizer slf4jLoggerCustomizer() {
+        return configuration -> configuration.loggers("slf4j");
     }
 }
