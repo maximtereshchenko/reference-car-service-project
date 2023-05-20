@@ -91,9 +91,12 @@ state.
 * **stage-4** - Application state saved in database using JDBC instead of disk.
 * **stage-5** - Application state saved in database using JPA instead of JDBC.
 * **stage-6** - Application utilizes Spring Boot with starters for HTTP and storage configuration.
-* **stage-7** - Application uses PostgreSQL. The GitHub Actions pipeline includes step to build and push car-service
-  container image.
+* **stage-7** - Application uses PostgreSQL. The GitHub Actions pipeline includes step to build
+  and push car-service container image.
 * **stage-8** - There are Kubernetes manifests to run the Application in the Kubernetes cluster.
 * **stage-9** - Application publishes a message on order creation either to Apache Kafka or
   ActiveMQ Artemis using Spring profiles ("apache-kafka" or "artemis" respectively).
 * **stage-10** - Authentication and authorization are done via Keycloak.
+* **stage-11** - Additional container images are built which run native GraalVM image. Their
+  tags have additional suffix: native-apache-kafka and native-artemis for car-service, native for
+  apache-kafka-consumer and artemis-consumer.
