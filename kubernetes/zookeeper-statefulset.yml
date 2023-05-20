@@ -25,9 +25,6 @@ spec:
           readinessProbe:
             exec:
               command: [ "nc", "-z", "localhost", "2181" ]
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            failureThreshold: 10
           volumeMounts:
             - name: data
               mountPath: /var/lib/zookeeper/data

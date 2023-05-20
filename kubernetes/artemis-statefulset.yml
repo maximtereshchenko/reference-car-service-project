@@ -35,10 +35,7 @@ spec:
           readinessProbe:
             exec:
               command: [ "/home/jboss/broker/bin/artemis", "check", "node" ]
-            initialDelaySeconds: 10
-            periodSeconds: 10
             timeoutSeconds: 10
-            failureThreshold: 10
           volumeMounts:
             - name: data
               mountPath: /var/lib/artemis/data

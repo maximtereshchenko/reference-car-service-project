@@ -35,11 +35,7 @@ spec:
               name: http
           readinessProbe:
             exec:
-              command:
-                - "pg_isready"
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            failureThreshold: 10
+              command: [ "pg_isready" ]
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
