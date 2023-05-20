@@ -9,22 +9,24 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public final class CarServiceExtension implements ParameterResolver {
 
-    private final Map<String, Context> contextHolder = new HashMap<>();
+    private final ExtensionContext.Namespace namespace = ExtensionContext.Namespace.create(CarServiceExtension.class);
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        return contextHolder.computeIfAbsent(extensionContext.getUniqueId(), id -> Context.create())
+        return extensionContext.getStore(namespace)
+                .getOrComputeIfAbsent(extensionContext.getUniqueId(), id -> Context.create(), Context.class)
                 .supports(parameterContext.getParameter().getType());
     }
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        return contextHolder.get(extensionContext.getUniqueId()).parameter(parameterContext.getParameter().getType());
+        return extensionContext.getStore(namespace)
+                .get(extensionContext.getUniqueId(), Context.class)
+                .parameter(parameterContext.getParameter().getType());
     }
 
     private record Context(Map<Class<?>, Object> parameters) {
