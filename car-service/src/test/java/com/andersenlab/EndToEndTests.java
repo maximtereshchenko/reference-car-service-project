@@ -1,16 +1,11 @@
 package com.andersenlab;
 
 import com.andersenlab.carservice.port.usecase.*;
-import com.andersenlab.extension.ApacheKafkaExtension;
-import com.andersenlab.extension.KeycloakExtension;
-import com.andersenlab.extension.PostgreSqlExtension;
-import com.andersenlab.extension.PredictableUUIDExtension;
+import com.andersenlab.extension.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.VoidDeserializer;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,24 +41,24 @@ import static org.assertj.core.api.Assertions.assertThat;
         }
 )
 @ActiveProfiles("apache-kafka")
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(NaturalMethodOrderer.class)
 @ExtendWith({
         PredictableUUIDExtension.class,
         PostgreSqlExtension.class,
         ApacheKafkaExtension.class,
-        KeycloakExtension.class
+        KeycloakExtension.class,
+        SkipRemainingOnFailureExtension.class
 })
 final class EndToEndTests {
 
     @Autowired
     private TestRestTemplate restTemplate;
     @Autowired
-    private KafkaTemplate<Void, String> kafkaTemplate;
+    private KafkaTemplate<String, String> kafkaTemplate;
     @Value("${car-service.kafka.topic}")
     private String topic;
 
     @Test
-    @Order(50)
     void livenessProbeEnabled() {
         var response = restTemplate.getForEntity("/actuator/health/liveness", Health.class);
 
@@ -72,7 +67,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(75)
     void readinessProbeEnabled() {
         var response = restTemplate.getForEntity("/actuator/health/readiness", Health.class);
 
@@ -81,7 +75,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(100)
     void createRepairer(UUID repairerId) {
         var response = restTemplate.exchange(
                 RequestEntity.post("/repairers")
@@ -100,7 +93,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(200)
     void createRepairerWithSameId(UUID repairerId) {
         var response = restTemplate.exchange(
                 RequestEntity.post("/repairers")
@@ -118,7 +110,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(300)
     void listRepairers(UUID repairerId) {
         var response = restTemplate.exchange(
                 RequestEntity.get("/repairers?sort=id")
@@ -140,7 +131,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(400)
     void createGarageSlot(UUID garageSlot) {
         var response = restTemplate.exchange(
                 RequestEntity.post("/garage-slots")
@@ -154,7 +144,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(500)
     void listGarageSlots(UUID garageSlot) {
         var response = restTemplate.exchange(
                 RequestEntity.get("/garage-slots?sort=id")
@@ -175,7 +164,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(600)
     void createOrder(UUID orderId1) {
         var response = restTemplate.exchange(
                 RequestEntity.post("/orders")
@@ -198,7 +186,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(700)
     void cancelOrder(UUID orderId1) {
         var response = restTemplate.exchange(
                 RequestEntity.post("/orders/{id}/cancel", orderId1)
@@ -211,7 +198,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(800)
     void assignGarageSlot(UUID orderId2, UUID garageSlotId) {
         restTemplate.exchange(
                 RequestEntity.post("/orders")
@@ -239,7 +225,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(900)
     void assignRepairer(UUID orderId2, UUID repairerId) {
         var response = restTemplate.exchange(
                 RequestEntity.post("/orders/{id}/assign/repairer/{repairerId}", orderId2, repairerId)
@@ -252,7 +237,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(1000)
     void completeOrder(UUID orderId2) {
         var response = restTemplate.exchange(
                 RequestEntity.post("/orders/{id}/complete", orderId2)
@@ -265,7 +249,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(1100)
     void viewOrder(UUID orderId2, UUID garageSlotId, UUID repairerId) {
         var response = restTemplate.exchange(
                 RequestEntity.get("/orders/{id}", orderId2)
@@ -290,7 +273,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(1200)
     void listOrders(UUID orderId1, UUID orderId2) {
         var response = restTemplate.exchange(
                 RequestEntity.get("/orders?sort=id")
@@ -320,7 +302,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(1300)
     void deleteRepairer(UUID repairerId) {
         var response = restTemplate.exchange(
                 RequestEntity.delete("/repairers/{id}", repairerId)
@@ -333,7 +314,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(1400)
     void deleteGarageSlot(UUID garageSlotId) {
         var response = restTemplate.exchange(
                 RequestEntity.delete("/garage-slots/{id}", garageSlotId)
@@ -346,7 +326,6 @@ final class EndToEndTests {
     }
 
     @Test
-    @Order(1500)
     void listOrdersWithoutSortParameter() {
         var response = restTemplate.exchange(
                 RequestEntity.get("/orders")
@@ -370,8 +349,8 @@ final class EndToEndTests {
         }
 
         @Bean
-        KafkaTemplate<Void, String> kafkaTemplate(
-                ProducerFactory<Void, String> producerFactory,
+        KafkaTemplate<String, String> kafkaTemplate(
+                ProducerFactory<String, String> producerFactory,
                 @Value("${spring.kafka.bootstrap-servers}") String bootstrapServers
         ) {
             var kafkaTemplate = new KafkaTemplate<>(producerFactory);
